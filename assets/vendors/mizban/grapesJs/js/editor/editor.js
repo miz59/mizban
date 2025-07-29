@@ -15,7 +15,6 @@ editor_assetsManager(editor);
 setupAssetsManager(editor);
 editor_panelManager(editor);
 code_editor(editor);
-
 initializeWidgets(editor);
 
 
