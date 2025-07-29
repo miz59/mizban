@@ -1,5 +1,14 @@
 import { breakPoints } from "../../../commands/variables.js";
 
+const breakPointIcons = {
+    xxl: 'fa fa-tv',
+    xl: 'fa fa-desktop',
+    lg: 'fa fa-laptop',
+    md: 'fa fa-tablet',
+    sm: 'fa fa-mobile',
+    xs: 'fa fa-mobile-alt'
+};
+
 class PanelManager {
     constructor(editor) {
         this.editor = editor;
@@ -56,10 +65,9 @@ class PanelManager {
     getAboutContent() {
         return `
             <div class="modal-question">
-                <img src="https://esperlos.ir/wp-content/uploads/2023/07/logo-esperlos.webp">
-                <p>GrapesJS Webpage Builder is a simple showcase of what is possible to achieve with the GrapesJS core library.</p>
-                <p>For any hint about the demo check the Webpage Preset repository and open an issue. For problems with the builder itself, open an issue on the main GrapesJS repository.</p>
-                <p>Being a free and open source project contributors and supporters are extremely welcome. If you like the project support it with a donation of your choice or become a backer/sponsor via Open Collective.</p>
+                <img src="https://eazymizy.com/assets/media/images/logo.png">
+                <p>MIZBAN</p>
+                <p class="txt-align-center">Do not start from ZERO. The MIZ framework is here to make front-end development incredibly easy</p>
             </div>
         `;
     }
@@ -74,29 +82,29 @@ class PanelManager {
 
     getDeviceButtons() {
         return [
-            this.createDeviceButton('desktop', 'fa fa-desktop', 'set-device-desktop', true),
             ...this.createBreakpointButtons()
         ];
     }
 
-    createDeviceButton(id, icon, command, active = false) {
+    createDeviceButton(id, icon, command, active = false, title = '') {
         return {
             id,
             className: "btn-toggle-device",
-            label: `<i class="${icon}"></i>`,
+            label: `<i class="${icon}" title="${title}"></i>`,
             command,
             active,
             togglable: false
         };
     }
-
+    
     createBreakpointButtons() {
-        return Object.keys(breakPoints).map(key => 
+        return Object.entries(breakPoints).map(([key, value]) =>
             this.createDeviceButton(
                 key,
-                `<i style="font-size: 1rem">${key}</i>`,
+                breakPointIcons[key],
                 `set-device-${key}`,
-                true
+                true,
+                `${key}:${value}`
             )
         );
     }

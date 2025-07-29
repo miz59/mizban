@@ -1987,7 +1987,7 @@ span.CodeMirror-selectedtext {
     border-radius: 2px;
     padding: 4px;
     position: relative;
-    cursor: pointer
+    cursor: pointer;
 }
 
 .gjs-pn-btn.gjs-pn-active {
