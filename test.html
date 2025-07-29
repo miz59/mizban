@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resizable Panels (Column with Pixels)</title>
+  <style>
+    /* کانتینر اصلی */
+    .container {
+      display: flex;
+      flex-direction: column; /* جهت ستون */
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* پنل‌ها */
+    .panel {
+      overflow: auto; /* محتوای اضافی پیمایش شود */
+    }
+
+    /* استایل نوار resizer */
+    .resizer {
+      height: 5px; /* ضخامت نوار */
+      background: #ccc; /* رنگ نوار */
+      cursor: row-resize; /* نشانگر موس تغییر ارتفاع */
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <!-- ساختار HTML -->
+  <div class="container">
+    <div class="panel panel-top" style="height: 300px;">Top Panel</div>
+    <div class="resizer"></div>
+    <div class="panel panel-bottom" style="height: calc(100% - 305px);">Bottom Panel</div>
+  </div>
+
+  <script>
+    // گرفتن المان‌های DOM
+    const resizer = document.querySelector('.resizer');
+    const topPanel = document.querySelector('.panel-top');
+    const bottomPanel = document.querySelector('.panel-bottom');
+    const container = document.querySelector('.container');
+
+    // متغیر برای ذخیره وضعیت کشیدن
+    let isResizing = false;
+
+    // شروع کشیدن
+    resizer.addEventListener('mousedown', () => {
+      isResizing = true;
+      document.body.style.cursor = 'row-resize'; // تغییر نشانگر موس
+    });
+
+    // حین کشیدن
+    document.addEventListener('mousemove', (e) => {
+      if (!isResizing) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const newTopHeightPx = e.clientY - containerRect.top; // ارتفاع پنل بالا بر اساس پیکسل
+
+      // محدودیت‌های حداقل و حداکثر
+      const minHeight = 50; // حداقل ارتفاع
+      const maxHeight = containerRect.height - minHeight - resizer.offsetHeight;
+
+      if (newTopHeightPx < minHeight || newTopHeightPx > maxHeight) return;
+
+      // به‌روزرسانی ارتفاع پنل‌ها
+      topPanel.style.height = `${newTopHeightPx}px`;
+      bottomPanel.style.height = `${containerRect.height - newTopHeightPx - resizer.offsetHeight}px`;
+    });
+
+    // پایان کشیدن
+    document.addEventListener('mouseup', () => {
+      if (isResizing) {
+        isResizing = false;
+        document.body.style.cursor = ''; // بازگرداندن نشانگر موس
+      }
+    });
+  </script>
+</body>
+</html>

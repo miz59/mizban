@@ -1,0 +1,130 @@
+:root {
+    --primary-color: #F7D800;
+    --primary-color-hover: #d7bb01
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.block{
+    justify-content: center !important;
+align-items: center !important;
+}
+
+.gjs-block {
+    display: flex;
+    justify-content: space-around;
+    align-content: space-around;
+
+}
+
+.gjs-block-label {
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    justify-self: center;
+    text-align: center;
+    font-size: 22px;
+
+}
+
+.gjs-block-label span {
+    font-size: 14px;
+}
+
+.gjs-block-label i {
+    font-size: 34px;
+    font-style: normal;
+}
+
+.gjs-pn-options{
+    display: flex;
+}
+
+.modal-question{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+.modal-question img{
+    max-height: 150px;
+    max-width: 150px;
+    aspect-ratio: 1;
+}
+
+.my-small-modal .gjs-mdl-dialog {
+    max-width: 300px;
+}
+
+
+.modal-import-code {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: space-around;
+
+}
+
+.modal-import-code div {
+    background-color: #322931;
+    min-width: 45%;
+    min-height: 300px;
+    margin-bottom: 2rem;
+    overflow: scroll;
+}
+.modal-import-code div :not(p){
+    padding: 10px;
+}
+
+.modal-import-code p {
+    color: white;
+    background-color: #444444;
+    padding: 10px;
+}
+#import_code{
+    padding: 10px;
+    color: #B9A5A6;
+    background-color: #594E50;
+    border: none;
+    transition: .3s ease-in-out;
+    cursor: pointer;
+}
+#import_code:hover{
+    filter: brightness(1.5);
+}
+
+/*.gjs-pn-buttons{*/
+/*    background-color: red;*/
+/*    */
+/*}*/
+
+
+.gjs-pn-devices-c{
+    /*display: none;*/
+    position: initial;
+}
+
+
+.gjs-pn-commands{
+ display: flex;
+}
+
+.btn-toggle-device
+{
+    font-size: 2.1em;
+    margin: 0 10px;
+}
+
+
+.miz-col{
+    display: flex;
+    .cell{
+        width: 100%;
+        min-height: 100px;
+    }
+}
