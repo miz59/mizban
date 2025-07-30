@@ -66,33 +66,56 @@ class PanelManager {
     }
 
     showCleanConfirmation(editor) {
-        const modal = editor.Modal;
-        modal.setTitle('Delete output');
-        modal.setContent(this.getCleanConfirmationContent());
-        const modalContent = modal.getContentEl();
+        // Create a separate modal container to avoid conflicts with code editor
+        const modalContainer = document.createElement('div');
+        modalContainer.className = 'gjs-mdl-container gjs-mdl-dialog gjs-one-bg gjs-two-color delete-confirmation-modal position-fixed top-0 left-0 w-100 h-100 d-flex align-items-center justify-content-center bg-black-50';
+        modalContainer.style.cssText = 'background: rgba(0,0,0,0.5); z-index: 9999; max-width:100%;';
+        const modalDialog = document.createElement('div');
+        modalDialog.className = 'gjs-mdl-content bg-disabled-dark-color on-primary-color p-2 radius-all-small';
+        
+        const title = document.createElement('h3');
+        title.textContent = 'Delete output';
+        title.style.cssText = 'margin: 0 0 15px 0; color: #fff;';
+        
+        const content = document.createElement('div');
+        content.innerHTML = this.getCleanConfirmationContent();
+        
         const buttonContainer = document.createElement('div');
-        buttonContainer.style.cssText = 'display: flex; justify-content: center; gap: 10px; margin-top: 20px;';
+        buttonContainer.className = 'd-flex justify-content-center gap-2 mt-2';
         
         const noButton = document.createElement('button');
         noButton.textContent = 'No';
-        noButton.classList.add('on-primary-color', 'border-style-none', 'radius-all-small', 'px-2', 'py-1', 'cursor-pointer', 'bg-disabled-regular-color');
+        noButton.className = 'on-primary-color border-style-none radius-all-small px-2 py-1 cursor-pointer bg-disabled-regular-color';
         noButton.setAttribute('id', 'noDeleteCode');
-        noButton.onclick = () => modal.close();
+        noButton.onclick = () => {
+            document.body.removeChild(modalContainer);
+        };
         
         const yesButton = document.createElement('button');
         yesButton.textContent = 'Yes';
-        yesButton.classList.add('on-primary-color', 'border-style-none', 'radius-all-small', 'px-2', 'py-1', 'cursor-pointer', 'bg-danger-regular-color');
-        yesButton.setAttribute('id', 'noDeleteCode');
+        yesButton.className = 'on-primary-color border-style-none radius-all-small px-2 py-1 cursor-pointer bg-danger-regular-color';
+        yesButton.setAttribute('id', 'yesDeleteCode');
         yesButton.onclick = () => {
             editor.runCommand('core:canvas-clear');
-            modal.close();
+            document.body.removeChild(modalContainer);
         };
         
         buttonContainer.appendChild(noButton);
         buttonContainer.appendChild(yesButton);
-        modalContent.appendChild(buttonContainer);
         
-        modal.open();
+        modalDialog.appendChild(title);
+        modalDialog.appendChild(content);
+        modalDialog.appendChild(buttonContainer);
+        modalContainer.appendChild(modalDialog);
+        
+        // Add click outside to close
+        modalContainer.addEventListener('click', (e) => {
+            if (e.target === modalContainer) {
+                document.body.removeChild(modalContainer);
+            }
+        });
+        
+        document.body.appendChild(modalContainer);
     }
 
     showAboutModal(editor) {
