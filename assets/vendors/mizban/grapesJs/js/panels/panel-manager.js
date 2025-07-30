@@ -30,7 +30,7 @@ class PanelManager {
             this.createButton('importCode', 'fa fa-upload', 'import-code-from-html', 'import code from html'),
             this.createButton('undo', 'fa fa-undo', 'core:undo', 'undo'),
             this.createButton('redo', 'fa fa-rotate-right', 'core:redo', 'redo'),
-            this.createButton('clean', 'fa fa-trash', 'core:canvas-clear', 'clean'),
+            this.createCleanButton(),
             this.createAboutButton(),
         ];
     }
@@ -45,6 +45,15 @@ class PanelManager {
         };
     }
 
+    createCleanButton() {
+        return {
+            id: 'clean',
+            className: 'btn-toggle-borders',
+            label: '<i class="fa fa-trash" title="clean"></i>',
+            command: this.showCleanConfirmation.bind(this)
+        };
+    }
+
     createAboutButton() {
         return {
             id: 'question',
@@ -54,12 +63,52 @@ class PanelManager {
         };
     }
 
+    showCleanConfirmation(editor) {
+        const modal = editor.Modal;
+        modal.setTitle('Delete output');
+        modal.setContent(this.getCleanConfirmationContent());
+        const modalContent = modal.getContentEl();
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = 'display: flex; justify-content: center; gap: 10px; margin-top: 20px;';
+        
+        const noButton = document.createElement('button');
+        noButton.textContent = 'No';
+        noButton.classList.add('on-primary-color', 'border-style-none', 'radius-all-small', 'px-2', 'py-1', 'cursor-pointer', 'bg-disabled-regular-color');
+        noButton.setAttribute('id', 'noDeleteCode');
+        noButton.onclick = () => modal.close();
+        
+        const yesButton = document.createElement('button');
+        yesButton.textContent = 'Yes';
+        // yesButton.style.cssText = 'padding: 8px 20px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;';
+        yesButton.classList.add('on-primary-color', 'border-style-none', 'radius-all-small', 'px-2', 'py-1', 'cursor-pointer', 'bg-danger-regular-color');
+        yesButton.setAttribute('id', 'noDeleteCode');
+        yesButton.onclick = () => {
+            editor.runCommand('core:canvas-clear');
+            modal.close();
+        };
+        
+        buttonContainer.appendChild(noButton);
+        buttonContainer.appendChild(yesButton);
+        modalContent.appendChild(buttonContainer);
+        
+        modal.open();
+    }
+
     showAboutModal(editor) {
         editor.Modal.open({
             title: 'about Miz',
             attributes: { class: 'my-small-modal' },
             content: this.getAboutContent()
         });
+    }
+
+    getCleanConfirmationContent() {
+        return `
+            <div class="modal-question cursor-pointer">
+                <p>Are you sure you want to delete the output you are currently viewing?</p>
+                <p style="color: #ff6b6b; font-size: 14px; margin-top: 10px;">This operation cannot be reversed!</p>
+            </div>
+        `;
     }
 
     getAboutContent() {
