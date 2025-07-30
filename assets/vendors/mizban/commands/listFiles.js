@@ -44,7 +44,7 @@ function extractBodyContent(html) {
   const match = html.match(bodyRegex);
   if (match && match[1]) {
     const bodyContent = match[1].trim();
-    return removeIconDiv(bodyContent); // حذف div miz-block-icon
+    return removeIconDiv(bodyContent);
   }
   return ''; 
 }

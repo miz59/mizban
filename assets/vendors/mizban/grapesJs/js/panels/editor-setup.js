@@ -24,7 +24,7 @@ class EditorContainer {
 
     createCssMonacoContainer() {
         const container = document.createElement('div');
-        container.id = 'cssEditor';
+        container.id = 'editor';
         return container;
     }
 
@@ -96,17 +96,13 @@ class ImportButton {
 }
 
 function code_editor(editor) {
-    // ایجاد کانتینرها
     const editorContainer = new EditorContainer();
     editorContainer.appendElements();
 
-    // ایجاد کد ویور
     const codeViewer = new CodeViewer(editor);
 
-    // ایجاد دکمه ایمپورت
     const importButton = new ImportButton(editor);
 
-    // تنظیم دستورات
     setupHtmlImportCommand(
         editor,
         codeViewer.getViewer(),

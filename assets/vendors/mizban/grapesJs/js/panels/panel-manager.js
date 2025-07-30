@@ -31,7 +31,7 @@ class PanelManager {
             this.createButton('undo', 'fa fa-undo', 'core:undo'),
             this.createButton('redo', 'fa fa-rotate-right', 'core:redo'),
             this.createButton('clean', 'fa fa-trash', 'core:canvas-clear'),
-            this.createAboutButton()
+            this.createAboutButton(),
         ];
     }
 

@@ -25148,20 +25148,20 @@
                     togglable: !1,
                     attributes: {title: 'Open Style Manager'}
                 },
-                // {
-                //     id: Nu,
-                //     className: 'fa fa-cog',
-                //     command: Nu,
-                //     togglable: !1,
-                //     attributes: {title: 'Settings'}
-                // },
-                // {
-                //     id: Iu,
-                //     className: 'fa fa-bars',
-                //     command: Iu,
-                //     togglable: !1,
-                //     attributes: {title: 'Open Layer Manager'}
-                // },
+                {
+                    id: Nu,
+                    className: 'fa fa-cog',
+                    command: Nu,
+                    togglable: !1,
+                    attributes: {title: 'Settings'}
+                },
+                {
+                    id: Iu,
+                    className: 'fa fa-bars',
+                    command: Iu,
+                    togglable: !1,
+                    attributes: {title: 'Open Layer Manager'}
+                },
                 {
                     id: Fu,
                     className: 'fa fa-th-large',
