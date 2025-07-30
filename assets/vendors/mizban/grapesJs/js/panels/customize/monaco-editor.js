@@ -330,6 +330,7 @@ function setupCodeEditorCommand(editor, modal, container, monacoContainer, resiz
         language: 'html',
         theme: 'vs-dark',
         automaticLayout: true,
+        wordWrap: "on",
       });
       monacoContainer.onkeyup = () => {
         const code = window.monacoEditor.getValue();
