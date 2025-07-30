@@ -26,20 +26,20 @@ class PanelManager {
 
     getMainPanelButtons() {
         return [
-            this.createButton('code-editor', 'fa fa-code', 'code-editor'),
-            this.createButton('importCode', 'fa fa-upload', 'import-code-from-html'),
-            this.createButton('undo', 'fa fa-undo', 'core:undo'),
-            this.createButton('redo', 'fa fa-rotate-right', 'core:redo'),
-            this.createButton('clean', 'fa fa-trash', 'core:canvas-clear'),
+            this.createButton('codeEditor', 'fa fa-code', 'code-editor', 'code editor'),
+            this.createButton('importCode', 'fa fa-upload', 'import-code-from-html', 'import code from html'),
+            this.createButton('undo', 'fa fa-undo', 'core:undo', 'undo'),
+            this.createButton('redo', 'fa fa-rotate-right', 'core:redo', 'redo'),
+            this.createButton('clean', 'fa fa-trash', 'core:canvas-clear', 'clean'),
             this.createAboutButton(),
         ];
     }
 
-    createButton(id, icon, command) {
+    createButton(id, icon, command, title) {
         return {
             id,
             className: 'btn-toggle-borders',
-            label: `<i class="${icon}"></i>`,
+            label: `<i class="${icon}" title="${title}"></i>`,
             command,
             readOnly: 0
         };
