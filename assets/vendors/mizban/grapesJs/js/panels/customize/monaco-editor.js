@@ -511,12 +511,32 @@ function formatHtmlCode(html) {
 }
 
 function formatCssCode(css) {
-  return css
-    .replace(/{/g, ' {\n    ')
-    .replace(/;/g, ';\n    ')
-    .replace(/\t}/g, '}')
-    .replace(/}/g, '}\n')
-    .replace(/\n\s*\n/g, '\n'); // Remove extra empty lines
+  // Remove extra spaces before { and after }
+  css = css.replace(/\s*{\s*/g, ' {\n');
+  css = css.replace(/\s*}\s*/g, '\n}\n');
+  // Remove extra spaces in selectors
+  css = css.replace(/(^|\n)\s*([^{\n]+?)\s*{/, (m, p1, p2) => `\n${p2.trim()} {`);
+  // Add space after : if missing
+  css = css.replace(/:\s*/g, ': ');
+  // Split into lines and process
+  let lines = css.split(/\n+/).map(line => line.trim()).filter(Boolean);
+  let result = '';
+  let insideBlock = false;
+  for (let line of lines) {
+    if (line.endsWith('{')) {
+      result += line + '\n';
+      insideBlock = true;
+    } else if (line === '}') {
+      result += '}\n\n';
+      insideBlock = false;
+    } else if (insideBlock) {
+      result += '    ' + line + '\n';
+    } else {
+      result += line + '\n';
+    }
+  }
+  // Remove extra blank lines
+  return result.replace(/\n{3,}/g, '\n\n').trim() + '\n';
 }
 
 export { setupCodeEditorCommand };
