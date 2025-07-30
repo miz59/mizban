@@ -1,4 +1,5 @@
 import { breakPoints } from "../../../commands/variables.js";
+import { formatHtmlCode, formatCssCode } from "./functions/clean-code.js";
 
 const breakPointIcons = {
     xxl: 'fa fa-tv',
@@ -14,6 +15,7 @@ class PanelManager {
         this.editor = editor;
         this.setupMainPanel();
         this.setupDevicePanel();
+        this.setupCodeEditorWithFormat();
     }
 
     setupMainPanel() {
@@ -26,7 +28,7 @@ class PanelManager {
 
     getMainPanelButtons() {
         return [
-            this.createButton('codeEditor', 'fa fa-code', 'code-editor', 'code editor'),
+            this.createButton('codeEditor', 'fa fa-code', 'code-editor-with-format', 'code editor'),
             this.createButton('importCode', 'fa fa-upload', 'import-code-from-html', 'import code from html'),
             this.createButton('undo', 'fa fa-undo', 'core:undo', 'undo'),
             this.createButton('redo', 'fa fa-rotate-right', 'core:redo', 'redo'),
@@ -98,6 +100,37 @@ class PanelManager {
             title: 'about Miz',
             attributes: { class: 'my-small-modal' },
             content: this.getAboutContent()
+        });
+    }
+
+    setupCodeEditorWithFormat() {
+        this.editor.Commands.add('code-editor-with-format', {
+            run: (editor) => {
+                editor.runCommand('code-editor');
+                
+                // Wait for Monaco editors to be fully initialized
+                const checkAndFormat = () => {
+                    if (window.monacoEditor && window.cssMonacoContainer) {
+                        try {
+                            const htmlCode = window.monacoEditor.getValue();
+                            const formattedHtml = formatHtmlCode(htmlCode);
+                            window.monacoEditor.setValue(formattedHtml);
+                            
+                            const cssCode = window.cssMonacoContainer.getValue();
+                            const formattedCss = formatCssCode(cssCode);
+                            window.cssMonacoContainer.setValue(formattedCss);
+                        } catch (error) {
+                            console.log('Monaco editors not ready yet, retrying...');
+                            setTimeout(checkAndFormat, 50);
+                        }
+                    } else {
+                        setTimeout(checkAndFormat, 50);
+                    }
+                };
+                
+                // Start checking after a short delay
+                setTimeout(checkAndFormat, 200);
+            }
         });
     }
 
