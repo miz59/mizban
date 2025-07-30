@@ -58,6 +58,19 @@ class CodeImportManager {
         this.editor.Commands.add('import-code-from-html', {
             run: () => {
                 this.editor.addComponents(this.editor.config.components);
+                
+                setTimeout(() => {
+                    if (window.monacoEditor) {
+                        const htmlCode = this.editor.getHtml();
+                        const formattedHtml = formatHtmlCode(htmlCode);
+                        window.monacoEditor.setValue(formattedHtml);
+                    }
+                    if (window.cssMonacoContainer) {
+                        const cssCode = this.editor.getCss();
+                        const formattedCss = formatCssCode(cssCode);
+                        window.cssMonacoContainer.setValue(formattedCss);
+                    }
+                }, 100);
             }
         });
     }
@@ -71,4 +84,5 @@ function setupImportCodeFromHtmlCommand(editor) {
     new CodeImportManager(editor);
 }
 
+import { formatHtmlCode, formatCssCode } from './functions/clean-code.js';
 export { setupHtmlImportCommand, setupImportCodeFromHtmlCommand };
