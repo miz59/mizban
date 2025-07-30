@@ -216,10 +216,17 @@ function setupCodeEditorCommand(editor, modal, container, monacoContainer, resiz
         setupResizer(container, monacoContainer, cssMonacoContainer, resizer, DockSide);
 
 
-        // document.querySelector('#cleanCode').addEventListener('click', () => {
-        //   setTimeout(() => window.monacoEditor.getAction('editor.action.formatDocument').run(), 1);
-        //   setTimeout(() => window.cssMonacoContainer.setValue(formatString(mainEditor.getCss())), 1);
-        // });
+        document.querySelector('#cleanCode').addEventListener('click', () => {
+          const htmlCode = window.monacoEditor.getValue();
+          const formattedHtml = formatHtmlCode(htmlCode);
+          window.monacoEditor.setValue(formattedHtml);
+          console.log('html');
+          
+          const cssCode = window.cssMonacoContainer.getValue();
+          const formattedCss = formatCssCode(cssCode);
+          window.cssMonacoContainer.setValue(formattedCss);
+          console.log('css');
+        });
 
 
         document.querySelector("#editorDockSide")
@@ -424,6 +431,92 @@ function setupEditorResizer(container, monacoContainer, cssMonacoContainer, resi
   });
   document.addEventListener('mousemove', handleMouseMove);
   document.addEventListener('mouseup', handleMouseUp);
+}
+
+function formatHtmlCode(html) {
+  let result = '';
+  let indentLevel = 0;
+  let i = 0;
+  const indent = (lvl) => '    '.repeat(lvl);
+
+  while (i < html.length) {
+    // Skip whitespace at the start
+    while (html[i] === '\n' || html[i] === '\r') i++;
+    if (html[i] === '<') {
+      // Handle comments
+      if (html.startsWith('<!--', i)) {
+        let end = html.indexOf('-->', i + 4);
+        if (end === -1) end = html.length - 1;
+        const comment = html.slice(i, end + 3);
+        result += '\n' + indent(indentLevel) + comment;
+        i = end + 3;
+        continue;
+      }
+      // Handle closing tag
+      if (html[i + 1] === '/') {
+        indentLevel = Math.max(0, indentLevel - 1);
+        let end = html.indexOf('>', i);
+        const tag = html.slice(i, end + 1);
+        result += '\n' + indent(indentLevel) + tag;
+        i = end + 1;
+        continue;
+      }
+      // Handle opening tag
+      let end = html.indexOf('>', i);
+      let tag = html.slice(i, end + 1);
+      const isSelfClosing = tag.endsWith('/>');
+      
+      if (isSelfClosing) {
+        result += '\n' + indent(indentLevel) + tag;
+        i = end + 1;
+        continue;
+      }
+      
+      // For opening tags, check if they have simple text content or are empty
+      const tagNameMatch = tag.match(/^<([a-zA-Z0-9\-]+)/);
+      if (tagNameMatch) {
+        const tagName = tagNameMatch[1];
+        const closingTag = `</${tagName}>`;
+        const closingTagIndex = html.indexOf(closingTag, end + 1);
+        
+        if (closingTagIndex !== -1) {
+          const content = html.slice(end + 1, closingTagIndex);
+          const trimmedContent = content.trim();
+          // Check if content has any tags (not just text)
+          const hasChildTags = trimmedContent.includes('<') && trimmedContent.indexOf('<') < trimmedContent.lastIndexOf('>');
+          
+          if (!hasChildTags) {
+            // Simple text or empty content - put everything on one line
+            result += '\n' + indent(indentLevel) + tag + trimmedContent + closingTag;
+            i = closingTagIndex + closingTag.length;
+            continue;
+          }
+        }
+      }
+      
+      result += '\n' + indent(indentLevel) + tag;
+      i = end + 1;
+      indentLevel++;
+      continue;
+    }
+    // Handle text node
+    let nextTag = html.indexOf('<', i);
+    let text = (nextTag === -1 ? html.slice(i) : html.slice(i, nextTag)).trim();
+    if (text) {
+      result += '\n' + indent(indentLevel) + text;
+    }
+    i = nextTag === -1 ? html.length : nextTag;
+  }
+  return result.replace(/^\n+/, '');
+}
+
+function formatCssCode(css) {
+  return css
+    .replace(/{/g, ' {\n    ')
+    .replace(/;/g, ';\n    ')
+    .replace(/\t}/g, '}')
+    .replace(/}/g, '}\n')
+    .replace(/\n\s*\n/g, '\n'); // Remove extra empty lines
 }
 
 export { setupCodeEditorCommand };

@@ -72,4 +72,3 @@ function setupImportCodeFromHtmlCommand(editor) {
 }
 
 export { setupHtmlImportCommand, setupImportCodeFromHtmlCommand };
-  

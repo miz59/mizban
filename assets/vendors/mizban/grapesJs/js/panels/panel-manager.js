@@ -79,7 +79,6 @@ class PanelManager {
         
         const yesButton = document.createElement('button');
         yesButton.textContent = 'Yes';
-        // yesButton.style.cssText = 'padding: 8px 20px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;';
         yesButton.classList.add('on-primary-color', 'border-style-none', 'radius-all-small', 'px-2', 'py-1', 'cursor-pointer', 'bg-danger-regular-color');
         yesButton.setAttribute('id', 'noDeleteCode');
         yesButton.onclick = () => {
