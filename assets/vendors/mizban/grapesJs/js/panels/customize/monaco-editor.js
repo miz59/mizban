@@ -49,7 +49,6 @@ function render(editor) {
         initMonacoEditors(mainEditor, monacoContainer, cssMonacoContainer, formatString);
 
 
-        setTimeout(() => window.monacoEditor.getAction('editor.action.formatDocument').run(), 1);
         setTimeout(() => {
           window.monacoEditor.trigger('anyString', 'editor.action.formatDocument');
           window.cssMonacoContainer.trigger('anyString', 'editor.action.formatDocument');
@@ -64,10 +63,6 @@ function render(editor) {
         setupResizer(container, monacoContainer, cssMonacoContainer, resizer, DockSide);
 
 
-        // document.querySelector('.fa-align-left').addEventListener('click', () => {
-        // setTimeout(() => window.monacoEditor.getAction('editor.action.formatDocument').run(), 1);
-        // setTimeout(() => window.cssMonacoContainer.setValue(formatString(mainEditor.getCss())), 1);
-        // });
 
 
         document.querySelector("#editorDockSide")
@@ -128,13 +123,11 @@ function render(editor) {
                 console.error(error.message);
                 alert('An error occurred: ' + error.message);
               }
-              setTimeout(() => window.monacoEditor.getAction('editor.action.formatDocument').run(), 1);
             });
           }
         });
 
       function updateEditor(mainEditor) {
-        setTimeout(() => window.monacoEditor.getAction('editor.action.formatDocument').run(), 1);
         window.monacoEditor.setValue(mainEditor.getHtml());
         setTimeout(() => { cssCodeValue = mainEditor.getCss(); }, 1);
       }
@@ -201,7 +194,6 @@ function setupCodeEditorCommand(editor, modal, container, monacoContainer, resiz
         initMonacoEditors(mainEditor, monacoContainer, cssMonacoContainer, formatString);
 
 
-        setTimeout(() => window.monacoEditor.getAction('editor.action.formatDocument').run(), 1);
         setTimeout(() => {
           window.monacoEditor.trigger('anyString', 'editor.action.formatDocument');
           window.cssMonacoContainer.trigger('anyString', 'editor.action.formatDocument');
@@ -287,7 +279,6 @@ function setupCodeEditorCommand(editor, modal, container, monacoContainer, resiz
                 console.error(error.message);
                 alert('An error occurred: ' + error.message);
               }
-              setTimeout(() => window.monacoEditor.getAction('editor.action.formatDocument').run(), 1);
             });
           }
         });
@@ -352,7 +343,6 @@ function initMonacoEditors(mainEditor, monacoContainer, cssMonacoContainer, form
         );
         if (selectedComponent) {
           mainEditor.select(selectedComponent);
-          setTimeout(() => window.monacoEditor.getAction('editor.action.formatDocument').run(), 1);
         }
       }
     });
@@ -440,10 +430,8 @@ function formatHtmlCode(html) {
   const indent = (lvl) => '    '.repeat(lvl);
 
   while (i < html.length) {
-    // Skip whitespace at the start
     while (html[i] === '\n' || html[i] === '\r') i++;
     if (html[i] === '<') {
-      // Handle comments
       if (html.startsWith('<!--', i)) {
         let end = html.indexOf('-->', i + 4);
         if (end === -1) end = html.length - 1;
@@ -452,7 +440,6 @@ function formatHtmlCode(html) {
         i = end + 3;
         continue;
       }
-      // Handle closing tag
       if (html[i + 1] === '/') {
         indentLevel = Math.max(0, indentLevel - 1);
         let end = html.indexOf('>', i);
@@ -461,7 +448,6 @@ function formatHtmlCode(html) {
         i = end + 1;
         continue;
       }
-      // Handle opening tag
       let end = html.indexOf('>', i);
       let tag = html.slice(i, end + 1);
       const isSelfClosing = tag.endsWith('/>');
@@ -472,7 +458,6 @@ function formatHtmlCode(html) {
         continue;
       }
       
-      // For opening tags, check if they have simple text content or are empty
       const tagNameMatch = tag.match(/^<([a-zA-Z0-9\-]+)/);
       if (tagNameMatch) {
         const tagName = tagNameMatch[1];
@@ -482,11 +467,9 @@ function formatHtmlCode(html) {
         if (closingTagIndex !== -1) {
           const content = html.slice(end + 1, closingTagIndex);
           const trimmedContent = content.trim();
-          // Check if content has any tags (not just text)
           const hasChildTags = trimmedContent.includes('<') && trimmedContent.indexOf('<') < trimmedContent.lastIndexOf('>');
           
           if (!hasChildTags) {
-            // Simple text or empty content - put everything on one line
             result += '\n' + indent(indentLevel) + tag + trimmedContent + closingTag;
             i = closingTagIndex + closingTag.length;
             continue;
@@ -499,7 +482,6 @@ function formatHtmlCode(html) {
       indentLevel++;
       continue;
     }
-    // Handle text node
     let nextTag = html.indexOf('<', i);
     let text = (nextTag === -1 ? html.slice(i) : html.slice(i, nextTag)).trim();
     if (text) {
@@ -511,14 +493,10 @@ function formatHtmlCode(html) {
 }
 
 function formatCssCode(css) {
-  // Remove extra spaces before { and after }
   css = css.replace(/\s*{\s*/g, ' {\n');
   css = css.replace(/\s*}\s*/g, '\n}\n');
-  // Remove extra spaces in selectors
   css = css.replace(/(^|\n)\s*([^{\n]+?)\s*{/, (m, p1, p2) => `\n${p2.trim()} {`);
-  // Add space after : if missing
   css = css.replace(/:\s*/g, ': ');
-  // Split into lines and process
   let lines = css.split(/\n+/).map(line => line.trim()).filter(Boolean);
   let result = '';
   let insideBlock = false;
@@ -535,7 +513,6 @@ function formatCssCode(css) {
       result += line + '\n';
     }
   }
-  // Remove extra blank lines
   return result.replace(/\n{3,}/g, '\n\n').trim() + '\n';
 }
 
