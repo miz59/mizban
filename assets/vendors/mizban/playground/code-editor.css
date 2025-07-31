@@ -1,0 +1,300 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  display: flex;
+  height: 100vh;
+  background-color: #fff;
+  max-width: 100vw;
+}
+
+.resize-handle-a {
+  top: 0 !important;
+  right: 0% !important;
+  height: 100vh !important;
+  cursor: e-resize !important;
+}
+
+.horizontal-container {
+  width: 50vw !important;
+  height: 100vh !important;
+}
+
+.vertical-container {
+  width: 100vw !important;
+  height: 50vh !important;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+#editor {
+  width: 50%;
+  height: 100%;
+  min-width: 20px;
+}
+
+#preview {
+  width: 50%;
+  height: 100%;
+  border-top: 1px solid #ddd;
+  min-width: 20px;
+  overflow-y: auto;
+}
+
+#preview body {
+  background-color: #fff !important;
+}
+
+#editor {
+  width: 300px;
+  height: 300px;
+  border: 2px solid #000;
+  position: relative;
+  background-color: #f5f5f5;
+}
+
+#preview {
+  flex: 1;
+  border: 2px solid #000;
+  background-color: #e0e0e0;
+  overflow: hidden;
+}
+
+.resize-handle {
+  width: 30px;
+  z-index: 1;
+  height: 100%;
+  position: absolute;
+  right: 0%;
+  top: 0%;
+  transform: translateX(50%);
+  cursor: ew-resize;
+  opacity: 0;
+}
+
+.resize-handle-b {
+  width: 100vw !important;
+  top: 100% !important;
+  right: 50% !important;
+}
+
+#preview,
+#editor {
+  height: 100vh;
+  width: 50%;
+}
+
+body {
+  flex-direction: column;
+}
+
+#preview,
+#editor {
+  width: 100%;
+  height: 50vh;
+}
+
+.resize-handle {
+  cursor: n-resize;
+}
+
+.breakPoint {
+  width: 100%;
+  top: 0;
+  right: 0;
+  position: absolute;
+  display: flex;
+  justify-content: right;
+  background-color: #fff;
+}
+.breakPoint span {
+  width: 768px;
+  background-color: red;
+}
+
+#setting {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 0.5rem;
+  font-size: 1.2rem;
+  padding: 0.5rem;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.setting-box {
+  position: absolute;
+  width: 100px;
+  height: fit-content;
+  bottom: 45px;
+  right: 5px;
+  background: rgba(51, 51, 51, 0.8588235294);
+  border-radius: 5px;
+  backdrop-filter: blur(15px);
+  opacity: 0;
+  transition: 0.5s;
+  transform: translateX(100%);
+  padding: 10px;
+  color: #fff;
+}
+
+.setting-box > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#setting:hover .setting-box {
+  transform: translateX(0%) translateY(0%);
+  opacity: 1;
+}
+
+.switch {
+  display: inline-block;
+}
+
+.switch input {
+  display: none;
+}
+
+.switch label {
+  display: block;
+  width: 30px;
+  height: 13px;
+  padding: 3px;
+  border-radius: 15px;
+  border: 2px solid #ffffff;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.switch label::after {
+  content: "";
+  display: inherit;
+  width: 50%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  background: #ffffff;
+  transition: 0.3s;
+}
+
+.switch input:checked ~ label {
+  border-color: #ffffff;
+  background-color: #761818;
+}
+
+.switch input:checked ~ label::after {
+  translate: 107% 0;
+  background: #ffffff;
+}
+
+.height {
+  height: 100vh !important;
+}
+
+.d-none {
+  display: none;
+}
+
+#togglePage {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.7215686275);
+  padding: 6px 12px;
+  border-radius: 4px;
+  backdrop-filter: blur(9px);
+  color: #000;
+  cursor: pointer;
+  box-shadow: 0px 2px 4px 2px rgba(99, 99, 99, 0.3490196078);
+  user-select: none;
+}
+
+.full-page {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+body:has(#switch-rounded:checked) #editor,
+body:has(#switch-rounded:checked) #preview {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+body:has(#switch-rounded:checked) .fa-rotate {
+  display: none;
+}
+body:has(#switch-rounded:checked) #rotatePage {
+  opacity: 0;
+}
+body:has(#switch-rounded:checked) #preview {
+  display: none;
+}
+body:has(#switch-rounded:checked) #rotate-pages-box {
+  display: none;
+}
+body:has(#switch-rounded:checked) #togglePage {
+  display: block !important;
+}
+
+body:has(#changePage:checked) #preview {
+  display: block;
+}
+body:has(#changePage:checked) #editor {
+  display: none;
+}
+
+body:has(#switch-rounded:not(:checked)) #preview {
+  display: block;
+}
+body:has(#switch-rounded:not(:checked)) #editor {
+  display: block;
+}
+
+.preview-resize-handle {
+  width: 40px;
+  height: 100%;
+  top: 0%;
+  right: 0;
+  z-index: 2;
+  opacity: 1;
+  cursor: ew-resize;
+  position: absolute;
+  opacity: 0;
+}
+
+#rotatePages {
+  cursor: pointer;
+  margin-top: 5px;
+  transition: 0.1s;
+}
+
+.vertical {
+  flex-direction: column;
+}
+
+.horizontal {
+  flex-direction: row;
+}
+
+.vertical #editor, .vertical #preview {
+  width: 100%;
+  height: 50vh;
+}
+
+.horizontal #editor, .horizontal #preview {
+  height: 100%;
+  width: 50%;
+}

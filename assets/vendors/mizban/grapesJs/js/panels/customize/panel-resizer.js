@@ -6,7 +6,6 @@ function buildResizer(){
 
 function setupResizer(container, monacoContainer, cssMonacoContainer, resizer, side){
     console.log('first')
-    // let resizer = buildResizer();
     let isResizing = false;
     let handleMouseMove, handleMouseUp;
   

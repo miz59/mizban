@@ -42,7 +42,6 @@ function editor_events(editor) {
 
     editor.on('block:drag:stop', function (model) {
         if (model.attributes.tagName === "img") {
-            // Open the Asset Manager
             editor.runCommand('open-assets');
         }
         model.addStyle({

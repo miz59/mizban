@@ -66,10 +66,9 @@ class PanelManager {
     }
 
     showCleanConfirmation(editor) {
-        // Create a separate modal container to avoid conflicts with code editor
         const modalContainer = document.createElement('div');
-        modalContainer.className = 'gjs-mdl-container gjs-mdl-dialog gjs-one-bg gjs-two-color delete-confirmation-modal position-fixed top-0 left-0 w-100 h-100 d-flex align-items-center justify-content-center bg-black-50';
-        modalContainer.style.cssText = 'background: rgba(0,0,0,0.5); z-index: 9999; max-width:100%;';
+        modalContainer.className = 'gjs-mdl-container gjs-mdl-dialog gjs-one-bg gjs-two-color delete-confirmation-modal position-fixed top-0 left-0 w-100 h-100 d-flex align-items-center justify-content-center';
+        modalContainer.style.cssText = 'background: rgba(0,0,0,0.5); z-index: 1000; max-width:100%;';
         const modalDialog = document.createElement('div');
         modalDialog.className = 'gjs-mdl-content bg-disabled-dark-color on-primary-color p-2 radius-all-small';
         
@@ -85,7 +84,7 @@ class PanelManager {
         
         const noButton = document.createElement('button');
         noButton.textContent = 'No';
-        noButton.className = 'on-primary-color border-style-none radius-all-small px-2 py-1 cursor-pointer bg-disabled-regular-color';
+        noButton.className = 'on-primary-color border-style-none radius-all-small px-2 py-1 cursor-pointer bg-success-regular-color';
         noButton.setAttribute('id', 'noDeleteCode');
         noButton.onclick = () => {
             document.body.removeChild(modalContainer);
@@ -108,7 +107,6 @@ class PanelManager {
         modalDialog.appendChild(buttonContainer);
         modalContainer.appendChild(modalDialog);
         
-        // Add click outside to close
         modalContainer.addEventListener('click', (e) => {
             if (e.target === modalContainer) {
                 document.body.removeChild(modalContainer);
@@ -131,7 +129,6 @@ class PanelManager {
             run: (editor) => {
                 editor.runCommand('code-editor');
                 
-                // Wait for Monaco editors to be fully initialized
                 const checkAndFormat = () => {
                     if (window.monacoEditor && window.cssMonacoContainer) {
                         try {
@@ -151,7 +148,6 @@ class PanelManager {
                     }
                 };
                 
-                // Start checking after a short delay
                 setTimeout(checkAndFormat, 200);
             }
         });

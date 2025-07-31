@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const imagesFolder = path.join(__dirname, '../../../media/images'); // اصلاح مسیر به media/images
+const imagesFolder = path.join(__dirname, '../../../media/images');
 
 const getImageUrls = () => {
 

@@ -3259,13 +3259,8 @@ span.CodeMirror-selectedtext {
 .gjs-mdl-dialog {
     text-shadow: -1px -1px 0 rgba(0, 0, 0, .05);
     animation: gjs-slide-down .215s;
-    margin: auto;
-    max-width: 850px;
-    width: 90%;
     border-radius: 3px;
     font-weight: lighter;
-    position: relative;
-    z-index: 2
 }
 
 .gjs-mdl-title {
@@ -3839,10 +3834,6 @@ div:has( > #editor){
         justify-content: center;
         align-items: center;
         gap: 20px;
-        #editorDockSide{
-            height: 30px;
-            transform: translateY(14%) scale(1.4);
-        }
     }
     div:last-child{
         display: flex;
@@ -3865,57 +3856,4 @@ div:has( > #editor){
             }
         }
     }
-}
-
-/* mizban Editor */
-
-
-#editorContainer {
-    height: 30vh;
-    width: 100%;
-    border-radius: 5px;
-    position: relative;
-    display: flex;
-}
-#editor {
-    width: 50%;
-    height: 100%;
-}
-#cssEditor {
-    width: 50%;
-    height: 100%;
-}
-#resizer {
-    position: absolute;
-    height: 100%;
-    width: 5px;
-    background-color: #474747;
-    top: 0;
-    right: 50%;
-    transform: translateX(50%);
-    cursor: ew-resize;
-    opacity: 0;
-    transition:  opacity .1s ease;
-}
-#containerResizer {
-    position: absolute;
-    width: 100%;
-    height: 5px;
-    background-color: #474747;
-    top: -5px;
-    cursor: ns-resize;
-    opacity: 0;
-    transition:  opacity .1s ease;
-}
-#containerResizer:hover , #resizer:hover{
-    opacity: 1;
-}
-.container:empty{
-    width: 100%;
-}
-.div-element:empty{
-   min-width: 300px;
-}
-.block-element:empty{
-   min-width: 300px;
 }

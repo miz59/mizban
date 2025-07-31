@@ -11,6 +11,8 @@ const editor = grapesjs.init({
     storageManager: true,
 });
 
+window.editor = editor;
+
 editor_assetsManager(editor);
 setupAssetsManager(editor);
 editor_panelManager(editor);

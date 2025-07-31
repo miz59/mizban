@@ -9,7 +9,7 @@ const category = {
 }
 function base_blocks(editor) {  
     editor.Blocks.add("section", {
-        label: `<i class="fa-regular fa-square"></i><span>section</span>`,
+        label: `<i class="fa-solid fa-square"></i><span>section</span>`,
         attributes: {class: "block"},
         category: category.layouts,
         content: {
@@ -19,7 +19,7 @@ function base_blocks(editor) {
     });
 
     editor.Blocks.add("container", {
-        label: `<i class="fa-regular fa-square"></i><span>container</span>`,
+        label: `<i class="fa-solid fa-square"></i><span>container</span>`,
         attributes: {class: "block"},
         category: category.layouts,
         content: {
@@ -28,7 +28,7 @@ function base_blocks(editor) {
         },
     });
     editor.Blocks.add("div", {
-        label: `<i class="fa-regular fa-square"></i><span>div</span>`,
+        label: `<i class="fa-solid fa-square"></i><span>div</span>`,
         attributes: {class: "block"},
         category: category.layouts,
         content: {
@@ -37,7 +37,7 @@ function base_blocks(editor) {
         },
     });
     editor.Blocks.add("block", {
-        label: `<i class="fa-regular fa-square"></i><span>block</span>`,
+        label: `<i class="fa-solid fa-square"></i><span>block</span>`,
         attributes: {class: "block"},
         category: category.layouts,
         content: {

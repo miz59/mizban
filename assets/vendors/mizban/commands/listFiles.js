@@ -51,7 +51,7 @@ function extractBodyContent(html) {
 
 function removeIconDiv(content) {
   const iconDivRegex = /<div class="miz-block-icon">[\s\S]*?<\/div>/i;
-  return content.replace(iconDivRegex, '').trim(); // حذف div و trim
+  return content.replace(iconDivRegex, '').trim();
 }
 
 function extractIconContent(html) {
