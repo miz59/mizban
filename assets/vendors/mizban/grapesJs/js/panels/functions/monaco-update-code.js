@@ -1,4 +1,4 @@
-import { formatHtmlCode, formatCssCode } from './clean-code.js';
+import { formatHtmlCode, formatCssCode } from './monaco-clean-code.js';
 function updateEditor(mainEditor) {
     const htmlCode = mainEditor.getHtml();
     const cssCode = mainEditor.getCss();

@@ -1,5 +1,5 @@
 import { breakPoints } from "../../../commands/variables.js";
-import { formatHtmlCode, formatCssCode } from "./functions/clean-code.js";
+import { formatHtmlCode, formatCssCode } from "./functions/monaco-clean-code.js";
 
 const breakPointIcons = {
     xxl: 'fa fa-tv',
