@@ -219,4 +219,4 @@ function setupCleanCodeButton() {
       window.cssMonacoContainer.setValue(formattedCss);
     }
   });
-}
+} 
