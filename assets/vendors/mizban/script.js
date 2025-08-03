@@ -23,14 +23,8 @@ script1.onload = () => {
 
     script2.onload = () => {
         const script3 = document.createElement('script');
-        script3.src = './assets/vendors/mizban/playground/monaco-config.js';
+        script3.src = './assets/vendors/mizban/playground/loader.min.js';
         body.appendChild(script3);
-        
-        script3.onload = () => {
-            const script4 = document.createElement('script');
-            script4.src = './assets/vendors/mizban/playground/loader.min.js';
-            body.appendChild(script4);
-        };
     };
 };
 

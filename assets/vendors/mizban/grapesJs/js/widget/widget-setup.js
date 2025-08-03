@@ -4,7 +4,8 @@ import {
     saveImageToFolder,
     copyCSSLinksToIframe,
     setupComponentIdListener,
-    setupCommand
+    setupCommand,
+    initializeCSSAutocomplete
 } from './mizban-widget.js';
 
 export function initializeWidgets(editor) {
@@ -14,8 +15,6 @@ export function initializeWidgets(editor) {
     setupCommand(editor, 'send-email', () => alert('Email sent!'));
     setupCommand(editor, 'save-template', () => alert('Template saved!'));
 
-    fetchCSSClasses('./assets/css/miz.min.css').then(cssClasses => {
-        const input = document.querySelector('#gjs-clm-new');
-        createDataListForInput(input, cssClasses);
-    });
+    // Initialize CSS autocomplete with better error handling
+    initializeCSSAutocomplete(editor);
 }

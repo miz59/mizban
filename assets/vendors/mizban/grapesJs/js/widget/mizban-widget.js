@@ -1,6 +1,11 @@
 export function fetchCSSClasses(url) {
     return fetch(url)
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
         .then(cssText => {
             const classNames = new Set();
             const regex = /\.([a-zA-Z0-9_-]+)/g;
@@ -11,7 +16,7 @@ export function fetchCSSClasses(url) {
             return Array.from(classNames);
         })
         .catch(error => {
-            console.error('Error fetching CSS classes:', error);
+            console.warn(`CSS file not found or not accessible: ${url}`);
             return [];
         });
 }
@@ -71,4 +76,59 @@ export function setupCommand(editor, name, callback) {
             callback();
         }
     });
+}
+
+export function getCSSClassesFromDocument() {
+    const classNames = new Set();
+    
+    // Get all stylesheets from the document
+    const styleSheets = Array.from(document.styleSheets);
+    
+    styleSheets.forEach(sheet => {
+        try {
+            const rules = Array.from(sheet.cssRules || sheet.rules || []);
+            rules.forEach(rule => {
+                if (rule.selectorText) {
+                    // Extract class names from selectors
+                    const classMatches = rule.selectorText.match(/\.([a-zA-Z0-9_-]+)/g);
+                    if (classMatches) {
+                        classMatches.forEach(match => {
+                            classNames.add(match.substring(1)); // Remove the dot
+                        });
+                    }
+                }
+            });
+        } catch (error) {
+            // CORS error or other issues, skip this stylesheet
+            console.warn('Could not access stylesheet:', error);
+        }
+    });
+    
+    return Array.from(classNames);
+}
+
+export function initializeCSSAutocomplete(editor) {
+    // Try to get CSS classes from existing stylesheets first
+    const existingClasses = getCSSClassesFromDocument();
+    
+    if (existingClasses.length > 0) {
+        const input = document.querySelector('#gjs-clm-new');
+        if (input) {
+            createDataListForInput(input, existingClasses);
+            console.log(`Found ${existingClasses.length} CSS classes from existing stylesheets`);
+        }
+    } else {
+        // Fallback to fetching from file
+        fetchCSSClasses('./assets/css/miz.min.css')
+            .then(cssClasses => {
+                const input = document.querySelector('#gjs-clm-new');
+                if (input && cssClasses.length > 0) {
+                    createDataListForInput(input, cssClasses);
+                    console.log(`Found ${cssClasses.length} CSS classes from file`);
+                }
+            })
+            .catch(error => {
+                console.warn('No CSS classes available for autocomplete');
+            });
+    }
 }

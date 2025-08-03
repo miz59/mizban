@@ -9,7 +9,7 @@
     "watch-miz":"sass --watch --update --style=expanded sass/style.scss:assets/css/miz.min.css", 
     "build-miz":"sass --no-source-map --style=compressed miz/_index.scss:assets/css/miz.min.css", 
     "build-miz-clean":"sass --no-source-map --style=expanded miz/_index.scss:assets/css/miz-clean.css && node miz-min.js",
-    "miz-studio": "node ./assets/vendors/mizban/commands/listFiles.js && node ./assets/vendors/mizban/commands/extractVariables.js",
+    "mizban": "node ./assets/vendors/mizban/commands/listFiles.js && node ./assets/vendors/mizban/commands/extractVariables.js",
     "dev": "npx http-server . -p 5500 -c-1 --cors"
   }, 
     "author":"", 
@@ -17,6 +17,5 @@
     "devDependencies":{ 
       "sass":"^1.75.0" 
   }, 
-    "dependencies":{"fs":"^0.0.1-security"} 
-    
+    "dependencies":{"fs":"^0.0.1-security"}
 } 
