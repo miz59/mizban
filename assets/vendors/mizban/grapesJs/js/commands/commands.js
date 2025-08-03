@@ -1,4 +1,5 @@
 import { breakPoints } from "../../../commands/variables.js";
+
 function commands(editor) {
     Object.keys(breakPoints).forEach(key => {
         editor.Commands.add(`set-device-${key}`, {
@@ -6,7 +7,6 @@ function commands(editor) {
         });
     });
 }
-
 
 
 export  {commands}
