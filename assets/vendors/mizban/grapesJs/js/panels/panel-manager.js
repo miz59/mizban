@@ -1,5 +1,7 @@
 import { breakPoints } from "../../../commands/variables.js";
 import { formatHtmlCode, formatCssCode } from "./functions/monaco-clean-code.js";
+// import { HtmlImportManager } from "./monaco-code-import.js";
+import { setupPreviewManager } from "./preview-manager.js";
 
 const breakPointIcons = {
     xxl: 'fa fa-tv',
@@ -16,6 +18,7 @@ class PanelManager {
         this.setupMainPanel();
         this.setupDevicePanel();
         this.setupCodeEditorWithFormat();
+        this.setupPreview();
     }
 
     setupMainPanel() {
@@ -24,6 +27,69 @@ class PanelManager {
             el: ".gjs-pn-options",
             buttons: this.getMainPanelButtons()
         });
+
+        this.editor.Panels.addButton('options', [{
+            id: 'save-button',
+            className: 'fa fa-save',
+            command: 'save-project',
+            attributes: { title: 'Save Project' }
+        }]);
+
+        this.editor.Commands.add('save-project', {
+            run(editor, sender) {
+                sender && sender.set('active', 0); // غیرفعال کردن دکمه بعد از کلیک
+
+                const html = editor.getHtml(); // فقط html
+                const css = editor.getCss();   // css جداگانه
+                const bodyContent = `<style>${css}</style>${html}`; // ترکیب html+css
+
+
+
+                const formData = new FormData();
+                formData.append("filename", 'current-page.html');
+                formData.append("html", bodyContent);
+
+                console.log(html)    
+                fetch('/save', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(res => res.json())
+                    .then(data => alert(data.message))
+                    .catch(err => alert('Error saving file: ' + err.message));
+            }
+        });
+
+// this.editor.Commands.add('import-code-from-html', {
+//     run: (editor, sender) => {
+//         sender && sender.set('active', 0);
+
+//         // فرض کنیم HtmlImportManager قبلاً ساخته شده
+//         CodeImportManager.setupImportCommand();
+//     }
+// });
+// this.editor.Panels.addButton('options', [
+//     {
+//         id: 'importCode',
+//         className: 'btn-toggle-borders',
+//         label: `<i class="fa fa-upload" title="import code from html"></i>`,
+//         command: 'import-code-from-html',
+//         attributes: { title: 'Import Code' }
+//     }
+// ]);
+
+
+// const htmlImportManager = new HtmlImportManager(editor);
+// const htmlImportManager = new HtmlImportManager(editor);
+
+// this.editor.Panels.addButton('options', [
+//     {
+//         id: 'import-html-btn',
+//         className: 'fa fa-eye',
+//         command: 'html-import',
+//         attributes: { title: 'Import HTML' }
+//     }
+// ]);
     }
 
     getMainPanelButtons() {
@@ -32,10 +98,13 @@ class PanelManager {
             this.createButton('importCode', 'fa fa-upload', 'import-code-from-html', 'import code from html'),
             this.createButton('undo', 'fa fa-undo', 'core:undo', 'undo'),
             this.createButton('redo', 'fa fa-rotate-right', 'core:redo', 'redo'),
+            this.createPreviewButton(),
             this.createCleanButton(),
             this.createAboutButton(),
         ];
     }
+
+    
 
     createButton(id, icon, command, title) {
         return {
@@ -56,6 +125,14 @@ class PanelManager {
         };
     }
 
+    createPreviewButton() {
+        return {
+            id: 'preview',
+            label: '<i class="fa-solid fa-arrow-up-right-from-square" title="preview"></i>',
+            command: 'open-preview'
+        };
+    }
+
     createAboutButton() {
         return {
             id: 'question',
@@ -71,17 +148,17 @@ class PanelManager {
         modalContainer.style.cssText = 'background: rgba(0,0,0,0.5); z-index: 1000; max-width:100%;';
         const modalDialog = document.createElement('div');
         modalDialog.className = 'gjs-mdl-content bg-disabled-dark-color on-primary-color p-2 radius-all-small';
-        
+
         const title = document.createElement('h3');
         title.textContent = 'Delete output';
         title.style.cssText = 'margin: 0 0 15px 0; color: #fff;';
-        
+
         const content = document.createElement('div');
         content.innerHTML = this.getCleanConfirmationContent();
-        
+
         const buttonContainer = document.createElement('div');
         buttonContainer.className = 'd-flex justify-content-center gap-2 mt-2';
-        
+
         const noButton = document.createElement('button');
         noButton.textContent = 'No';
         noButton.className = 'on-primary-color border-style-none radius-all-small px-2 py-1 cursor-pointer bg-success-regular-color';
@@ -89,30 +166,51 @@ class PanelManager {
         noButton.onclick = () => {
             document.body.removeChild(modalContainer);
         };
-        
+
         const yesButton = document.createElement('button');
         yesButton.textContent = 'Yes';
         yesButton.className = 'on-primary-color border-style-none radius-all-small px-2 py-1 cursor-pointer bg-danger-regular-color';
         yesButton.setAttribute('id', 'yesDeleteCode');
         yesButton.onclick = () => {
             editor.runCommand('core:canvas-clear');
+
+            // Update Monaco editors after clearing GrapesJS
+            setTimeout(() => {
+                if (window.monacoEditor) {
+                    window.monacoEditor.setValue('<div>Hello World</div>');
+                    console.log('✅ Monaco HTML editor cleared');
+                }
+                if (window.cssMonacoContainer) {
+                    window.cssMonacoContainer.setValue('');
+                    console.log('✅ Monaco CSS editor cleared');
+                }
+
+                // Update GrapesJS with Monaco content
+                if (window.mainEditor) {
+                    window.mainEditor.setComponents('<div>Hello World</div>');
+                    window.mainEditor.setStyle('');
+                    window.mainEditor.store();
+                    console.log('✅ GrapesJS updated with cleared content');
+                }
+            }, 100);
+
             document.body.removeChild(modalContainer);
         };
-        
+
         buttonContainer.appendChild(noButton);
         buttonContainer.appendChild(yesButton);
-        
+
         modalDialog.appendChild(title);
         modalDialog.appendChild(content);
         modalDialog.appendChild(buttonContainer);
         modalContainer.appendChild(modalDialog);
-        
+
         modalContainer.addEventListener('click', (e) => {
             if (e.target === modalContainer) {
                 document.body.removeChild(modalContainer);
             }
         });
-        
+
         document.body.appendChild(modalContainer);
     }
 
@@ -128,14 +226,14 @@ class PanelManager {
         this.editor.Commands.add('code-editor-with-format', {
             run: (editor) => {
                 editor.runCommand('code-editor');
-                
+
                 const checkAndFormat = () => {
                     if (window.monacoEditor && window.cssMonacoContainer) {
                         try {
                             const htmlCode = window.monacoEditor.getValue();
                             const formattedHtml = formatHtmlCode(htmlCode);
                             window.monacoEditor.setValue(formattedHtml);
-                            
+
                             const cssCode = window.cssMonacoContainer.getValue();
                             const formattedCss = formatCssCode(cssCode);
                             window.cssMonacoContainer.setValue(formattedCss);
@@ -147,10 +245,13 @@ class PanelManager {
                         setTimeout(checkAndFormat, 50);
                     }
                 };
-                
                 setTimeout(checkAndFormat, 200);
             }
         });
+    }
+
+    setupPreview() {
+        this.previewManager = setupPreviewManager(this.editor);
     }
 
     getCleanConfirmationContent() {
@@ -196,7 +297,7 @@ class PanelManager {
             togglable: false
         };
     }
-    
+
     createBreakpointButtons() {
         return Object.entries(breakPoints).map(([key, value]) =>
             this.createDeviceButton(
@@ -208,6 +309,32 @@ class PanelManager {
             )
         );
     }
+
+    cleanGrapesJSEvents(html) {
+        // حذف تمام event listener های GrapesJS
+        let cleanHtml = html;
+
+        // حذف data-gjs-* attributes
+        cleanHtml = cleanHtml.replace(/data-gjs-[^=]*="[^"]*"/g, '');
+
+        // حذف class های GrapesJS
+        cleanHtml = cleanHtml.replace(/\s*gjs-[^\s]*/g, '');
+
+        // حذف id های GrapesJS
+        cleanHtml = cleanHtml.replace(/id="gjs-[^"]*"/g, '');
+
+        // حذف event listener های inline
+        cleanHtml = cleanHtml.replace(/\s*on\w+="[^"]*"/g, '');
+
+        // حذف style های GrapesJS
+        cleanHtml = cleanHtml.replace(/style="[^"]*gjs-[^"]*"/g, 'style=""');
+
+        // پاک کردن style های خالی
+        cleanHtml = cleanHtml.replace(/style="\s*"/g, '');
+
+        return cleanHtml;
+    }
+
 }
 
 function editor_panelManager(editor) {

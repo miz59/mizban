@@ -5,38 +5,91 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const directoryPath = path.join(__dirname, '../components');
+const directoryPath = path.join(__dirname, '../../../../miz/themes/mizoon/components');
 
 let componentJson = {};
 
-fs.promises.readdir(directoryPath)
-  .then(files => {
-    return Promise.all(files.map(file => {
-      const filePath = path.join(directoryPath, file);
-      const formattedName = formatFileName(file);
+// Function to recursively find all HTML files
+function findHtmlFiles(dir) {
+  let htmlFiles = [];
+  
+  try {
+    const items = fs.readdirSync(dir);
+    
+    items.forEach(item => {
+      const itemPath = path.join(dir, item);
+      const stat = fs.statSync(itemPath);
+      
+      if (stat.isDirectory()) {
+        // Recursively search subdirectories
+        htmlFiles = htmlFiles.concat(findHtmlFiles(itemPath));
+      } else if (item.endsWith('.html')) {
+        // Add HTML files with their relative path
+        htmlFiles.push(itemPath);
+      }
+    });
+  } catch (error) {
+    console.error(`❌ Error reading directory ${dir}:`, error);
+  }
+  
+  return htmlFiles;
+}
 
-      return fs.promises.readFile(filePath, 'utf8')
-        .then(data => {
-          const bodyContent = extractBodyContent(data);
-          const iconContent = extractIconContent(data);
+// Process all HTML files
+async function processHtmlFiles() {
+  console.log('🔍 Scanning for HTML files in components directory...');
+  
+  const htmlFiles = findHtmlFiles(directoryPath);
+  console.log(`📁 Found ${htmlFiles.length} HTML files to process`);
+  
+  for (const filePath of htmlFiles) {
+    try {
+      const relativePath = path.relative(directoryPath, filePath);
+      const formattedName = formatFileName(relativePath);
+      
+      console.log(`📝 Processing: ${relativePath}`);
+      
+      const data = await fs.promises.readFile(filePath, 'utf8');
+      const bodyContent = extractBodyContent(data);
+      const iconContent = extractIconContent(data);
 
-          componentJson[formattedName] = { 
-            code: bodyContent,
-            icon: iconContent 
-          };
-        })
-        .catch(err => console.error(`Error reading file ${file}: `, err));
-    }));
-  })
-  .then(() => {
-    saveAsJSFile(componentJson);
-  })
-  .catch(err => console.error('Unable to scan directory: ', err));
+      componentJson[formattedName] = { 
+        code: bodyContent,
+        icon: iconContent 
+      };
+      
+      console.log(`✅ Processed: ${formattedName}`);
+    } catch (error) {
+      console.error(`❌ Error processing file ${filePath}:`, error);
+    }
+  }
+  
+  console.log(`🎉 All files processed! Total components: ${Object.keys(componentJson).length}`);
+  saveAsJSFile(componentJson);
+}
 
-function formatFileName(fileName) {
-  const nameWithoutExtension = fileName.replace(/\.[^/.]+$/, "");
-  const withSpaces = nameWithoutExtension.replace(/-/g, ' ');
-  return withSpaces.replace(/([a-z])([A-Z])/g, '$1 $2');
+// Start processing
+processHtmlFiles().catch(err => console.error('❌ Error in main process: ', err));
+
+function formatFileName(filePath) {
+  // Remove the .html extension
+  const nameWithoutExtension = filePath.replace(/\.[^/.]+$/, "");
+  
+  // Split by path separator and get the last part (filename)
+  const pathParts = nameWithoutExtension.split(path.sep);
+  const fileName = pathParts[pathParts.length - 1];
+  
+  // Format the filename
+  const withSpaces = fileName.replace(/-/g, ' ');
+  const formatted = withSpaces.replace(/([a-z])([A-Z])/g, '$1 $2');
+  
+  // If there are parent directories, include them in the name
+  if (pathParts.length > 1) {
+    const parentDir = pathParts[pathParts.length - 2];
+    return `${parentDir} ${formatted}`;
+  }
+  
+  return formatted;
 }
 
 function extractBodyContent(html) {
@@ -65,6 +118,6 @@ function saveAsJSFile(jsonData) {
   const jsFilePath = path.join(__dirname, 'componentJson.js');
 
   fs.promises.writeFile(jsFilePath, jsContent, 'utf8')
-    .then(() => console.log(`File saved as componentJson.js`))
-    .catch(err => console.error('Error writing to file: ', err));
+    .then(() => console.log(`💾 File saved as componentJson.js`))
+    .catch(err => console.error('❌ Error writing to file: ', err));
 }

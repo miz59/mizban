@@ -1,5 +1,4 @@
 import {
-    fetchCSSClasses,
     createDataListForInput,
     saveImageToFolder,
     copyCSSLinksToIframe,

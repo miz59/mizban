@@ -25130,13 +25130,15 @@
                     command: 'core:component-outline',
                     context: Mu,
                     attributes: {title: 'View components'}
-                }, {id: Ru, className: 'fa fa-eye', command: Ru, context: Ru, attributes: {title: 'Preview'}}, {
-                    id: Vu,
-                    className: 'fa fa-arrows-alt',
-                    command: Vu,
-                    context: Vu,
-                    attributes: {title: 'Fullscreen'}
-                },]
+                },
+                //  {id: Ru, className: 'fa fa-eye', command: Ru, context: Ru, attributes: {title: 'Preview'}}, {
+                //     id: Vu,
+                //     className: 'fa fa-arrows-alt',
+                //     command: Vu,
+                //     context: Vu,
+                //     attributes: {title: 'Fullscreen'}
+                // },
+            ]
             }, {
                 id: 'views',
                 buttons: [

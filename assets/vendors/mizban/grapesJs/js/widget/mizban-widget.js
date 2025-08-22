@@ -1,39 +1,14 @@
-export function fetchCSSClasses(url) {
-    return fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.text();
-        })
-        .then(cssText => {
-            const classNames = new Set();
-            const regex = /\.([a-zA-Z0-9_-]+)/g;
-            let match;
-            while ((match = regex.exec(cssText)) !== null) {
-                classNames.add(match[1]);
-            }
-            return Array.from(classNames);
-        })
-        .catch(error => {
-            console.warn(`CSS file not found or not accessible: ${url}`);
-            return [];
-        });
-}
+import { createCSSClassDropdown } from '../panels/style-manager.js';
+import { 
+  getCSSClassesFromFiles, 
+  addCSSFile, 
+  removeCSSFile, 
+  getCSSFiles 
+} from '../panels/functions/css-classes.js';
 
 export function createDataListForInput(input, cssClasses) {
     if (!input) return;
-    const dataList = document.createElement('datalist');
-    dataList.id = 'cssClassList';
-    input.setAttribute('list', dataList.id);
-
-    cssClasses.forEach(className => {
-        const option = document.createElement('option');
-        option.value = className;
-        dataList.appendChild(option);
-    });
-
-    input.parentNode.insertBefore(dataList, input.nextSibling);
+    createCSSClassDropdown(input, cssClasses);
 }
 
 export function saveImageToFolder(file) {
@@ -78,57 +53,60 @@ export function setupCommand(editor, name, callback) {
     });
 }
 
-export function getCSSClassesFromDocument() {
-    const classNames = new Set();
-    
-    // Get all stylesheets from the document
-    const styleSheets = Array.from(document.styleSheets);
-    
-    styleSheets.forEach(sheet => {
-        try {
-            const rules = Array.from(sheet.cssRules || sheet.rules || []);
-            rules.forEach(rule => {
-                if (rule.selectorText) {
-                    // Extract class names from selectors
-                    const classMatches = rule.selectorText.match(/\.([a-zA-Z0-9_-]+)/g);
-                    if (classMatches) {
-                        classMatches.forEach(match => {
-                            classNames.add(match.substring(1)); // Remove the dot
-                        });
-                    }
-                }
-            });
-        } catch (error) {
-            // CORS error or other issues, skip this stylesheet
-            console.warn('Could not access stylesheet:', error);
-        }
-    });
-    
-    return Array.from(classNames);
+export function initializeCSSAutocomplete(editor) {
+    getCSSClassesFromFiles()
+        .then(cssClasses => {
+            if (cssClasses.length > 0) {
+                setupClassManagerAutocomplete(editor, cssClasses);
+            }
+        })
+        .catch(error => {
+            // Silent fail - no CSS classes available
+        });
 }
 
-export function initializeCSSAutocomplete(editor) {
-    // Try to get CSS classes from existing stylesheets first
-    const existingClasses = getCSSClassesFromDocument();
+// تابع جدید برای تنظیم autocomplete در Class Manager
+function setupClassManagerAutocomplete(editor, cssClasses) {
+    // اضافه کردن event listener برای Class Manager
+    editor.on('component:selected', function(component) {
+        setTimeout(() => {
+            const classInput = document.querySelector('#gjs-clm-new');
+            if (classInput) {
+                createDataListForInput(classInput, cssClasses);
+            }
+        }, 100);
+    });
     
-    if (existingClasses.length > 0) {
-        const input = document.querySelector('#gjs-clm-new');
-        if (input) {
-            createDataListForInput(input, existingClasses);
-            console.log(`Found ${existingClasses.length} CSS classes from existing stylesheets`);
-        }
-    } else {
-        // Fallback to fetching from file
-        fetchCSSClasses('./assets/css/miz.min.css')
-            .then(cssClasses => {
-                const input = document.querySelector('#gjs-clm-new');
-                if (input && cssClasses.length > 0) {
-                    createDataListForInput(input, cssClasses);
-                    console.log(`Found ${cssClasses.length} CSS classes from file`);
+    // اضافه کردن event listener برای Class Manager panel
+    editor.on('panel:open', function(panel) {
+        if (panel.id === 'gjs-clm') {
+            setTimeout(() => {
+                const classInput = document.querySelector('#gjs-clm-new');
+                if (classInput) {
+                    createDataListForInput(classInput, cssClasses);
                 }
-            })
-            .catch(error => {
-                console.warn('No CSS classes available for autocomplete');
-            });
-    }
+            }, 200);
+        }
+    });
 }
+
+// تابع برای دریافت CSS classes به صورت select options
+export function getCSSClassesAsOptions() {
+    return new Promise((resolve) => {
+        getCSSClassesFromFiles()
+            .then(cssClasses => {
+                const options = cssClasses.map(className => ({
+                    id: className,
+                    label: className.charAt(0).toUpperCase() + className.slice(1).replace(/-/g, ' ')
+                }));
+                resolve(options);
+            })
+            .catch(() => {
+                // اگر فایل‌های CSS در دسترس نباشند، array خالی برگردان
+                resolve([]);
+            });
+    });
+}
+
+// Re-export توابع از css-classes.js
+export { addCSSFile, removeCSSFile, getCSSFiles };

@@ -4,7 +4,7 @@ import { setupDraggableModal } from './monaco-draggable-modal.js';
 import { initializeMonacoEditors } from './monaco-editors-manager.js';
 
 // ===== MONACO EDITOR SETUP =====
-function setupCodeEditorCommand(editor, modal, container, monacoContainer, resizer, cssMonacoContainer) {
+function setupCodeEditorCommand(editor, modal) {
   editor.Commands.add('code-editor', {
     run: (mainEditor, sender) => {
       let cssCode = mainEditor.getCss();
@@ -24,7 +24,7 @@ function setupCodeEditorCommand(editor, modal, container, monacoContainer, resiz
       
       wrapperContent.appendChild(editorContainer);
       setEditorHeader(mainEditor);
-      resetEditorsResize(htmlContainer, cssContainer);
+      resetEditorsResize(htmlContainer, cssContainer , htmlImportCodeContainer);
       
       initializeMonacoEditors(mainEditor, editorContainer);
     },

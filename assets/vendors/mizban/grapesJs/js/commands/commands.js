@@ -8,5 +8,4 @@ function commands(editor) {
     });
 }
 
-
 export  {commands}

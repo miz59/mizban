@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-const scssFiles = ['./sass/miz/sass/config/_responsive.scss'];
+const scssFiles = ['./miz/sass/config/_responsive.scss'];
 
 const variableNames = ['$conf-cols','$break-points',];
 
