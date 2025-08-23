@@ -1,7 +1,7 @@
-:root {
+/* :root {
     --primary-color: #F7D800;
     --primary-color-hover: #d7bb01
-}
+} */
 
 * {
     margin: 0;
@@ -10,37 +10,7 @@
 
 .block{
     justify-content: center !important;
-align-items: center !important;
-}
-
-.gjs-block {
-    display: flex;
-    justify-content: space-around;
-    align-content: space-around;
-
-}
-
-.gjs-block-label {
-    gap: 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-self: center;
-    text-align: center;
-    font-size: 22px;
-}
-
-.gjs-block-label span {
-    font-size: 14px;
-}
-
-.gjs-block-label i {
-    font-size: 34px;
-    font-style: normal;
-}
-
-.gjs-pn-options{
-    display: flex;
+    align-items: center !important;
 }
 
 .modal-question{
@@ -96,31 +66,27 @@ align-items: center !important;
     filter: brightness(1.5);
 }
 
-
-
 .gjs-pn-devices-c{
-
     position: initial;
 }
 
 
 .gjs-pn-commands{
- display: flex;
+    display: flex;
 }
 
-.btn-toggle-device
-{
+.btn-toggle-device{
     font-size: 2.1em;
-    margin: 0 10px;
 }
 
 
 .miz-col{
     display: flex;
+
     .cell{
         width: 100%;
         min-height: 100px;
-}
+    }
 }
 
 
@@ -248,10 +214,12 @@ div:has(> #htmlEditor, > #cssEditor, > #resizer){
     position: relative;
     display: flex;
 }
+
 #editor, #htmlEditor, #cssEditor {
     width: 50%;
     height: 100%;
 }
+
 #resizer {
     position: absolute;
     height: 100%;
@@ -260,6 +228,7 @@ div:has(> #htmlEditor, > #cssEditor, > #resizer){
     top: 0;
     right: 50%;
 }
+
 #containerResizer {
     position: absolute;
     width: 100%;
@@ -270,15 +239,59 @@ div:has(> #htmlEditor, > #cssEditor, > #resizer){
     opacity: 0;
     transition:  all .1s ease;
 }
+
 #containerResizer:hover, #resizer:hover{
     opacity: 1;
 }
+
 .container:empty{
     width: 100%;
 }
+
 .div-element:empty{
     min-width: 300px;
 }
+
 .block-element:empty{
     min-width: 300px;
+}
+
+.editor-header{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-top: 10px;
+    
+    div:first-child{
+        order: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+    div:last-child{
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        button{
+            font-family: var(--gjs-main-font);
+            padding: 7px 9px;
+            font-size: .7rem;
+            border-radius: 4px;
+            background: transparent;
+            color: #fff;
+            border: 1px solid;
+            cursor: pointer;
+            transition: .3s ;
+            &:hover{
+                color: #000;
+                background: #fff;
+                border-color: #fff;
+            }
+        }
+    }
+}
+
+.section:empty,.container:empty,.block:empty,.div:empty{
+    min-height: 150px;
 }

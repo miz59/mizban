@@ -102,8 +102,8 @@ function base_blocks(editor) {
         tagName: "img",
         content: `<img />`,
         type: "image"
-
     });
+
     editor.Blocks.add("video", {
         label: `<i class="fa fa-play"></i><span>video</span>`,
         attributes: {class: "block"},
@@ -187,7 +187,6 @@ function base_blocks(editor) {
                     type: "text",
                     attributes: {class: "paragraph"},
                     content: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua`
-
                 }
             ]
         }
@@ -222,6 +221,24 @@ function base_blocks(editor) {
         },
 
     });
+
+
+    editor.Blocks.add(`hossein`, {
+        label: `<i class="fa-solid fa-heading"></i><span>hossein</span>`,
+        attributes: {class: `block`},
+        category: category.heading,
+
+        content: {
+            tagName: `h1`,
+            type: "hotest",
+            attributes: {class: "blocks"},
+            content: ` this is header 1`,
+            draggable: true,
+            droppable: true,
+        },
+
+    });
+
 
 
     editor.Blocks.add(`h2`, {

@@ -260,8 +260,8 @@ function updateMonacoFromGrapesJS(mainEditor) {
     
     const htmlCode = mainEditor.getHtml();
     const cssCode = mainEditor.getCss();
-    console.log('HTML Code:', htmlCode);
-    console.log('CSS Code:', cssCode);
+    // console.log('HTML Code:', htmlCode);
+    // console.log('CSS Code:', cssCode);
     updateLivePreview(htmlCode, cssCode);
   } catch (error) {
     console.error('Error updating Monaco from GrapesJS:', error);

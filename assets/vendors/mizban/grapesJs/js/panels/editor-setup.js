@@ -1,4 +1,5 @@
-import { setupHtmlImportCommand, setupImportCodeFromHtmlCommand } from './monaco-code-import.js';
+// import { setupHtmlImportCommand, setupImportCodeFromHtmlCommand } from './monaco-code-import.js';
+import { codeImportManager } from './monaco-code-import.js';
 import { setupCodeEditorCommand } from './customize/monaco-editor.js';
 
 class EditorContainer {
@@ -103,13 +104,13 @@ function code_editor(editor) {
 
     const importButton = new ImportButton(editor);
 
-    setupHtmlImportCommand(
-        editor,
-        codeViewer.getViewer(),
-        editor.Modal,
-        editorContainer.container,
-        importButton.getButton()
-    );
+    // setupHtmlImportCommand(
+    //     editor,
+    //     codeViewer.getViewer(),
+    //     editor.Modal,
+    //     editorContainer.container,
+    //     importButton.getButton()
+    // );
 
     setupCodeEditorCommand(
         editor,
@@ -119,6 +120,10 @@ function code_editor(editor) {
         editorContainer.resizer,
         editorContainer.cssMonacoContainer
     );
+
+    function setupImportCodeFromHtmlCommand(editor) {
+        new codeImportManager(editor);
+    }
 
     setupImportCodeFromHtmlCommand(editor);
 }

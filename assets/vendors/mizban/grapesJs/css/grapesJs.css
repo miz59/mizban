@@ -1,3 +1,39 @@
+:root {
+    --gjs-main-color: #18181B;
+    --gjs-primary-color: #18181B;
+    --gjs-secondary-color: #ddd;
+    --gjs-tertiary-color: #804f7b;
+    --gjs-quaternary-color: #fa8b8b;
+    --gjs-font-color: #ddd;
+    --gjs-font-color-active: #f8f8f8;
+    --gjs-main-dark-color: rgba(0, 0, 0, 0.2);
+    --gjs-secondary-dark-color: rgba(0, 0, 0, 0.1);
+    --gjs-main-light-color: rgba(255, 255, 255, 0.1);
+    --gjs-secondary-light-color: rgba(255, 255, 255, 0.7);
+    --gjs-soft-light-color: rgba(255, 255, 255, 0.015);
+    --gjs-color-blue: #3b97e3;
+    --gjs-color-red: #dd3636;
+    --gjs-color-yellow: #ffca6f;
+    --gjs-color-green: #62c462;
+    --gjs-color-highlight: #71b7f1;
+    --gjs-color-warn: #ffca6f;
+    --gjs-handle-margin: -5px;
+    --gjs-left-width: 15%;
+    --gjs-light-border: rgba(255, 255, 255, 0.05);
+    --gjs-arrow-color: rgba(255, 255, 255, 0.7);
+    --gjs-dark-text-shadow: rgba(0, 0, 0, 0.2);
+    --gjs-color-input-padding: 22px;
+    --gjs-input-padding: 5px;
+    --gjs-padding-elem-classmanager: 5px 6px;
+    --gjs-upload-padding: 150px 10px;
+    --gjs-animation-duration: 0.2s;
+    --gjs-main-font: Helvetica, sans-serif;
+    --gjs-font-size: 0.75rem;
+    --gjs-placeholder-background-color: var(--gjs-color-green);
+    --gjs-canvas-top: 40px;
+    --gjs-flex-item-gap: 5px
+}
+
 .CodeMirror {
     font-family: monospace;
     height: 300px;
@@ -1261,42 +1297,6 @@ span.CodeMirror-selectedtext {
     width: 8px
 }
 
-:root {
-    --gjs-main-color: #18181B;
-    --gjs-primary-color: #18181B;
-    --gjs-secondary-color: #ddd;
-    --gjs-tertiary-color: #804f7b;
-    --gjs-quaternary-color: #fa8b8b;
-    --gjs-font-color: #ddd;
-    --gjs-font-color-active: #f8f8f8;
-    --gjs-main-dark-color: rgba(0, 0, 0, 0.2);
-    --gjs-secondary-dark-color: rgba(0, 0, 0, 0.1);
-    --gjs-main-light-color: rgba(255, 255, 255, 0.1);
-    --gjs-secondary-light-color: rgba(255, 255, 255, 0.7);
-    --gjs-soft-light-color: rgba(255, 255, 255, 0.015);
-    --gjs-color-blue: #3b97e3;
-    --gjs-color-red: #dd3636;
-    --gjs-color-yellow: #ffca6f;
-    --gjs-color-green: #62c462;
-    --gjs-left-width: 15%;
-    --gjs-color-highlight: #71b7f1;
-    --gjs-color-warn: #ffca6f;
-    --gjs-handle-margin: -5px;
-    --gjs-light-border: rgba(255, 255, 255, 0.05);
-    --gjs-arrow-color: rgba(255, 255, 255, 0.7);
-    --gjs-dark-text-shadow: rgba(0, 0, 0, 0.2);
-    --gjs-color-input-padding: 22px;
-    --gjs-input-padding: 5px;
-    --gjs-padding-elem-classmanager: 5px 6px;
-    --gjs-upload-padding: 150px 10px;
-    --gjs-animation-duration: 0.2s;
-    --gjs-main-font: Helvetica, sans-serif;
-    --gjs-font-size: 0.75rem;
-    --gjs-placeholder-background-color: var(--gjs-color-green);
-    --gjs-canvas-top: 40px;
-    --gjs-flex-item-gap: 5px
-}
-
 .clear {
     clear: both
 }
@@ -1587,7 +1587,7 @@ span.CodeMirror-selectedtext {
     z-index: 1;
     position: absolute;
     left: 0;
-    top: var(--gjs-canvas-top)
+    /* top: var(--gjs-canvas-top) */
 }
 
 .gjs-cv-canvas-bg {
@@ -1815,6 +1815,10 @@ span.CodeMirror-selectedtext {
     height: 100%
 }
 
+.gjs-pn-options{
+    display: flex;
+}
+
 .gjs-resizing .gjs-highlighter, .gjs-resizing .gjs-badge {
     display: none !important
 }
@@ -1928,7 +1932,7 @@ span.CodeMirror-selectedtext {
 }
 
 .gjs-pn-panel {
-    display: inline-block;
+    display: flex;
     position: absolute;
     box-sizing: border-box;
     text-align: center;
@@ -1962,8 +1966,9 @@ span.CodeMirror-selectedtext {
 }
 
 .gjs-pn-views-container {
+    width: 100%;
     height: 100%;
-    padding: 42px 0 0;
+    padding: 0;
     right: 0;
     width: var(--gjs-left-width);
     overflow: auto;
@@ -2887,7 +2892,8 @@ span.CodeMirror-selectedtext {
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
+    align-content: space-around;
     border: 1px solid rgba(0, 0, 0, .2);
     border-radius: 3px;
     margin: 10px 2.5% 5px;
@@ -2926,12 +2932,27 @@ span.CodeMirror-selectedtext {
 
 .gjs-block-label {
     line-height: normal;
-    font-size: .65rem;
+    font-size: 22px;
     font-weight: normal;
     font-family: Helvetica, sans-serif;
     overflow: hidden;
     text-overflow: ellipsis;
-    pointer-events: none
+    pointer-events: none;
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-self: center;
+    text-align: center;
+}
+
+.gjs-block-label span {
+    font-size: 14px;
+}
+
+.gjs-block-label i {
+    font-size: 34px;
+    font-style: normal;
 }
 
 .gjs-block.gjs-bdrag {
@@ -2954,6 +2975,10 @@ span.CodeMirror-selectedtext {
     position: relative;
     font-size: var(--gjs-font-size);
     display: grid
+}
+
+div:has(> .gjs-layer.gjs-layer__t-wrapper) {
+    width: 100%;
 }
 
 .gjs-layer-item {
@@ -3318,10 +3343,8 @@ span.CodeMirror-selectedtext {
     height: 100%;
     overflow: visible;
     clear: both;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    align-content: flex-start;
+    display: grid;
+    grid-template-columns: repeat(3 , 1fr);
     gap: 10px;
     width: 100%;
     padding-top: 20px;
@@ -3423,7 +3446,6 @@ span.CodeMirror-selectedtext {
     width: 100%;
     display: flex;
     flex-direction: column;
-    width: calc(25% - 10px);
     overflow: hidden;
     border: 1px solid #3F3F46;
     border-radius: 5px;
@@ -3799,7 +3821,7 @@ span.CodeMirror-selectedtext {
 }
 .gjs-mdl-dialog.gjs-one-bg.gjs-two-color:has(.gjs-am-assets-header){
     height: 90%;
-    max-width: 980px;
+    width: 50%;
     background: #18181B;
     border-radius: 12px;
     overflow: hidden;
@@ -3810,51 +3832,4 @@ span.CodeMirror-selectedtext {
 }
 .gjs-mdl-c:has(.gjs-am-assets-header){
     height: 100%;
-}
-div:has( > #editor){
-    height: 40vh;
-    display: flex;
-    #editor,#cssEditor{
-        /* height: 100% !important; */
-        width: 50%;
-    }
-}
-
-
-.section:empty,.container:empty,.block:empty,.div:empty{
-    min-height: 150px;
-}
-.editor-header{
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    margin-top: 10px;
-    div:first-child{
-        order: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 20px;
-    }
-    div:last-child{
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        button{
-            font-family: var(--gjs-main-font);
-            padding: 7px 9px;
-            font-size: .7rem;
-            border-radius: 4px;
-            background: transparent;
-            color: #fff;
-            border: 1px solid;
-            cursor: pointer;
-            transition: .3s ;
-            &:hover{
-                color: #000;
-                background: #fff;
-                border-color: #fff;
-            }
-        }
-    }
 }

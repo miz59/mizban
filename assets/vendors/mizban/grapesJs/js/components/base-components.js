@@ -17,9 +17,7 @@ function base_component(editor) {
                             }
                         ]
                     }
-
                 ]
-
             },
         },
     });
@@ -33,9 +31,8 @@ function base_component(editor) {
                 ]
             }
         }
-    })
-      
-      
+    });
+
     editor.DomComponents.addType("input", {
         model: {
             defaults: {
@@ -59,7 +56,6 @@ function base_component(editor) {
             }
         }
     });
-
 
     editor.DomComponents.addType("textAria", {
         model: {
@@ -96,7 +92,6 @@ function base_component(editor) {
         }
     });
 
-
     editor.DomComponents.addType("checkBox", {
         model: {
             defaults: {
@@ -117,7 +112,6 @@ function base_component(editor) {
             }
         }
     });
-
 
     editor.DomComponents.addType("radio", {
         model: {
@@ -140,20 +134,17 @@ function base_component(editor) {
         }
     });
 
-    const script = function (){
-        console.log(this.dataset.time)
-    };
-    editor.DomComponents.addType("sq" , {
-        model:{
-            defaults:{
-                script,
-                attributes:{'data-time':'55' , }
-            }
-        }
-    });
-
-
-
+    // const script = function (){
+    //     console.log(this.dataset.time);
+    // };
+    // editor.DomComponents.addType("sq" , {
+    //     model:{
+    //         defaults:{
+    //             script,
+    //             attributes:{'data-time':'55' , }
+    //         }
+    //     }
+    // });
 }
 
 
