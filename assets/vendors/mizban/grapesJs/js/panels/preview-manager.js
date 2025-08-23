@@ -15,9 +15,7 @@ class PreviewManager {
 
     setupPreviewCommand() {
         this.editor.Commands.add('open-preview', {
-            run: () => {
-                this.openPreview();
-            }
+            run: () => this.openPreview()
         });
     }
 
@@ -40,222 +38,159 @@ class PreviewManager {
     }
 
     openPreview() {
-        try {
-            const htmlCode = this.getHtmlCode();
-            const cssCode = this.getCssCode();
-            const timestamp = Date.now();
+        const htmlCode = this.getHtmlCode();
+        const cssCode = this.getCssCode();
+        const timestamp = Date.now();
 
-            // ⛳ ذخیره محتوا در localStorage با tabId یکتا قبل از باز کردن پنجره
-            localStorage.setItem(`previewHtml-${this.tabId}`, htmlCode);
-            localStorage.setItem(`previewCss-${this.tabId}`, cssCode);
-            localStorage.setItem(`previewTimestamp-${this.tabId}`, timestamp);
+        localStorage.setItem(`previewHtml-${this.tabId}`, htmlCode);
+        localStorage.setItem(`previewCss-${this.tabId}`, cssCode);
+        localStorage.setItem(`previewTimestamp-${this.tabId}`, timestamp);
 
-            // ساخت URL preview با tabId
-            let previewUrl = window.location.pathname;
-            if (previewUrl === '/' || previewUrl === '') {
-                previewUrl = '/index.html';
-            }
+        let previewUrl = window.location.pathname;
+        if (previewUrl === '/' || previewUrl === '') previewUrl = '/index.html';
 
-            const params = new URLSearchParams(window.location.search);
-            params.set('preview', 'true');
-            params.set('previewId', this.tabId); // tabId به عنوان previewId عمل می‌کند
+        const params = new URLSearchParams(window.location.search);
+        params.set('preview', 'true');
+        params.set('previewId', this.tabId);
 
-            const fullUrl = previewUrl + '?' + params.toString();
+        const fullUrl = previewUrl + '?' + params.toString();
+        this.previewWindow = window.open(fullUrl, 'preview_' + this.tabId);
 
-            // باز کردن پنجره preview
-            const previewWindowName = 'preview_' + this.tabId;
-            this.previewWindow = window.open(fullUrl, previewWindowName);
-
-            if (this.previewWindow) {
-                this.previewWindow.focus();
-
-                const sendData = () => {
-                    const win = this.previewWindow;
-                    const doc = win.document;
-
-                    doc.body.innerHTML = '<div id="previewContent"></div><style id="previewCss"></style>';
-
-                    // اسکریپت تزریقی برای دریافت داده از localStorage و postMessage
-                    const previewScript = doc.createElement('script');
-                    previewScript.innerHTML = `
-    (function(){
-        function getPreviewIdFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('previewId');
-        }
-        const previewId = getPreviewIdFromUrl();
-
-        function updatePreviewFromStorage() {
-            const html = localStorage.getItem('previewHtml-' + previewId) || '';
-            const css = localStorage.getItem('previewCss-' + previewId) || '';
-            const contentEl = document.getElementById('previewContent');
-            const cssEl = document.getElementById('previewCss');
-            if (contentEl && cssEl) {
-                contentEl.innerHTML = html;
-                cssEl.textContent = css;
-            }
+        if (!this.previewWindow) {
+            console.error('Popup blocked by browser');
+            return;
         }
 
-        updatePreviewFromStorage();
+        this.previewWindow.focus();
 
-        window.addEventListener('message', function(event) {
-            if (
-                event.data &&
-                event.data.type === 'UPDATE_PREVIEW' &&
-                event.data.previewId === previewId
-            ) {
-                const contentEl = document.getElementById('previewContent');
-                const cssEl = document.getElementById('previewCss');
-                if (contentEl && cssEl) {
-                    contentEl.innerHTML = event.data.html;
-                    cssEl.textContent = event.data.css;
-                }
+        const sendData = () => {
+            const win = this.previewWindow;
+            const doc = win.document;
+
+            doc.body.innerHTML = "";
+
+            doc.getElementById('preview-canvas')?.remove();
+
+            const iframe = doc.createElement('iframe');
+            iframe.id = 'preview-canvas';
+            iframe.style.width = "100vw";
+            iframe.style.height = "100vh";
+            iframe.style.boder = "none";
+            doc.body.appendChild(iframe);
+
+            const iframeDoc = iframe.contentWindow.document;
+            const html = localStorage.getItem('previewHtml-' + this.tabId) || '';
+            iframeDoc.open();
+            iframeDoc.write(`
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                    
+                    </head>
+                    <body>
+                  
+                      
+                    </body>
+                </html>`);
+            iframeDoc.close();
+            /* <script src="./assets/js/mizchin.min.js"></script> */
+
+            setTimeout(() => {
+                let mizCss = iframeDoc.createElement("link");
+                mizCss.href = "./assets/css/miz.min.css";
+                mizCss.rel = "stylesheet";
+
+                let mizchin = iframeDoc.createElement("script");
+                mizchin.src = "./assets/js/mizchin.min.js";
+                mizchin.async = true;
+
+                iframeDoc.head.appendChild(mizCss);
+                iframeDoc.body.innerHTML = html;
+                iframeDoc.body.appendChild(mizchin);
+            }, 100);
+
+
+
+
+            // اسکریپت تزریقی برای بروزرسانی محتوا و init mizchin
+            // const previewScript = doc.createElement('script');
+            // previewScript.innerHTML = `
+            //     (function(){
+            //         const previewId = new URLSearchParams(window.location.search).get('previewId');
+
+            //       const html = localStorage.getItem('previewHtml-' + previewId) || '';
+            //             const css = localStorage.getItem('previewCss-' + previewId) || '';
+            //             const contentEl = document.getElementById('previewContent');
+            //             const cssEl = document.getElementById('previewCss');
+            //             if (contentEl && cssEl) {
+            //                 contentEl.innerHTML = html;
+            //                 cssEl.textContent = css;
+            //             }
+
+
+            //     })();
+            // `;
+            // doc.body.appendChild(previewScript);
+
+
+
+
+
+
+        };
+
+        this.previewWindow.onload = sendData;
+
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+
+            } else {
+                console.log('کاربر تب را ترک کرده است');
+                sendData()
             }
         });
-    })();
-                    `;
-                    doc.body.appendChild(previewScript);
 
-                    // لود اسکریپت mizchin فقط یک بار
-                    setTimeout(() => {
-                        // const alreadyLoaded = !!win.Accordion || doc.querySelector('script[src*="/assets/js/mizchin.min.js"]');
-                        const alreadyLoaded = doc.querySelector('script[src*="/assets/js/mizchin.min.js"]');
-                        if (!alreadyLoaded) {
-                            const mizchinScript = doc.createElement('script');
-                            mizchinScript.src = '/assets/js/mizchin.min.js';
-                            doc.body.appendChild(mizchinScript);
-                        }
-                    }, 150);
 
-                    // بعد از تزریق، ارسال پیام postMessage برای اطمینان از بروز رسانی
-                    setTimeout(() => {
-                        this.previewWindow?.postMessage({
-                            type: 'UPDATE_PREVIEW',
-                            previewId: this.tabId,
-                            html: this.getHtmlCode(),
-                            css: this.getCssCode(),
-                            timestamp: Date.now()
-                        }, '*');
-                    }, 100);
-                };
-
-                // ارسال داده‌ها پس از بارگذاری پنجره
-                this.previewWindow.onload = sendData;
-
-                // fallback در صورت عدم فعال شدن onload
-                let tries = 0;
-                const interval = setInterval(() => {
-                    if (this.previewWindow.document?.readyState === 'complete') {
-                        sendData();
-                        clearInterval(interval);
-                    }
-                    if (++tries > 10) clearInterval(interval);
-                }, 300);
-            } else {
-                throw new Error('Popup blocked by browser');
-            }
-        } catch (error) {
-            console.error('Preview error:', error);
-            this.showPreviewError('Error opening preview: ' + error.message);
-        }
     }
 
     updatePreviewContent(htmlCode, cssCode) {
-        try {
-            const timestamp = Date.now();
+        const timestamp = Date.now();
+        localStorage.setItem(`previewHtml-${this.tabId}`, htmlCode);
+        localStorage.setItem(`previewCss-${this.tabId}`, cssCode);
+        localStorage.setItem(`previewTimestamp-${this.tabId}`, timestamp);
 
-            // بروزرسانی در localStorage
-            localStorage.setItem(`previewHtml-${this.tabId}`, htmlCode);
-            localStorage.setItem(`previewCss-${this.tabId}`, cssCode);
-            localStorage.setItem(`previewTimestamp-${this.tabId}`, timestamp);
+        if (!this.previewWindow || this.previewWindow.closed) return;
 
-            if (this.previewWindow && !this.previewWindow.closed) {
-                this.previewWindow.postMessage({
-                    type: 'UPDATE_PREVIEW',
-                    previewId: this.tabId,
-                    html: htmlCode,
-                    css: cssCode,
-                    timestamp
-                }, '*');
-            }
-        } catch (error) {
-            console.error('Error updating preview content:', error);
-        }
+        // فقط ارسال پیام برای بروزرسانی محتوا
+        this.previewWindow.postMessage({
+            type: 'UPDATE_PREVIEW',
+            previewId: this.tabId,
+            html: htmlCode,
+            css: cssCode,
+            timestamp
+        }, '*');
     }
 
     getHtmlCode() {
         try {
             if (window.monacoEditor?.getValue) {
-                const htmlValue = window.monacoEditor.getValue();
-                if (htmlValue.trim()) return htmlValue;
+                const val = window.monacoEditor.getValue();
+                if (val.trim()) return val;
             }
-        } catch (error) {
-            console.warn('Error getting Monaco HTML content:', error);
-        }
+        } catch { }
         return this.editor.getHtml();
     }
 
     getCssCode() {
         try {
             if (window.cssMonacoContainer?.getValue) {
-                const cssValue = window.cssMonacoContainer.getValue();
-                if (cssValue.trim()) return cssValue;
+                const val = window.cssMonacoContainer.getValue();
+                if (val.trim()) return val;
             }
-        } catch (error) {
-            console.warn('Error getting Monaco CSS content:', error);
-        }
+        } catch { }
         return this.editor.getCss();
     }
-
-//     createFullHtml(htmlCode, cssCode) {
-//         const cleanHtml = this.cleanGrapesJSEvents(htmlCode);
-
-//         return `<!DOCTYPE html>
-// <html lang="en">
-// <head>
-//     <meta charset="UTF-8" />
-//     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-//     <title>Preview - MIZBAN</title>
-//     <link rel="stylesheet" href="../../css/miz.min.css" />
-//     <link rel="stylesheet" href="../../css/style.min.css" />
-//     <link rel="stylesheet" href="../../css/style.css" />
-//     <link rel="stylesheet" href="../../icons/fontawesome/css/all.min.css" />
-//     <style>${cssCode}</style>
-// </head>
-// <body>
-//     ${cleanHtml}
-//     <script src="../../js/mizchin.js"></script>
-// </body>
-// </html>`;
-//     }
-
-    cleanGrapesJSEvents(html) {
-        let cleanHtml = html;
-        cleanHtml = cleanHtml.replace(/data-gjs-[^=]*="[^"]*"/g, '');
-        cleanHtml = cleanHtml.replace(/\s*gjs-[^\s"]*/g, '');
-        cleanHtml = cleanHtml.replace(/id="gjs-[^"]*"/g, '');
-        cleanHtml = cleanHtml.replace(/\s*on\w+="[^"]*"/g, '');
-        cleanHtml = cleanHtml.replace(/style="[^"]*gjs-[^"]*"/g, 'style=""');
-        cleanHtml = cleanHtml.replace(/style="\s*"/g, '');
-        return cleanHtml;
-    }
-
-    showPreviewError(message) {
-        this.editor.Modal.open({
-            title: 'Preview Error',
-            content: `<div style="color: #ff6b6b; padding: 20px;">
-                <i class="fa fa-exclamation-triangle"></i>
-                <p>${message}</p>
-            </div>`
-        });
-    }
-
-    // closePreview() {
-    //     if (this.previewWindow && !this.previewWindow.closed) {
-    //         this.previewWindow.close();
-    //         this.previewWindow = null;
-    //     }
-    // }
 }
 
 // راه‌اندازی

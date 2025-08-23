@@ -280,9 +280,8 @@ export function initializeMonacoEditors(mainEditor, editorContainer) {
 
   const htmlContainer = editorContainer.querySelector('#htmlEditor');
   const cssContainer = editorContainer.querySelector('#cssEditor');
-  const htmlImportCodeContainer = editorContainer.querySelector('#htmlImportCodeContainer');
 
-  if (!htmlContainer || !cssContainer || !htmlImportCodeContainer) {
+  if (!htmlContainer || !cssContainer) {
 
     return;
   }
@@ -306,8 +305,8 @@ export function initializeMonacoEditors(mainEditor, editorContainer) {
           colors: {}
         });
         disposeExistingEditors();
-        clearContainers(htmlContainer, cssContainer, htmlImportCodeContainer);
-        initMonacoEditors(mainEditor, htmlContainer, cssContainer , htmlImportCodeContainer);
+        clearContainers(htmlContainer, cssContainer);
+        initMonacoEditors(mainEditor, htmlContainer, cssContainer);
         setupGrapesJSToMonacoSync(mainEditor);
         setupEditorsLayout();
         setupDefaultContent();
@@ -505,16 +504,12 @@ function setupAdvancedMonacoFeatures() {
   };
 }
 
-function initMonacoEditors(mainEditor, htmlContainer, cssContainer , htmlImportCodeContainer) {
+function initMonacoEditors(mainEditor, htmlContainer, cssContainer) {
   const currentHtml = mainEditor.getHtml() || '';
   const currentCss = mainEditor.getCss() || '';
-  const currenthtmlImportCode = mainEditor.getHtmlImportCode 
-                                ? mainEditor.getHtmlImportCode() 
-                                : '';
 
   window.monacoEditor = createHtmlEditor(htmlContainer, currentHtml);
   window.cssMonacoContainer = createCssEditor(cssContainer, formatCssString(currentCss));
-  window.htmlImportCodeContainer = createHtmlEditor(htmlImportCodeContainer, currenthtmlImportCode);
 
   setupHtmlEditorEvents(window.monacoEditor, mainEditor);
   setupCssEditorEvents(window.cssMonacoContainer, mainEditor);
@@ -771,68 +766,6 @@ function setupCssEditorEvents(cssMonacoContainer, mainEditor) {
   });
 }
 
-function setupHtmlImportCodeEditorEvents(monacoEditor, mainEditor) {
-  monacoEditor.onDidChangeModelContent((e) => {
-    const code = monacoEditor.getValue();
-    
-    if (window.isUpdatingFromGrapesJS || window.isAutoRenamingTag || (window.preventAutoFormatting && window.preventAutoFormatting())) {
-      return;
-    }
-    
-    tryAutoRenameHtmlTag(e, monacoEditor);
-    
-    window.isUserTyping = true;
-    window.hasUserTyped = true;
-    clearTimeout(window.typingTimer);
-    window.typingTimer = setTimeout(() => {
-      window.isUserTyping = false;
-    }, 2000);
-    
-    try {
-      window.isFromMonaco = true;
-      
-      mainEditor.DomComponents.getWrapper().set('content', '');
-      mainEditor.setComponents(code.trim());
-      mainEditor.store();
-      updateLivePreview(code, window.cssMonacoContainer?.getValue() || '');
-    } catch (error) {
-      console.error('Error updating HTML:', error);
-    }
-
-    try { window._htmlPrevValue = code; } catch (e) {}
-  });
-  
-  monacoEditor.onMouseDown(event => {
-    handleHtmlEditorClick(event, monacoEditor, mainEditor);
-  });
-  
-  monacoEditor.updateOptions({
-    suggest: {
-      showKeywords: true,
-      showSnippets: true,
-      showClasses: true,
-      showFunctions: true,
-      showVariables: true,
-      showConstants: true,
-      showEnums: true,
-      showEnumsMembers: true,
-      showColors: true,
-      showFiles: true,
-      showReferences: true,
-      showFolders: true,
-      showTypeParameters: true,
-      showWords: true,
-      showUsers: true,
-      showIssues: true
-    },
-    quickSuggestions: {
-      other: true,
-      comments: false,
-      strings: true
-    }
-  });
-}
-
 function handleHtmlEditorClick(event, monacoEditor, mainEditor) {
   const position = event.target.position;
   if (!position) return;
@@ -1022,20 +955,17 @@ function findComponentByLineAnalysis(lineNumber, monacoEditor, mainEditor) {
   return null;
 }
 
-function clearContainers(htmlContainer, cssContainer, htmlImportCodeContainer) {
+function clearContainers(htmlContainer, cssContainer) {
   htmlContainer.innerHTML = '';
   cssContainer.innerHTML = '';
-  htmlImportCodeContainer.innerHTML = '';
 
   ['data-monaco-editor', 'data-context', 'data-editor-type'].forEach(attr => {
     htmlContainer.removeAttribute(attr);
     cssContainer.removeAttribute(attr);
-    htmlImportCodeContainer.removeAttribute(attr);
   });
-  
+
   htmlContainer.className = htmlContainer.className.replace(/monaco-editor/g, '').trim();
   cssContainer.className = cssContainer.className.replace(/monaco-editor/g, '').trim();
-  htmlImportCodeContainer.className = htmlImportCodeContainer.className.replace(/monaco-editor/g, '').trim();
 }
 
 function disposeExistingEditors() {
@@ -1057,7 +987,6 @@ function disposeExistingEditors() {
   
   const htmlContainer = document.querySelector('#htmlEditor');
   const cssContainer = document.querySelector('#cssEditor');
-  const htmlImportCodeContainer = document.querySelector('#htmlImportCodeContainer');
 
   if (htmlContainer) {
     htmlContainer.removeAttribute('data-monaco-editor');
@@ -1067,11 +996,6 @@ function disposeExistingEditors() {
   if (cssContainer) {
     cssContainer.removeAttribute('data-monaco-editor');
     cssContainer.removeAttribute('data-context');
-  }
-
-  if (htmlImportCodeContainer) {
-    htmlImportCodeContainer.removeAttribute('data-monaco-editor');
-    htmlImportCodeContainer.removeAttribute('data-context');
   }
 }
 
@@ -1269,9 +1193,8 @@ window.preventAutoFormatting = function() {
 window.clearMonacoContext = function() {
   const htmlContainer = document.querySelector('#htmlEditor');
   const cssContainer = document.querySelector('#cssEditor');
-  const htmlImportCodeContainer = document.querySelector('#htmlImportCodeContainer');
 
-  [htmlContainer, cssContainer , htmlImportCodeContainer].forEach(container => {
+  [htmlContainer, cssContainer].forEach(container => {
     if (container) {
       const attributes = container.getAttributeNames();
       attributes.forEach(attr => {
@@ -1328,15 +1251,14 @@ export function reloadMonacoWithCDN(mainEditor, editorContainer) {
   
   const htmlContainer = editorContainer.querySelector('#htmlEditor');
   const cssContainer = editorContainer.querySelector('#cssEditor');
-  const htmlImportCodeContainer = editorContainer.querySelector('#htmlImportCodeContainer');
-  clearContainers(htmlContainer, cssContainer, htmlImportCodeContainer);
+  clearContainers(htmlContainer, cssContainer);
 
   if (window.require && window.require.undef) {
     window.require.undef('vs/editor/editor.main');
   }
   
   if (window.monaco) {
-    initMonacoEditors(mainEditor, htmlContainer, cssContainer , htmlImportCodeContainer);
+    initMonacoEditors(mainEditor, htmlContainer, cssContainer);
     setupEditorsLayout();
     setupDefaultContent();
     formatEditors();
@@ -1406,7 +1328,6 @@ window.simpleFix = function() {
   
   const htmlContainer = document.querySelector('#htmlEditor') || document.createElement('div');
   const cssContainer = document.querySelector('#cssEditor') || document.createElement('div');
-  const htmlImportCodeContainer = document.querySelector('#htmlImportCodeContainer') || document.createElement('div');
   
   if (!htmlContainer.id) {
     htmlContainer.id = 'htmlEditor';
@@ -1420,13 +1341,6 @@ window.simpleFix = function() {
     cssContainer.style.height = '300px';
     cssContainer.style.border = '1px solid #ccc';
     document.body.appendChild(cssContainer);
-  }
-
-  if (!htmlImportCodeContainer.id) {
-    htmlImportCodeContainer.id = 'htmlImportCodeEditor';
-    htmlImportCodeContainer.style.height = '300px';
-    htmlImportCodeContainer.style.border = '1px solid #ccc';
-    document.body.appendChild(htmlImportCodeContainer);
   }
   
   disposeExistingEditors();
@@ -1448,16 +1362,9 @@ window.simpleFix = function() {
       ...MONACO_CONFIG.EDITOR_OPTIONS
     });
     
-    window.monacoImportCodeEditor = window.monaco.editor.create(htmlImportCodeContainer, {
-      value: 'hosseintest',
-      language: 'html',
-      ...MONACO_CONFIG.EDITOR_OPTIONS
-    });
-    
     if (mainEditor) {
       setupHtmlEditorEvents(window.monacoEditor, mainEditor);
       setupCssEditorEvents(window.cssMonacoContainer, mainEditor);
-      setupHtmlImportCodeEditorEvents(window.monacoEditor, mainEditor);
     }
     
 
