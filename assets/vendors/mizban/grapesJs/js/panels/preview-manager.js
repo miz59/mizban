@@ -85,15 +85,11 @@ class PreviewManager {
                 <!DOCTYPE html>
                 <html>
                     <head>
-                    
                     </head>
                     <body>
-                  
-                      
                     </body>
                 </html>`);
             iframeDoc.close();
-            /* <script src="./assets/js/mizchin.min.js"></script> */
 
             setTimeout(() => {
                 let mizCss = iframeDoc.createElement("link");
@@ -108,35 +104,6 @@ class PreviewManager {
                 iframeDoc.body.innerHTML = html;
                 iframeDoc.body.appendChild(mizchin);
             }, 100);
-
-
-
-
-            // اسکریپت تزریقی برای بروزرسانی محتوا و init mizchin
-            // const previewScript = doc.createElement('script');
-            // previewScript.innerHTML = `
-            //     (function(){
-            //         const previewId = new URLSearchParams(window.location.search).get('previewId');
-
-            //       const html = localStorage.getItem('previewHtml-' + previewId) || '';
-            //             const css = localStorage.getItem('previewCss-' + previewId) || '';
-            //             const contentEl = document.getElementById('previewContent');
-            //             const cssEl = document.getElementById('previewCss');
-            //             if (contentEl && cssEl) {
-            //                 contentEl.innerHTML = html;
-            //                 cssEl.textContent = css;
-            //             }
-
-
-            //     })();
-            // `;
-            // doc.body.appendChild(previewScript);
-
-
-
-
-
-
         };
 
         this.previewWindow.onload = sendData;
@@ -146,7 +113,6 @@ class PreviewManager {
             if (document.visibilityState === 'visible') {
 
             } else {
-                console.log('کاربر تب را ترک کرده است');
                 sendData()
             }
         });
@@ -162,7 +128,6 @@ class PreviewManager {
 
         if (!this.previewWindow || this.previewWindow.closed) return;
 
-        // فقط ارسال پیام برای بروزرسانی محتوا
         this.previewWindow.postMessage({
             type: 'UPDATE_PREVIEW',
             previewId: this.tabId,
@@ -193,7 +158,6 @@ class PreviewManager {
     }
 }
 
-// راه‌اندازی
 function setupPreviewManager(editor) {
     const previewManager = new PreviewManager(editor);
     window.previewManager = previewManager;
