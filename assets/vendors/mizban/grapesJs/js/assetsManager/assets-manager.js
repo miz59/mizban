@@ -36,7 +36,6 @@ fetch("/images")
   });
 
   editor.on('asset:upload:response', (response) => {
-    console.log('Asset uploaded successfully:', response);
     const project = JSON.parse(localStorage.getItem(storageKey)) || {};
     const newData = { ...project, assets: [...(project.assets || []), response.data] };
     localStorage.setItem(storageKey, JSON.stringify(newData));
@@ -54,7 +53,6 @@ fetch("/images")
 
       const removedSrc = removedAsset.get('src');
 
-      // پاک کردن از localStorage
       assets = assets.filter((a) => {
         if (typeof a === 'string') {
           return a !== removedSrc;
@@ -72,14 +70,11 @@ fetch("/images")
       const formData = new FormData();
       formData.append("filePath", removedSrc);
 
-      // ارسال درخواست حذف فایل به سرور
       fetch('/delete-asset', {
         method: 'POST',
         body: formData
       }).then(res => {
-        if (res.ok) {
-          console.log('File deleted from server:', removedSrc);
-        } else {
+        if (!res.ok) {
           console.warn('Failed to delete file from server');
         }
       }).catch(err => {

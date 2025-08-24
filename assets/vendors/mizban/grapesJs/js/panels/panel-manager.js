@@ -5,15 +5,6 @@ import { setupPreviewManager } from "./preview-manager.js";
 import { cleanConfirmation } from "./clean-canvas.js";
 import { saveProject } from "./save-project.js";
 
-// const breakPointIcons = {
-//     xxl: 'fa fa-tv',
-//     xl: 'fa fa-desktop',
-//     lg: 'fa fa-laptop',
-//     md: 'fa fa-tablet',
-//     sm: 'fa fa-mobile',
-//     xs: 'fa fa-mobile-alt'
-// };
-
 class PanelManager {
     constructor(editor) {
         this.editor = editor;

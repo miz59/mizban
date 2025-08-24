@@ -54,21 +54,7 @@ editor.on('load', () => {
     }, 300);
 });
 
-editor.on('asset:upload:response', (response) => {
-    console.log('Asset uploaded successfully:', response);
-});
-
-
-
-
-
-
 editor.on('asset:remove', (asset) => {
     const src = asset.get('src');
-    console.log('Asset removed:', src);
-    // حذف از localStorage
     localStorage.removeItem(src);
 });
-
-
-
