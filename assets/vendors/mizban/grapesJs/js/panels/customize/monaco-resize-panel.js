@@ -55,19 +55,32 @@ export function makeWrapperResizable(wrapper) {
             startL = (r.left / window.innerWidth) * 100;
             startT = (r.top / window.innerHeight) * 100;
 
+            // handle.style.width = '10vw';
+            // handle.style.height = '10vw';
+
             wrapper.style.transform = 'none';
             document.body.style.userSelect = 'none';
+
             if (handle.classList.contains("cursor-n")) {
-                document.body.style.cursor = 'ne-resize';
+                document.body.style.cursor = 'n-resize';
+                handle.style.width = 'calc(100% - 3vw)';
+                handle.style.height = '10vw';
             }
             else if (handle.classList.contains("cursor-e")) {
-                document.body.style.cursor = 'ne-resize';
+                document.body.style.cursor = 'e-resize';
+                handle.style.width = '10vw';
+                handle.style.height = 'calc(100% - 3vw)';
+
             }
             else if (handle.classList.contains("cursor-ne")) {
                 document.body.style.cursor = 'ne-resize';
+                handle.style.width = '10vw';
+                handle.style.height = '10vw';
             }
             else if (handle.classList.contains("cursor-nw")) {
-                document.body.style.cursor = 'ne-resize';
+                document.body.style.cursor = 'nw-resize';
+                handle.style.width = '10vw';
+                handle.style.height = '10vw';
             }
             e.preventDefault();
             e.stopPropagation();
@@ -124,7 +137,6 @@ export function makeWrapperResizable(wrapper) {
         wrapper.style.left = newL + '%';
         wrapper.style.top = newT + '%';
 
-        // بروزرسانی px
         const pxWidthMove = (newW / 100) * window.innerWidth;
         const pxHeightMove = (newH / 100) * window.innerHeight - 62;
         if (content) {
@@ -139,6 +151,10 @@ export function makeWrapperResizable(wrapper) {
         currentHandle = null;
         document.body.style.userSelect = '';
         document.body.style.cursor = '';
+        wrapper.querySelectorAll('.resize-handle').forEach(handle => {
+            handle.style.width = '';
+            handle.style.height = '';
+        });
     };
 
     document.addEventListener('mousemove', onMouseMove);
