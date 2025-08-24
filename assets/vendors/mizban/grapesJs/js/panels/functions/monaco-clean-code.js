@@ -72,23 +72,25 @@ function formatCssCode(css) {
     css = css.replace(/\s*}\s*/g, '\n}\n');
     css = css.replace(/(^|\n)\s*([^{\n]+?)\s*{/, (m, p1, p2) => `\n${p2.trim()} {`);
     css = css.replace(/:\s*/g, ': ');
+
     let lines = css.split(/\n+/).map(line => line.trim()).filter(Boolean);
     let result = '';
-    let insideBlock = false;
+    let indentLevel = 0;
+
     for (let line of lines) {
-    if (line.endsWith('{')) {
-        result += line + '\n';
-        insideBlock = true;
-    } else if (line === '}') {
-        result += '}\n\n';
-        insideBlock = false;
-    } else if (insideBlock) {
-        result += '    ' + line + '\n';
-    } else {
-        result += line + '\n';
+        if (line.endsWith('{')) {
+            result += '    '.repeat(indentLevel) + line + '\n';
+            indentLevel++;
+        } else if (line === '}') {
+            indentLevel--;
+            result += '    '.repeat(indentLevel) + '}\n\n';
+        } else {
+            result += '    '.repeat(indentLevel) + line + '\n';
+        }
     }
-    }
+
     return result.replace(/\n{3,}/g, '\n\n').trim() + '\n';
 }
+
 
 export { formatHtmlCode, formatCssCode };

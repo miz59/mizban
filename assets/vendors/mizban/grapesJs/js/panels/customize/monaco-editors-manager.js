@@ -197,55 +197,118 @@ const ADVANCED_MONACO_OPTIONS = {
 };
 
 
+function onAnyChange(callback) {
+  const events = [
+    'change',
+    'component:update',
+    'component:update:style',
+    'component:update:attribute',
+    'component:selected',
+    'component:deselected',
+    'component:drag:start',
+    'component:drag:end',
+    'canvas:drop',
+    'canvas:undo',
+    'canvas:redo',
+    'asset:add',
+    'asset:remove',
+    'asset:upload:start',
+    'asset:upload:response',
+    'asset:upload:error'
+  ];
+
+  events.forEach(ev => {
+    mainEditor.on(ev, (...args) => callback(ev, ...args));
+  });
+}
+
+
 function setupGrapesJSToMonacoSync(mainEditor) {
 
   if (window.grapesJSSyncSetup) return;
   window.grapesJSSyncSetup = true;
   
-
-  mainEditor.on('block:drag:stop', () => {
-
-  });
-  mainEditor.on('run:core:undo', () => {
-
-  });
-  mainEditor.on('run:core:redo', () => {
-
-  });
-  mainEditor.on('run:core:canvas-clear', () => {
-
-  });
-  mainEditor.on('component:add', () => {
-
-  });
-  mainEditor.on('component:remove', () => {
-
-  });
-  let updateTimer = null;
-  window.isFromMonaco = false;
-  window.isUserTyping = false;
-  window.hasUserTyped = false;
-  window.typingTimer = null;
+  // let updateTimer = null;
+  // window.isFromMonaco = false;
+  // window.isUserTyping = false;
+  // window.hasUserTyped = false;
+  // window.typingTimer = null;
   
-  mainEditor.on('change', () => {
+  // // mainEditor.on('change', () => {
+  // onAnyChange((eventName, ...args) => {
+  //   if (window.isFromMonaco) {
+  //     window.isFromMonaco = false;
+  //     return;
+  //   }
+    
+  //   if (window.isUserTyping) {
+  //     return;
+  //   }
+  //   if (!window.hasUserTyped) {
+  //     return;
+  //   }
+
+  //   clearTimeout(updateTimer);
+  //   updateTimer = setTimeout(() => {
+  //     updateMonacoFromGrapesJS(mainEditor);
+  //   }, 2000);
+  // // });
+  // });
+
+  let updateTimer = null;   // برای debounce آپدیت GrapesJS
+  let typingTimer = null;   // برای تشخیص پایان تایپ کاربر
+  let canUpdate = false;    // آیا می‌توان آپدیت کرد؟
+  const timeUpdate = 5000;
+
+  // وقتی کاربر روی Monaco focus می‌کند
+  monacoEditor.onDidFocusEditorWidget(() => {
+    canUpdate = true;           // آماده آپدیت بعد از توقف تایپ
+    clearTimeout(typingTimer);  // اگر تایمر قبلی بود، لغو شود
+
+    // اگر کاربر تایپ نکرد تا 3 ثانیه، آپدیت انجام شود
+    typingTimer = setTimeout(() => {
+      if (canUpdate) {
+        updateFromGrapesJS();
+        canUpdate = false;  // بعد از آپدیت، تا تایپ بعدی مجدداً آماده شود
+      }
+    }, timeUpdate);
+  });
+
+  // وقتی کاربر در Monaco تایپ می‌کند
+  monacoEditor.onDidChangeModelContent(() => {
+    canUpdate = false;          // تایپ شروع شد، آپدیت متوقف شود
+    clearTimeout(typingTimer);  // تایمر قبلی را ریست کن
+
+    // بعد از پایان تایپ (3 ثانیه بدون تایپ)، دوباره آماده آپدیت شود
+    typingTimer = setTimeout(() => {
+      canUpdate = true;
+      updateFromGrapesJS();
+      canUpdate = false;
+    }, timeUpdate);
+  });
+
+  // وقتی تغییر در GrapesJS رخ می‌دهد
+  onAnyChange((eventName, ...args) => {
     if (window.isFromMonaco) {
       window.isFromMonaco = false;
       return;
     }
-    
-    if (window.isUserTyping) {
-      return;
-    }
-    if (!window.hasUserTyped) {
-      return;
-    }
+
+    // اگر کاربر در حال تایپ یا تازه تایپ کرده، آپدیت نکن
+    if (!canUpdate) return;
 
     clearTimeout(updateTimer);
     updateTimer = setTimeout(() => {
       updateMonacoFromGrapesJS(mainEditor);
-    }, 2000);
+    }, timeUpdate); // debounce تغییرات GrapesJS
   });
-  mainEditor.on('component:selected', () => {});mainEditor.on('style:add', () => {});mainEditor.on('style:remove', () => {});mainEditor.on('style:update', () => {});
+
+  // تابع آپدیت از GrapesJS به Monaco
+  function updateFromGrapesJS() {
+    updateMonacoFromGrapesJS(mainEditor);
+  }
+
+  // mainEditor.on('component:selected', () => {});mainEditor.on('style:add', () => {});mainEditor.on('style:remove', () => {});mainEditor.on('style:update', () => {});
 }
 
 function updateMonacoFromGrapesJS(mainEditor) {
