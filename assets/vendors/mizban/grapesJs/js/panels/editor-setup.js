@@ -114,7 +114,7 @@ function code_editor(editor) {
 
     setupCodeEditorCommand(
         editor,
-        editor.Modal,
+        // editor.Modal,
         editorContainer.container,
         editorContainer.monacoContainer,
         editorContainer.resizer,

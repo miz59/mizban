@@ -55,4 +55,4 @@ export function setupResizeHandling(editorContainer, htmlContainer, cssContainer
   resizeHandle.addEventListener('mousedown', startResizing);
   document.addEventListener('mousemove', resize);
   document.addEventListener('mouseup', stopResizing);
-} 
+}

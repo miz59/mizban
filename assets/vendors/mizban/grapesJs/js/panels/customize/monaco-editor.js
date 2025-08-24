@@ -2,9 +2,10 @@ import { createEditorContainer, resetEditorsResize } from './monaco-editor-conta
 import { setupResizeHandling } from './monaco-resize-handler.js';
 import { setupDraggableModal } from './monaco-draggable-modal.js';
 import { initializeMonacoEditors } from './monaco-editors-manager.js';
+import { makeWrapperResizable  } from './monaco-resize-panel.js';
 
 // ===== MONACO EDITOR SETUP =====
-function setupCodeEditorCommand(editor, modal) {
+function setupCodeEditorCommand(editor , modal) {
     editor.Commands.add('code-editor', {
         run: (mainEditor, sender) => {
             let cssCode = mainEditor.getCss();
@@ -12,6 +13,9 @@ function setupCodeEditorCommand(editor, modal) {
             
             setupDraggableModal(modal);
             const wrapperContent = window.monacoDraggableContent;
+
+            const wrapper = window.monacoDraggableWrapper;
+
             const editorContainer = createEditorContainer();
 
             const htmlContainer = editorContainer.querySelector('#htmlEditor');
@@ -22,9 +26,10 @@ function setupCodeEditorCommand(editor, modal) {
 
             wrapperContent.appendChild(editorContainer);
             setEditorHeader(mainEditor);
-            resetEditorsResize(htmlContainer, cssContainer , htmlImportCodeContainer);
+            resetEditorsResize(htmlContainer, cssContainer);
 
             initializeMonacoEditors(mainEditor, editorContainer);
+            makeWrapperResizable(wrapper);
         },
     });
 }

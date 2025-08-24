@@ -91,19 +91,16 @@
 
 
 .monaco-draggable-wrapper {
-    top: 50%;
-    left: 50%;
     transform: translate(-50% , -50%);
     position: absolute;
     z-index: 999;
     background: #2d2d2d;
     border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    min-width: 800px;
-    min-height: 600px;
     max-width: 90vw;
     max-height: 90vh;
-    overflow: hidden;
+    width: 50%;
+    height: 50%;
 }
 
 .monaco-draggable-wrapper .monaco-header {
@@ -124,7 +121,8 @@
 
 .monaco-draggable-wrapper .monaco-content {
     padding: 0 ;
-    height: 1000px;
+    border-radius:0px 0px 8px 8px;
+    overflow: hidden;
 }
 
 .monaco-draggable-wrapper.dragging {
@@ -295,3 +293,24 @@ div:has(> #htmlEditor, > #cssEditor, > #resizer){
 .section:empty,.container:empty,.block:empty,.div:empty{
     min-height: 150px;
 }
+
+.resize-handle {
+    position: absolute;
+    width: 3vw;
+    aspect-ratio: 1/1;
+    background-color: #ff000042;
+}
+
+.resize-handle.top-left { top: 0; left: 0;transform: translate(-50% , -50%);  }
+.resize-handle.top-right { top: 0; right: 0; transform: translate(50% , -50%); }
+.resize-handle.bottom-left { bottom: 0; left: 0; transform: translate(-50% , 50%); }
+.resize-handle.bottom-right { bottom: 0; right: 0; transform: translate(50% , 50%); }
+.resize-handle.top { top: 0; left: 50%; transform: translate(-50% , -50%); }
+.resize-handle.bottom { bottom: 0; left: 50%; transform: translate(-50% , 50%); }
+.resize-handle.left { left: 0; top: 50%; transform: translate(-50% , -50%); }
+.resize-handle.right { right: 0; top: 50%; transform: translate(50% , -50%); }
+/* .resize-handle.cursor-nwse{cursor: nwse-resize;} */
+.resize-handle.cursor-ne{cursor: ne-resize;}
+.resize-handle.cursor-nw{cursor: nw-resize;}
+.resize-handle.cursor-n{cursor: n-resize;}
+.resize-handle.cursor-e{cursor: e-resize;}
