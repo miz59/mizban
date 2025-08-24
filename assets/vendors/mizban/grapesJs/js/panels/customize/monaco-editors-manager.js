@@ -255,31 +255,26 @@ function setupGrapesJSToMonacoSync(mainEditor) {
   // // });
   // });
 
-  let updateTimer = null;   // برای debounce آپدیت GrapesJS
-  let typingTimer = null;   // برای تشخیص پایان تایپ کاربر
-  let canUpdate = false;    // آیا می‌توان آپدیت کرد؟
+  let updateTimer = null;
+  let typingTimer = null;
+  let canUpdate = false;
   const timeUpdate = 5000;
 
-  // وقتی کاربر روی Monaco focus می‌کند
   monacoEditor.onDidFocusEditorWidget(() => {
-    canUpdate = true;           // آماده آپدیت بعد از توقف تایپ
-    clearTimeout(typingTimer);  // اگر تایمر قبلی بود، لغو شود
+    canUpdate = true;
+    clearTimeout(typingTimer);
 
-    // اگر کاربر تایپ نکرد تا 3 ثانیه، آپدیت انجام شود
     typingTimer = setTimeout(() => {
       if (canUpdate) {
         updateFromGrapesJS();
-        canUpdate = false;  // بعد از آپدیت، تا تایپ بعدی مجدداً آماده شود
+        canUpdate = false;
       }
     }, timeUpdate);
   });
 
-  // وقتی کاربر در Monaco تایپ می‌کند
   monacoEditor.onDidChangeModelContent(() => {
-    canUpdate = false;          // تایپ شروع شد، آپدیت متوقف شود
-    clearTimeout(typingTimer);  // تایمر قبلی را ریست کن
-
-    // بعد از پایان تایپ (3 ثانیه بدون تایپ)، دوباره آماده آپدیت شود
+    canUpdate = false;
+    clearTimeout(typingTimer);
     typingTimer = setTimeout(() => {
       canUpdate = true;
       updateFromGrapesJS();
@@ -287,28 +282,23 @@ function setupGrapesJSToMonacoSync(mainEditor) {
     }, timeUpdate);
   });
 
-  // وقتی تغییر در GrapesJS رخ می‌دهد
   onAnyChange((eventName, ...args) => {
     if (window.isFromMonaco) {
       window.isFromMonaco = false;
       return;
     }
 
-    // اگر کاربر در حال تایپ یا تازه تایپ کرده، آپدیت نکن
     if (!canUpdate) return;
 
     clearTimeout(updateTimer);
     updateTimer = setTimeout(() => {
       updateMonacoFromGrapesJS(mainEditor);
-    }, timeUpdate); // debounce تغییرات GrapesJS
+    }, timeUpdate);
   });
 
-  // تابع آپدیت از GrapesJS به Monaco
   function updateFromGrapesJS() {
     updateMonacoFromGrapesJS(mainEditor);
   }
-
-  // mainEditor.on('component:selected', () => {});mainEditor.on('style:add', () => {});mainEditor.on('style:remove', () => {});mainEditor.on('style:update', () => {});
 }
 
 function updateMonacoFromGrapesJS(mainEditor) {
