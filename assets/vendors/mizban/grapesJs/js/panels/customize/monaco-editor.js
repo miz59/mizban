@@ -25,7 +25,7 @@ function setupCodeEditorCommand(editor , modal) {
             setupResizeHandling(editorContainer, htmlContainer, cssContainer, resizeHandle);
 
             wrapperContent.appendChild(editorContainer);
-            setEditorHeader(mainEditor);
+            // setEditorHeader(mainEditor);
             resetEditorsResize(htmlContainer, cssContainer);
 
             initializeMonacoEditors(mainEditor, editorContainer);
@@ -35,9 +35,9 @@ function setupCodeEditorCommand(editor , modal) {
 }
 
 // ===== UTILITY FUNCTIONS =====
-function setEditorHeader(mainEditor) {
-    // Placeholder for future header setup
-}
+// function setEditorHeader(mainEditor) {
+//     // Placeholder for future header setup
+// }
 
 // ===== EXPORTS =====
 export { setupCodeEditorCommand }; 

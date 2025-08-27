@@ -223,84 +223,6 @@ function onAnyChange(callback) {
 }
 
 
-function setupGrapesJSToMonacoSync(mainEditor) {
-
-  if (window.grapesJSSyncSetup) return;
-  window.grapesJSSyncSetup = true;
-  
-  // let updateTimer = null;
-  // window.isFromMonaco = false;
-  // window.isUserTyping = false;
-  // window.hasUserTyped = false;
-  // window.typingTimer = null;
-  
-  // // mainEditor.on('change', () => {
-  // onAnyChange((eventName, ...args) => {
-  //   if (window.isFromMonaco) {
-  //     window.isFromMonaco = false;
-  //     return;
-  //   }
-    
-  //   if (window.isUserTyping) {
-  //     return;
-  //   }
-  //   if (!window.hasUserTyped) {
-  //     return;
-  //   }
-
-  //   clearTimeout(updateTimer);
-  //   updateTimer = setTimeout(() => {
-  //     updateMonacoFromGrapesJS(mainEditor);
-  //   }, 2000);
-  // // });
-  // });
-
-  let updateTimer = null;
-  let typingTimer = null;
-  let canUpdate = false;
-  const timeUpdate = 5000;
-
-  monacoEditor.onDidFocusEditorWidget(() => {
-    canUpdate = true;
-    clearTimeout(typingTimer);
-
-    typingTimer = setTimeout(() => {
-      if (canUpdate) {
-        updateFromGrapesJS();
-        canUpdate = false;
-      }
-    }, timeUpdate);
-  });
-
-  monacoEditor.onDidChangeModelContent(() => {
-    canUpdate = false;
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(() => {
-      canUpdate = true;
-      updateFromGrapesJS();
-      canUpdate = false;
-    }, timeUpdate);
-  });
-
-  onAnyChange((eventName, ...args) => {
-    if (window.isFromMonaco) {
-      window.isFromMonaco = false;
-      return;
-    }
-
-    if (!canUpdate) return;
-
-    clearTimeout(updateTimer);
-    updateTimer = setTimeout(() => {
-      updateMonacoFromGrapesJS(mainEditor);
-    }, timeUpdate);
-  });
-
-  function updateFromGrapesJS() {
-    updateMonacoFromGrapesJS(mainEditor);
-  }
-}
-
 function updateMonacoFromGrapesJS(mainEditor) {
   if (!window.monacoEditor || !window.cssMonacoContainer) return;
   
@@ -320,6 +242,70 @@ function updateMonacoFromGrapesJS(mainEditor) {
     
     window.isUpdatingFromGrapesJS = false;
   }
+}
+
+function setupGrapesJSToMonacoSync(mainEditor) {
+
+  if (window.grapesJSSyncSetup) return;
+  window.grapesJSSyncSetup = true;
+
+
+  let isMonacoTyping = false;
+  let grapesToMonacoTimer = null;
+  const timeUpdate = 1500;
+
+  monacoEditor.onDidChangeModelContent(() => {
+    isMonacoTyping = true;
+    clearTimeout(grapesToMonacoTimer);
+    grapesToMonacoTimer = setTimeout(() => {
+      isMonacoTyping = false;
+    }, timeUpdate);
+  });
+
+function observeGrapesJS(mainEditor) {
+  const frame = document.querySelector('iframe.gjs-frame');
+  if (!frame) return;
+
+  const frameDoc = frame.contentDocument || frame.contentWindow.document;
+  const observer = new MutationObserver((mutations) => {
+    if (isMonacoTyping) return;
+
+    let shouldUpdate = false;
+
+    for (const mutation of mutations) {
+      if (mutation.type === 'childList' || mutation.type === 'characterData') {
+        shouldUpdate = true;
+        break;
+      }
+
+      if (mutation.type === 'attributes') {
+        const name = mutation.attributeName;
+        if (!name.startsWith('data-gjs') && !mutation.target.classList.contains('gjs-')) {
+          shouldUpdate = true;
+          break;
+        }
+      }
+    }
+
+    if (shouldUpdate) {
+      clearTimeout(grapesToMonacoTimer);
+      grapesToMonacoTimer = setTimeout(() => {
+        updateMonacoFromGrapesJS(mainEditor);
+      }, timeUpdate);
+    }
+  });
+
+  observer.observe(frameDoc.body, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: ['class', 'id', 'src', 'href'],
+  });
+}
+
+observeGrapesJS(mainEditor);
+
 }
 
 
@@ -342,6 +328,7 @@ export function initializeMonacoEditors(mainEditor, editorContainer) {
 
   setupMonacoRequire();
   setupCleanCodeButton();
+  setupMonacoCodeToggles();
   setupIframeEvents();
   setupAdvancedMonacoFeatures();
 
@@ -447,6 +434,57 @@ function setupCleanCodeButton() {
     if (window.cssMonacoContainer) {
       const cssCode = window.cssMonacoContainer.getValue();
       window.cssMonacoContainer.setValue(formatCssCode(cssCode));
+    }
+  });
+}
+
+function setupMonacoCodeToggles() {
+  const monacoContainer = document.querySelector('.monaco-editor-container');
+  const monacoContainerHtml = monacoContainer.querySelector('#htmlEditor');
+  const monacoContainerCss = monacoContainer.querySelector('#cssEditor');
+  const monacoContainerResizeHandle = monacoContainer.querySelector('.monaco-resize-handle');
+
+  let activeEditor = 'html';
+
+  const showHtml = () => {
+    monacoContainerHtml.style.display = 'block';
+    monacoContainerCss.style.display = 'none';
+    monacoContainerResizeHandle.style.display = 'none';
+    monacoContainerHtml.style.width = '100%';
+    activeEditor = 'html';
+  };
+
+  const showCss = () => {
+    monacoContainerHtml.style.display = 'none';
+    monacoContainerCss.style.display = 'block';
+    monacoContainerResizeHandle.style.display = 'none';
+    monacoContainerCss.style.width = '100%';
+    activeEditor = 'css';
+  };
+
+  document.querySelector('#htmlCode')?.addEventListener('click', () => {
+    if (activeEditor === 'html') {
+      monacoContainerHtml.style.display = 'block';
+      monacoContainerCss.style.display = 'block';
+      monacoContainerResizeHandle.style.display = 'block';
+      monacoContainerHtml.style.width = '50%';
+      monacoContainerCss.style.width = '50%';
+      activeEditor = 'both';
+    } else {
+      showHtml();
+    }
+  });
+
+  document.querySelector('#cssCode')?.addEventListener('click', () => {
+    if (activeEditor === 'css') {
+      monacoContainerHtml.style.display = 'block';
+      monacoContainerCss.style.display = 'block';
+      monacoContainerResizeHandle.style.display = 'block';
+      monacoContainerHtml.style.width = '50%';
+      monacoContainerCss.style.width = '50%';
+      activeEditor = 'both';
+    } else {
+      showCss();
     }
   });
 }

@@ -1,31 +1,26 @@
 export function createCSSClassDropdown(input, cssClasses) {
-    // حذف dropdown قبلی اگر وجود دارد
     const existingDropdown = document.getElementById('cssClassDropdown');
     if (existingDropdown) {
         existingDropdown.remove();
     }
 
-    // ایجاد container برای dropdown
     const dropdownContainer = document.createElement('div');
     dropdownContainer.id = 'cssClassDropdown';
     dropdownContainer.style.cssText = `
-        position: absolute;
-        max-height: 200px;
+        width: 100%;
+        height:calc(33px * 3);
         overflow-y: auto;
-        background: white;
+        background-color: white;
         border: 1px solid #ccc;
         border-radius: 4px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        z-index: 1000;
         display: none;
-        width: 200px;
+        margin-top:1rem;
     `;
 
-    // اضافه کردن dropdown به DOM
-    input.parentNode.style.position = 'relative';
+    // input.parentNode.style.position = 'relative';
     input.parentNode.appendChild(dropdownContainer);
 
-    // تنظیم event listeners
     let isDropdownVisible = false;
 
     input.addEventListener('input', function() {
@@ -54,7 +49,6 @@ export function createCSSClassDropdown(input, cssClasses) {
     });
 
     input.addEventListener('blur', function() {
-        // تاخیر برای اجازه دادن به کلیک روی dropdown
         setTimeout(() => {
             if (!dropdownContainer.matches(':hover')) {
                 hideDropdown();
@@ -86,18 +80,20 @@ export function createCSSClassDropdown(input, cssClasses) {
             });
 
             item.addEventListener('click', function() {
+                const className = this.textContent.trim();
                 input.value = className;
+                const comp = editor.getSelected();
+                if (comp) {
+                comp.addClass(className);
+                }
+
+                input.value = '';
+
                 hideDropdown();
                 input.focus();
             });
-
             dropdownContainer.appendChild(item);
         });
-
-        // تنظیم موقعیت dropdown
-        const rect = input.getBoundingClientRect();
-        dropdownContainer.style.top = `${rect.bottom + 5}px`;
-        dropdownContainer.style.left = `${rect.left}px`;
     }
 
     function hideDropdown() {
@@ -105,7 +101,6 @@ export function createCSSClassDropdown(input, cssClasses) {
         isDropdownVisible = false;
     }
 
-    // بستن dropdown با کلیک خارج از آن
     document.addEventListener('click', function(e) {
         if (!input.contains(e.target) && !dropdownContainer.contains(e.target)) {
             hideDropdown();

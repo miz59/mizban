@@ -68,7 +68,6 @@ function updateEditorWithFormat(mainEditor) {
     const formattedHtml = formatHtmlCode(htmlCode);
     const formattedCss = formatCssCode(cssCode);
     
-    // ذخیره موقعیت cursor قبل از آپدیت
     let htmlPosition = null;
     let cssPosition = null;
     

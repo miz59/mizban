@@ -1,4 +1,8 @@
+
+
 export function makeWrapperResizable(wrapper) {
+    const minusBtn = document.getElementById('monacoMinusBtn');
+
     if (!wrapper) return;
 
     const cs = getComputedStyle(wrapper);
@@ -32,6 +36,7 @@ export function makeWrapperResizable(wrapper) {
     const pxWidth = (initW / 100) * window.innerWidth;
     const pxHeight = (initH / 100) * window.innerHeight - 62;
     const content = wrapper.querySelector('.monaco-content');
+
     if (content) {
         content.style.width = pxWidth + 'px';
         content.style.height = pxHeight + 'px';
@@ -144,6 +149,8 @@ export function makeWrapperResizable(wrapper) {
             content.style.height = pxHeightMove + 'px';
         }
     };
+
+
 
     const onMouseUp = () => {
         if (!isResizing) return;

@@ -24,10 +24,14 @@ export function setupDraggableModal(modal) {
     header.innerHTML = `
       <div class="d-flex align-items-center gap-1">
         <span class="on-primary-color font-weight-bold font-primary">Code Editor</span>
-        <i id="cleanCode" class="fa-solid fa-align-left on-primary-color cursor-pointer p-1 radius-all-small" title="Clean Code"></i>
+        <i id="cleanCode" class="fa-solid fa-align-left on-primary-color cursor-pointer p-1" title="Clean Code"></i>
+        <i id="htmlCode" class="fa-brands fa-html5 on-primary-color cursor-pointer p-1" title="Html"></i>
+        <i id="cssCode" class="fa-brands fa-css3 on-primary-color cursor-pointer p-1" title="Css"></i>
       </div>
       <div class="monaco-close-btn">
-        <i id="monacoCloseBtn" class="fa-solid fa-close on-primary-color txt-subtitle"></i>
+      <i id="monacoMinusBtn" class="fa-solid fa-minus on-primary-color txt-subtitle" title="minus"></i>
+      <i id="monacoScreenBtn" class="fa-solid fa-expand on-primary-color txt-subtitle" title="full screen"></i>
+      <i id="monacoCloseBtn" class="fa-solid fa-close on-primary-color txt-subtitle" title="close"></i>
     `;
 
     const content = document.createElement('div');
@@ -39,7 +43,7 @@ export function setupDraggableModal(modal) {
     document.body.appendChild(wrapper);
 
     setupDragging(header, wrapper);
-    setupCloseButton(wrapper);
+    setupMonacoWindowControls(wrapper);
 
     return { wrapper, content };
   }
@@ -115,9 +119,84 @@ function setupDragging(header, wrapper) {
   });
 }
 
-// ===== CLOSE BUTTON SETUP =====
-function setupCloseButton(wrapper) {
-  document.getElementById('monacoCloseBtn').addEventListener('click', () => {
+function setupMonacoWindowControls(wrapper) {
+  const content = wrapper.querySelector('.monaco-content');
+  const minusBtn = document.getElementById('monacoMinusBtn');
+  const screenBtn = document.getElementById('monacoScreenBtn');
+  const closeBtn = document.getElementById('monacoCloseBtn');
+
+  let isMinimized = false;
+  let isFullScreen = false;
+  let prevStyles = {};
+  let prevContentStyles = {};
+
+  const savePrevStyles = () => {
+    prevStyles = {
+      width: wrapper.style.width,
+      height: wrapper.style.height,
+      top: wrapper.style.top,
+      left: wrapper.style.left,
+      position: wrapper.style.position,
+    };
+    prevContentStyles = {
+      width: content.offsetWidth + 'px',
+      height: content.offsetHeight + 'px',
+      maxWidth: content.style.maxWidth,
+      maxHeight: content.style.maxHeight,
+    };
+  };
+
+  const restorePrevStyles = () => {
+    wrapper.style.width = prevStyles.width || '';
+    wrapper.style.height = prevStyles.height || '';
+    wrapper.style.top = prevStyles.top || '';
+    wrapper.style.left = prevStyles.left || '';
+    wrapper.style.position = prevStyles.position || '';
+
+    content.style.width = prevContentStyles.width || '';
+    content.style.height = prevContentStyles.height || '';
+    content.style.maxWidth = prevContentStyles.maxWidth || '';
+    content.style.maxHeight = prevContentStyles.maxHeight || '';
+  };
+
+  closeBtn?.addEventListener('click', () => {
     wrapper.remove();
   });
+
+  minusBtn?.addEventListener('click', () => {
+    const style = document.createElement('style');
+    style.textContent = `
+    .minimized {
+      height: 62px !important;
+    }
+    `;
+    document.head.appendChild(style);
+    wrapper.classList.toggle('minimized');
+    content.classList.toggle('d-none');
+  });
+
+  screenBtn?.addEventListener('click', () => {
+    if (!isFullScreen) {
+      savePrevStyles();
+      wrapper.style.position = 'fixed';
+      wrapper.style.top = '0';
+      wrapper.style.left = '0';
+      wrapper.style.maxWidth = '100vw';
+      wrapper.style.maxHeight = '100vh';
+      wrapper.style.width = '100vw';
+      wrapper.style.height = '100vh';
+      wrapper.style.maxWidth = '100vw';
+
+      content.style.maxWidth = '100vw';
+      content.style.maxHeight = '100vh';
+      content.style.width = '100vw';
+      content.style.height = '100vh';
+      isFullScreen = true;
+    } else {
+      restorePrevStyles();
+      isFullScreen = false;
+    }
+  });
 }
+
+window.monacoState = { minimized: false };

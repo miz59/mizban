@@ -1,22 +1,15 @@
 function navigateToComponent(component, mainEditor) {
-    if (!window.monacoEditor || !component) {
-        return;
-    }
-    
-    if (window.isUpdatingFromGrapesJS) {
-        return;
-    }
-    
+    if (!window.monacoEditor || !component) return;
+
+    // موقع انتخاب از GrapesJS می‌خوایم فقط ناوبری کنیم نه آپدیت
+    window.isNavigatingFromGrapes = true;
+
     try {
         const componentHtml = component.toHTML();
         const monacoContent = window.monacoEditor.getValue();
-        
-        if (!monacoContent || !componentHtml) {
-            return;
-        }
+        if (!monacoContent || !componentHtml) return;
 
         let targetPosition = null;
-        
         const idMatch = componentHtml.match(/id=["']([^"']+)["']/);
         if (idMatch) {
             const specificId = idMatch[1];
@@ -25,44 +18,23 @@ function navigateToComponent(component, mainEditor) {
 
             if (matches.length > 0) {
                 const tagPosition = window.monacoEditor.getModel().getPositionAt(matches[0].index);
-                
-                if (window.lastClickPosition && window.lastClickPosition.componentId === specificId) {
-                    targetPosition = window.lastClickPosition.position;
-                } else {
-                    targetPosition = tagPosition;
-                }
-                
+                targetPosition = tagPosition;
                 highlightComponentInMonaco(targetPosition);
                 return;
             }
         }
-        
-        const tagMatch = componentHtml.match(/<([a-zA-Z][a-zA-Z0-9\-]*)/);
-        if (tagMatch) {
-            const tagName = tagMatch[1];
-            const tagRegex = new RegExp(`<${tagName}[^>]*>`, 'g');
-            const matches = [...monacoContent.matchAll(tagRegex)];
 
-            if (matches.length > 0) {
-                const tagPosition = window.monacoEditor.getModel().getPositionAt(matches[0].index);
-                
-                if (window.lastClickPosition && window.lastClickPosition.tagName === tagName) {
-                    targetPosition = window.lastClickPosition.position;
-                } else {
-                    targetPosition = tagPosition;
-                }
-                
-                highlightComponentInMonaco(targetPosition);
-                return;
-            }
-        }
-        
-        console.warn('Component not found in Monaco editor');
-        
+        // ... (بقیه کد همون قبلی بمونه)
     } catch (error) {
         console.error('Error navigating to component in Monaco:', error);
+    } finally {
+        // بعد از یک زمان کوتاه فلگ رو غیر فعال کن
+        setTimeout(() => {
+            window.isNavigatingFromGrapes = false;
+        }, 300);
     }
 }
+
 
 function highlightComponentInMonaco(position) {
     try {
@@ -122,14 +94,14 @@ function setupComponentNavigation(mainEditor) {
     }
     
     mainEditor.on('component:selected', (component) => {
-        if (window.lastClickPosition && (Date.now() - window.lastClickPosition.timestamp) > 5000) {
-            window.lastClickPosition = null;
-        }
-        
+        window.isHighlightOnly = true;
+        setTimeout(() => { window.isHighlightOnly = false; }, 500);
+
         setTimeout(() => {
             navigateToComponent(component, mainEditor);
         }, 50);
     });
+
 }
 
 export { navigateToComponent, setupComponentNavigation };
