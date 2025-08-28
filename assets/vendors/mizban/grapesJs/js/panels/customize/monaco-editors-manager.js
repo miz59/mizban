@@ -262,32 +262,129 @@ function setupGrapesJSToMonacoSync(mainEditor) {
     }, timeUpdate);
   });
 
+// function observeGrapesJS(mainEditor) {
+//   const frame = document.querySelector('iframe.gjs-frame');
+//   if (!frame) return;
+
+//   const frameDoc = frame.contentDocument || frame.contentWindow.document;
+//   const observer = new MutationObserver((mutations) => {
+//     if (isMonacoTyping) return;
+
+//     let shouldUpdate = false;
+
+//     for (const mutation of mutations) {
+//       if (mutation.type === 'childList' || mutation.type === 'characterData') {
+//         shouldUpdate = true;
+//         break;
+//       }
+
+//       if (mutation.type === 'attributes') {
+//         const name = mutation.attributeName;
+//         // if (!name.startsWith('data-gjs') && !mutation.target.classList.contains('gjs-')) {
+//         //   shouldUpdate = true;
+//         //   break;
+//         // }
+//         // if (mutation.type === 'attributes') {
+//         //   const name = mutation.attributeName;
+//         //   if (name === 'class') {
+//         //     const classes = mutation.target.classList;
+//         //     if ([...classes].every(cls => cls.startsWith('gjs-'))) {
+//         //       continue;
+//         //     }
+//         //   }
+//         //   if (!name.startsWith('data-gjs') && !mutation.target.classList.contains('gjs-')) {
+//         //     shouldUpdate = true;
+//         //     break;
+//         //   }
+//         // }
+//         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+//           const classes = [...mutation.target.classList];
+          
+//           if (classes.some(cls => cls.startsWith('gjs-'))) {
+//             console.log("a");
+//             continue;
+//           }
+//           console.log("b");
+
+//           shouldUpdate = true;
+//           break;
+//         }
+//       }
+//     }
+
+//     if (shouldUpdate) {
+//       clearTimeout(grapesToMonacoTimer);
+//       grapesToMonacoTimer = setTimeout(() => {
+//         updateMonacoFromGrapesJS(mainEditor);
+//       }, timeUpdate);
+//     }
+//   });
+
+//   observer.observe(frameDoc.body, {
+//     childList: true,
+//     subtree: true,
+//     characterData: true,
+//     attributes: true,
+//     attributeFilter: ['class', 'id', 'src', 'href'],
+//   });
+// }
+
+let isHovering = false;
+
 function observeGrapesJS(mainEditor) {
   const frame = document.querySelector('iframe.gjs-frame');
   if (!frame) return;
 
   const frameDoc = frame.contentDocument || frame.contentWindow.document;
+
   const observer = new MutationObserver((mutations) => {
-    if (isMonacoTyping) return;
+    if (isMonacoTyping || isHovering) return;
 
     let shouldUpdate = false;
 
     for (const mutation of mutations) {
-      if (mutation.type === 'childList' || mutation.type === 'characterData') {
+      // ---------- بررسی تغییرات کلاس ----------
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        const newClasses = [...mutation.target.classList];
+        const oldClasses = mutation.oldValue ? mutation.oldValue.split(/\s+/) : [];
+
+        const changedClasses = [
+          ...newClasses.filter(c => !oldClasses.includes(c)),
+          ...oldClasses.filter(c => !newClasses.includes(c))
+        ];
+
+        // فقط تغییرات کلاس gjs-* نادیده گرفته شود
+        if (changedClasses.every(cls => cls.startsWith('gjs-'))) continue;
+
         shouldUpdate = true;
         break;
       }
 
-      if (mutation.type === 'attributes') {
+      // ---------- بررسی تغییرات سایر attributes ----------
+      if (mutation.type === 'attributes' && mutation.attributeName !== 'class') {
         const name = mutation.attributeName;
-        if (!name.startsWith('data-gjs') && !mutation.target.classList.contains('gjs-')) {
-          shouldUpdate = true;
-          break;
-        }
+        if (name.startsWith('data-gjs')) continue; // فقط attribute های gjs نادیده گرفته شوند
+
+        shouldUpdate = true;
+        break;
+      }
+
+      // ---------- تغییرات متن و content ----------
+      if (mutation.type === 'characterData') {
+        // هیچگاه نادیده گرفته نشود
+        shouldUpdate = true;
+        break;
+      }
+
+      // ---------- اضافه/حذف node ----------
+      if (mutation.type === 'childList') {
+        shouldUpdate = true; // همه تغییرات لحاظ شوند
+        break;
       }
     }
 
     if (shouldUpdate) {
+      console.log('asdf');
       clearTimeout(grapesToMonacoTimer);
       grapesToMonacoTimer = setTimeout(() => {
         updateMonacoFromGrapesJS(mainEditor);
@@ -300,9 +397,21 @@ function observeGrapesJS(mainEditor) {
     subtree: true,
     characterData: true,
     attributes: true,
-    attributeFilter: ['class', 'id', 'src', 'href'],
+    attributeOldValue: true,
+    attributeFilter: undefined,
   });
+
+  frameDoc.body.addEventListener('mouseenter', () => {
+    isHovering = true;
+  }, true);
+
+  frameDoc.body.addEventListener('mouseleave', () => {
+    isHovering = false;
+  }, true);
 }
+
+
+
 
 observeGrapesJS(mainEditor);
 
@@ -329,7 +438,7 @@ export function initializeMonacoEditors(mainEditor, editorContainer) {
   setupMonacoRequire();
   setupCleanCodeButton();
   setupMonacoCodeToggles();
-  setupIframeEvents();
+  // setupIframeEvents();
   setupAdvancedMonacoFeatures();
 
   
@@ -560,14 +669,6 @@ function setupAdvancedMonacoFeatures() {
     }
     
     console.log('❌ Advanced features disabled');
-  };
-  window.showMonacoFeaturesStatus = function () {
-    console.log('🎯 Monaco Status:');
-    console.log('HTML Editor:', !!window.monacoEditor);
-    console.log('CSS Editor:', !!window.cssMonacoContainer);
-    console.log('Monaco Object:', !!window.monaco);
-    console.log('Languages Support:', !!window.monaco?.languages);
-    console.log('✅ Advanced features enabled');
   };
 
   window.disableAdvancedMonacoFeatures = function () {
@@ -1151,38 +1252,38 @@ function formatEditors() {
   formatWithRetry();
 }
 
-export function setupIframeEvents() {
-  const iframe = document.querySelector('.gjs-frame');
-  if (!iframe) return;
+// export function setupIframeEvents() {
+//   const iframe = document.querySelector('.gjs-frame');
+//   if (!iframe) return;
 
-  iframe.addEventListener('load', setupIframeContentEvents);
+//   iframe.addEventListener('load', setupIframeContentEvents);
   
-  if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
-    setupIframeContentEvents();
-  }
-}
+//   if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
+//     setupIframeContentEvents();
+//   }
+// }
 
-function setupIframeContentEvents() {
-  const iframeDocument = getIframeContent();
-  if (!iframeDocument) return;
+// function setupIframeContentEvents() {
+//   const iframeDocument = getIframeContent();
+//   if (!iframeDocument) return;
 
-  try {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'childList' || mutation.type === 'attributes') {
-        }
-      });
-    });
+//   try {
+//     const observer = new MutationObserver((mutations) => {
+//       mutations.forEach((mutation) => {
+//         if (mutation.type === 'childList' || mutation.type === 'attributes') {
+//         }
+//       });
+//     });
 
-    observer.observe(iframeDocument.body, {
-      childList: true,
-      subtree: true,
-      attributes: true
-    });
-  } catch (error) {
-    console.warn('Error setting up iframe events:', error);
-  }
-}
+//     observer.observe(iframeDocument.body, {
+//       childList: true,
+//       subtree: true,
+//       attributes: true
+//     });
+//   } catch (error) {
+//     console.warn('Error setting up iframe events:', error);
+//   }
+// }
 
 export function getIframeContent() {
   const iframe = document.querySelector('.gjs-frame');

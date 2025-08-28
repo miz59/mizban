@@ -58,18 +58,15 @@ class cleanConfirmation {
             setTimeout(() => {
                 if (window.monacoEditor) {
                     window.monacoEditor.setValue('<div>Hello World</div>');
-                    console.log('✅ Monaco HTML editor cleared');
                 }
                 if (window.cssMonacoContainer) {
                     window.cssMonacoContainer.setValue('');
-                    console.log('✅ Monaco CSS editor cleared');
                 }
 
                 if (window.mainEditor) {
                     window.mainEditor.setComponents('<div>Hello World</div>');
                     window.mainEditor.setStyle('');
                     window.mainEditor.store();
-                    console.log('✅ GrapesJS updated with cleared content');
                 }
             }, 100);
 

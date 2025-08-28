@@ -1,11 +1,12 @@
 import fs from 'fs';
 import path from 'path';
+import config from '../../../../miz/themes/scripts';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const directoryPath = path.join(__dirname, '../../../../miz/themes/mizoon/components');
+const directoryPath = path.join(__dirname, `../../../../miz/themes/${config.theme}/components`);
 
 let componentJson = {};
 

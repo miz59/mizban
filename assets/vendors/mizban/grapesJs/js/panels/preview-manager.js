@@ -1,3 +1,5 @@
+import { config } from "../../../../../../miz/themes/scripts.js";
+
 class PreviewManager {
     constructor(editor) {
         this.editor = editor;
@@ -159,7 +161,8 @@ function setContentPreview(doc) {
 
         // اضافه کردن mizchin.min.js
         let mizchin = iframeDoc.createElement('script');
-        mizchin.src = './assets/js/mizchin.min.js';
+        // mizchin.src = './assets/js/mizchin.min.js';
+        mizchin.src = `${config.output}`;
         mizchin.async = true;
 
         // اضافه کردن به iframe
