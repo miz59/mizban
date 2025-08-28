@@ -131,7 +131,6 @@ function setContentPreview(doc) {
         sessionStorage.setItem('tabId', newTabId);
     }
     const tabId = sessionStorage.getItem('tabId');
-    // خواندن محتوا از localStorage
     const html = localStorage.getItem('previewHtml-' + tabId) || '';
     const css = localStorage.getItem('previewCss-' + tabId) || '';
 
@@ -172,61 +171,6 @@ function setContentPreview(doc) {
         iframeDoc.body.appendChild(mizchin);
     }, 100);
 }
-
-// (function() {
-//     // بررسی اینکه صفحه preview است
-//     const params = new URLSearchParams(window.location.search);
-//     if (params.get('preview') !== 'true') return;
-
-//     // گرفتن tabId
-//     let tabId = params.get('previewId') || sessionStorage.getItem('tabId');
-//     if (!tabId) {
-//         tabId = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-//         sessionStorage.setItem('tabId', tabId);
-//     }
-
-//     go fun
-
-//     // خواندن محتوا از localStorage
-//     const html = localStorage.getItem('previewHtml-' + tabId) || '';
-//     const css = localStorage.getItem('previewCss-' + tabId) || '';
-
-//     // ساخت iframe
-//     const iframe = document.createElement('iframe');
-//     iframe.id = 'preview-canvas';
-//     iframe.style.width = '100vw';
-//     iframe.style.height = '100vh';
-//     iframe.style.border = 'none';
-//     document.body.innerHTML = '';
-//     document.body.appendChild(iframe);
-
-//     const iframeDoc = iframe.contentWindow.document;
-//     iframeDoc.open();
-//     iframeDoc.write(`<!DOCTYPE html><html><head></head><body></body></html>`);
-//     iframeDoc.close();
-
-//     setTimeout(() => {
-//         // اضافه کردن miz.min.css
-//         let mizCss = iframeDoc.createElement('link');
-//         mizCss.href = './assets/css/miz.min.css';
-//         mizCss.rel = 'stylesheet';
-
-//         // اضافه کردن style آخرین CSS
-//         let stylePreview = iframeDoc.createElement('style');
-//         stylePreview.innerHTML = css;
-
-//         // اضافه کردن mizchin.min.js
-//         let mizchin = iframeDoc.createElement('script');
-//         mizchin.src = './assets/js/mizchin.min.js';
-//         mizchin.async = true;
-
-//         // اضافه کردن به iframe
-//         iframeDoc.head.appendChild(mizCss);
-//         iframeDoc.head.appendChild(stylePreview);
-//         iframeDoc.body.innerHTML = html;
-//         iframeDoc.body.appendChild(mizchin);
-//     }, 100);
-// })();
 
 function setupPreviewManager(editor) {
     const previewManager = new PreviewManager(editor);

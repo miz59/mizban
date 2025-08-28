@@ -1,98 +1,89 @@
 import fs from 'fs';
 import path from 'path';
-import config from '../../../../miz/themes/scripts';
+import { config } from '../../../../miz/themes/scripts.js';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// مسیر پوشه components
 const directoryPath = path.join(__dirname, `../../../../miz/themes/${config.theme}/components`);
 
 let componentJson = {};
 
-// Function to recursively find all HTML files
+// پیدا کردن تمام فایل‌های HTML به صورت بازگشتی
 function findHtmlFiles(dir) {
   let htmlFiles = [];
-  
   try {
     const items = fs.readdirSync(dir);
-    
     items.forEach(item => {
       const itemPath = path.join(dir, item);
       const stat = fs.statSync(itemPath);
-      
+
       if (stat.isDirectory()) {
-        // Recursively search subdirectories
         htmlFiles = htmlFiles.concat(findHtmlFiles(itemPath));
       } else if (item.endsWith('.html')) {
-        // Add HTML files with their relative path
         htmlFiles.push(itemPath);
       }
     });
   } catch (error) {
     console.error(`❌ Error reading directory ${dir}:`, error);
   }
-  
   return htmlFiles;
 }
 
-// Process all HTML files
+// پردازش تمام فایل‌های HTML
 async function processHtmlFiles() {
   console.log('🔍 Scanning for HTML files in components directory...');
-  
   const htmlFiles = findHtmlFiles(directoryPath);
   console.log(`📁 Found ${htmlFiles.length} HTML files to process`);
-  
+
   for (const filePath of htmlFiles) {
     try {
-      const relativePath = path.relative(directoryPath, filePath);
-      const formattedName = formatFileName(relativePath);
-      
-      console.log(`📝 Processing: ${relativePath}`);
-      
       const data = await fs.promises.readFile(filePath, 'utf8');
       const bodyContent = extractBodyContent(data);
       const iconContent = extractIconContent(data);
 
-      componentJson[formattedName] = { 
-        code: bodyContent,
-        icon: iconContent 
-      };
-      
-      console.log(`✅ Processed: ${formattedName}`);
+      addToJsonByFolders(filePath, { code: bodyContent, icon: iconContent });
+
+      console.log(`✅ Processed: ${filePath}`);
     } catch (error) {
       console.error(`❌ Error processing file ${filePath}:`, error);
     }
   }
-  
+
   console.log(`🎉 All files processed! Total components: ${Object.keys(componentJson).length}`);
   saveAsJSFile(componentJson);
 }
 
-// Start processing
-processHtmlFiles().catch(err => console.error('❌ Error in main process: ', err));
+function addToJsonByFolders(filePath, content) {
+    const relativePath = path.relative(directoryPath, filePath);
+    const parts = relativePath.split(path.sep); // مسیر به آرایه
 
-function formatFileName(filePath) {
-  // Remove the .html extension
-  const nameWithoutExtension = filePath.replace(/\.[^/.]+$/, "");
-  
-  // Split by path separator and get the last part (filename)
-  const pathParts = nameWithoutExtension.split(path.sep);
-  const fileName = pathParts[pathParts.length - 1];
-  
-  // Format the filename
-  const withSpaces = fileName.replace(/-/g, ' ');
-  const formatted = withSpaces.replace(/([a-z])([A-Z])/g, '$1 $2');
-  
-  // If there are parent directories, include them in the name
-  if (pathParts.length > 1) {
-    const parentDir = pathParts[pathParts.length - 2];
-    return `${parentDir} ${formatted}`;
-  }
-  
-  return formatted;
+    let componentName = parts[parts.length - 2] || parts[0]; // پوشه آخر قبل از فایل
+    let category;
+
+    if (parts.length === 1) {
+        // فایل مستقیم در components
+        category = 'components';
+    } else if (parts.length === 2) {
+        // فایل در پوشه سطح اول
+        category = 'components';
+    } else {
+        // فایل در زیرپوشه
+        category = parts[parts.length - 3]; // parent مستقیم پوشه component
+    }
+
+    if (!componentJson[componentName]) componentJson[componentName] = [];
+
+    componentJson[componentName].push({
+        code: content.code,
+        icon: content.icon,
+        category
+    });
 }
 
+// استخراج محتوا از تگ <body>
 function extractBodyContent(html) {
   const bodyRegex = /<body[^>]*>([\s\S]*?)<\/body>/i;
   const match = html.match(bodyRegex);
@@ -103,22 +94,28 @@ function extractBodyContent(html) {
   return ''; 
 }
 
+// حذف div مخصوص آیکون از محتوا
 function removeIconDiv(content) {
   const iconDivRegex = /<div class="miz-block-icon">[\s\S]*?<\/div>/i;
   return content.replace(iconDivRegex, '').trim();
 }
 
+// استخراج محتوا برای آیکون
 function extractIconContent(html) {
   const iconRegex = /<div class="miz-block-icon">([\s\S]*?)<\/div>/i;
   const match = html.match(iconRegex);
   return match && match[1] ? match[1].trim() : ''; 
 }
 
+// ذخیره JSON به صورت فایل JS
 function saveAsJSFile(jsonData) {
-  const jsContent = `const componentJson = ${JSON.stringify(jsonData, null, 2)}; \n export default componentJson;`;
+  const jsContent = `const componentJson = ${JSON.stringify(jsonData, null, 4)}; \n export default componentJson;`;
   const jsFilePath = path.join(__dirname, 'componentJson.js');
 
   fs.promises.writeFile(jsFilePath, jsContent, 'utf8')
     .then(() => console.log(`💾 File saved as componentJson.js`))
     .catch(err => console.error('❌ Error writing to file: ', err));
 }
+
+// اجرای پردازش
+processHtmlFiles().catch(err => console.error('❌ Error in main process: ', err));

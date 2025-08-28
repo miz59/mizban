@@ -2,4 +2,4 @@ export const breakPoints = { "xxl": "1920px", "xl": "1280px", "lg": "1024px", "m
 export const confCols = { 
     count: 12,
     responsive: true
-};
+ };

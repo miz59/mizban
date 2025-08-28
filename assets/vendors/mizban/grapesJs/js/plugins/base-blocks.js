@@ -193,18 +193,67 @@ function base_blocks(editor) {
     })
 
 
-    Object.keys(componentJson).forEach(key => {
-        const componentCode = componentJson[key].code;
-        const componentName = key.replace('.html', '');    
-        try {
-            editor.Blocks.add(key, {
-                label: `${componentJson[key].icon}<span>${componentName}</span>`,
-                attributes: {class: "flex"},
-                category: category.components,
-                content: componentCode
-            });
-        } catch (error) {}
-    });
+    // Object.keys(componentJson).forEach(key => {
+    //     const componentCode = componentJson[key].code;
+    //     const componentName = key.replace('.html', '');    
+    //     try {
+    //         editor.Blocks.add(key, {
+    //             label: `${componentJson[key].icon}<span>${componentName}</span>`,
+    //             attributes: {class: "flex"},
+    //             category: category.components,
+    //             content: componentCode
+    //         });
+    //     } catch (error) {}
+    // });
+
+
+    // helperها
+const titleize = s =>
+  s.replace(/[-_]+/g, ' ')
+   .replace(/\s+/g, ' ')
+   .trim()
+   .replace(/\b\w/g, c => c.toUpperCase());
+
+const slugify = s =>
+  s.toLowerCase()
+   .trim()
+   .replace(/\s+/g, '-')
+   .replace(/[^a-z0-9-_]/g, '');
+
+// 1) ساخت نقشه‌ی دسته‌ها فقط از روی JSON
+const categoriesMap = {};
+Object.entries(componentJson).forEach(([key, entries]) => {
+  // چون componentJson[key] آرایه است
+  entries.forEach(entry => {
+    const cat = entry.category?.trim();
+    if (!cat) return; // اگه دسته نداشت، ازش رد شو (یا می‌تونی لاگ بگیری)
+    if (!categoriesMap[cat]) {
+      categoriesMap[cat] = {
+        id: `${slugify(cat)}_category`,
+        label: titleize(cat),
+        open: true, // خواستی false کن
+      };
+    }
+  });
+});
+
+// 2) افزودن بلاک‌ها بر اساس دسته‌ی واقعی از JSON
+Object.entries(componentJson).forEach(([key, entries]) => {
+  entries.forEach((entry, idx) => {
+    const blockId = idx ? `${key}-${idx}` : key; // یکتا بودن id بلاک
+    try {
+      editor.Blocks.add(blockId, {
+        label: `${entry.icon || ''}<span>${titleize(key)}</span>`,
+        attributes: { class: 'flex' },
+        category: categoriesMap[entry.category], // فقط از JSON
+        content: entry.code || '',
+      });
+    } catch (error) {
+      console.error(`❌ Error adding block ${blockId}:`, error);
+    }
+  });
+});
+
 
     editor.Blocks.add(`h1`, {
         label: `<i class="fa-solid fa-heading">H</i><span>heading 1</span>`,
