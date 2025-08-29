@@ -6,116 +6,103 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// مسیر پوشه components
-const directoryPath = path.join(__dirname, `../../../../miz/themes/${config.theme}/components`);
-
+const componentsDir = path.join(__dirname, `../../../../miz/themes/${config.theme}/components`);
 let componentJson = {};
-
-// پیدا کردن تمام فایل‌های HTML به صورت بازگشتی
-function findHtmlFiles(dir) {
-  let htmlFiles = [];
-  try {
-    const items = fs.readdirSync(dir);
-    items.forEach(item => {
-      const itemPath = path.join(dir, item);
-      const stat = fs.statSync(itemPath);
-
-      if (stat.isDirectory()) {
-        htmlFiles = htmlFiles.concat(findHtmlFiles(itemPath));
-      } else if (item.endsWith('.html')) {
-        htmlFiles.push(itemPath);
-      }
-    });
-  } catch (error) {
-    console.error(`❌ Error reading directory ${dir}:`, error);
-  }
-  return htmlFiles;
-}
-
-// پردازش تمام فایل‌های HTML
-async function processHtmlFiles() {
-  console.log('🔍 Scanning for HTML files in components directory...');
-  const htmlFiles = findHtmlFiles(directoryPath);
-  console.log(`📁 Found ${htmlFiles.length} HTML files to process`);
-
-  for (const filePath of htmlFiles) {
-    try {
-      const data = await fs.promises.readFile(filePath, 'utf8');
-      const bodyContent = extractBodyContent(data);
-      const iconContent = extractIconContent(data);
-
-      addToJsonByFolders(filePath, { code: bodyContent, icon: iconContent });
-
-      console.log(`✅ Processed: ${filePath}`);
-    } catch (error) {
-      console.error(`❌ Error processing file ${filePath}:`, error);
-    }
-  }
-
-  console.log(`🎉 All files processed! Total components: ${Object.keys(componentJson).length}`);
-  saveAsJSFile(componentJson);
-}
-
-function addToJsonByFolders(filePath, content) {
-    const relativePath = path.relative(directoryPath, filePath);
-    const parts = relativePath.split(path.sep); // مسیر به آرایه
-
-    let componentName = parts[parts.length - 2] || parts[0]; // پوشه آخر قبل از فایل
-    let category;
-
-    if (parts.length === 1) {
-        // فایل مستقیم در components
-        category = 'components';
-    } else if (parts.length === 2) {
-        // فایل در پوشه سطح اول
-        category = 'components';
-    } else {
-        // فایل در زیرپوشه
-        category = parts[parts.length - 3]; // parent مستقیم پوشه component
-    }
-
-    if (!componentJson[componentName]) componentJson[componentName] = [];
-
-    componentJson[componentName].push({
-        code: content.code,
-        icon: content.icon,
-        category
-    });
-}
 
 // استخراج محتوا از تگ <body>
 function extractBodyContent(html) {
-  const bodyRegex = /<body[^>]*>([\s\S]*?)<\/body>/i;
-  const match = html.match(bodyRegex);
-  if (match && match[1]) {
-    const bodyContent = match[1].trim();
-    return removeIconDiv(bodyContent);
-  }
-  return ''; 
+    const bodyRegex = /<body[^>]*>([\s\S]*?)<\/body>/i;
+    const match = html.match(bodyRegex);
+    if (match && match[1]) {
+        return removeIconDiv(match[1].trim());
+    }
+    return '';
 }
 
-// حذف div مخصوص آیکون از محتوا
+// حذف div مخصوص آیکون
 function removeIconDiv(content) {
-  const iconDivRegex = /<div class="miz-block-icon">[\s\S]*?<\/div>/i;
-  return content.replace(iconDivRegex, '').trim();
+    return content.replace(/<div class="miz-block-icon">[\s\S]*?<\/div>/i, '').trim();
 }
 
 // استخراج محتوا برای آیکون
 function extractIconContent(html) {
-  const iconRegex = /<div class="miz-block-icon">([\s\S]*?)<\/div>/i;
-  const match = html.match(iconRegex);
-  return match && match[1] ? match[1].trim() : ''; 
+    const iconRegex = /<div class="miz-block-icon">([\s\S]*?)<\/div>/i;
+    const match = html.match(iconRegex);
+    return match && match[1] ? match[1].trim() : '';
 }
 
-// ذخیره JSON به صورت فایل JS
+// پردازش پوشه‌ها و فایل‌ها
+function processComponentsDir() {
+    const firstLevelItems = fs.readdirSync(componentsDir, { withFileTypes: true });
+
+    firstLevelItems.forEach(item => {
+        const itemPath = path.join(componentsDir, item.name);
+
+        if (item.isDirectory()) {
+            const subItems = fs.readdirSync(itemPath, { withFileTypes: true });
+
+            const folders = subItems.filter(sub => sub.isDirectory());
+            const files = subItems.filter(sub => sub.isFile() && sub.name.endsWith('.html'));
+
+            if (folders.length > 0) {
+                // اولویت با پوشه → فقط پوشه‌ها را اضافه می‌کنیم
+                folders.forEach(subFolder => {
+                    const subFolderPath = path.join(itemPath, subFolder.name);
+
+                    // فایل‌های مستقیم داخل این پوشه سطح دوم
+                    const subFiles = fs.readdirSync(subFolderPath, { withFileTypes: true })
+                        .filter(f => f.isFile() && f.name.endsWith('.html'));
+
+                    if (subFiles.length > 0) {
+                        const firstFile = subFiles[0]; // اگر چند فایل هست فقط اولین فایل را اضافه می‌کنیم
+                        const filePath = path.join(subFolderPath, firstFile.name);
+
+                        const htmlContent = fs.readFileSync(filePath, 'utf8');
+                        componentJson[subFolder.name] = [{
+                            code: extractBodyContent(htmlContent),
+                            icon: extractIconContent(htmlContent),
+                            category: item.name
+                        }];
+                    }
+                    // اگر پوشه سطح دوم هیچ فایل HTML نداشته باشد → نادیده گرفته می‌شود
+                });
+            } else if (files.length > 0) {
+                // فقط فایل‌ها → category = "components"
+                files.forEach(f => {
+                    const filePath = path.join(itemPath, f.name);
+                    const htmlContent = fs.readFileSync(filePath, 'utf8');
+                    componentJson[item.name] = [{
+                        code: extractBodyContent(htmlContent),
+                        icon: extractIconContent(htmlContent),
+                        category: 'components'
+                    }];
+                });
+            }
+        } else if (item.isFile() && item.name.endsWith('.html')) {
+            // فایل مستقیم در components
+            const filePath = itemPath;
+            const nameWithoutExt = path.basename(item.name, '.html');
+
+            const htmlContent = fs.readFileSync(filePath, 'utf8');
+            componentJson[nameWithoutExt] = [{
+                code: extractBodyContent(htmlContent),
+                icon: extractIconContent(htmlContent),
+                category: 'components'
+            }];
+        }
+    });
+
+    saveAsJSFile(componentJson);
+}
+
+// ذخیره به فایل JS
 function saveAsJSFile(jsonData) {
-  const jsContent = `const componentJson = ${JSON.stringify(jsonData, null, 4)}; \n export default componentJson;`;
-  const jsFilePath = path.join(__dirname, 'componentJson.js');
+    const jsContent = `const componentJson = ${JSON.stringify(jsonData, null, 4)};\nexport default componentJson;`;
+    const jsFilePath = path.join(__dirname, 'componentJson.js');
 
-  fs.promises.writeFile(jsFilePath, jsContent, 'utf8')
-    .then(() => console.log(`💾 File saved as componentJson.js`))
-    .catch(err => console.error('❌ Error writing to file: ', err));
+    fs.promises.writeFile(jsFilePath, jsContent, 'utf8')
+        .then(() => console.log('💾 componentJson.js created!'))
+        .catch(err => console.error('❌ Error writing file:', err));
 }
 
-// اجرای پردازش
-processHtmlFiles().catch(err => console.error('❌ Error in main process: ', err));
+processComponentsDir();
