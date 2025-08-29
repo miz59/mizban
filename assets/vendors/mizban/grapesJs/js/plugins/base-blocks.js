@@ -7,6 +7,7 @@ const category = {
     components: {id: "components_category", label: "Components",open: true  },
     layouts: {id: "layouts_category", label: "Layouts",open: true},
 }
+
 function base_blocks(editor) {  
     editor.Blocks.add("section", {
         label: `<i class="fa-solid fa-square"></i><span>section</span>`,
@@ -27,6 +28,7 @@ function base_blocks(editor) {
             attributes: {class: "container"},
         },
     });
+
     editor.Blocks.add("div", {
         label: `<i class="fa-solid fa-square"></i><span>div</span>`,
         attributes: {class: "block"},
@@ -36,6 +38,7 @@ function base_blocks(editor) {
             attributes: {class: "div-element"},
         },
     });
+
     editor.Blocks.add("block", {
         label: `<i class="fa-solid fa-square"></i><span>block</span>`,
         attributes: {class: "block"},
@@ -58,9 +61,7 @@ function base_blocks(editor) {
             draggable: true,
             droppable: true,
         },
-
     });
-
 
     editor.Blocks.add(`link`, {
         label: `<i class="fa fa-link"></i><span>link</span>`,
@@ -77,6 +78,7 @@ function base_blocks(editor) {
 
         },
     });
+
     editor.Blocks.add(`miz-link`, {
         label: `<i class="fa fa-link"></i><span>miz link</span>`,
         attributes: {class: `block`},
@@ -92,7 +94,6 @@ function base_blocks(editor) {
 
         },
     });
-
 
     editor.Blocks.add("image", {
         label: `<i class="fa fa-image"></i><span>image</span>`,
@@ -115,7 +116,7 @@ function base_blocks(editor) {
             attributes: {'allowfullscreen': "allowfullscreen", controls: true},
         }
 
-    })
+    });
 
     editor.Blocks.add("map", {
         label: `<i class="fa fa-map"></i><span>map</span>`,
@@ -136,7 +137,6 @@ function base_blocks(editor) {
 
         }
     });
-
 
     editor.Blocks.add(`link_block`, {
         label: `<i class="fa fa-paperclip"></i><span>link block</span>`,
@@ -192,68 +192,48 @@ function base_blocks(editor) {
         }
     })
 
+    const titleize = s =>
+    s.replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, c => c.toUpperCase());
 
-    // Object.keys(componentJson).forEach(key => {
-    //     const componentCode = componentJson[key].code;
-    //     const componentName = key.replace('.html', '');    
-    //     try {
-    //         editor.Blocks.add(key, {
-    //             label: `${componentJson[key].icon}<span>${componentName}</span>`,
-    //             attributes: {class: "flex"},
-    //             category: category.components,
-    //             content: componentCode
-    //         });
-    //     } catch (error) {}
-    // });
+    const slugify = s =>
+    s.toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-_]/g, '');
 
+    const categoriesMap = {};
+    Object.entries(componentJson).forEach(([key, entries]) => {
+        entries.forEach(entry => {
+        const cat = entry.category?.trim();
+        if (!cat) return;
+        if (!categoriesMap[cat]) {
+            categoriesMap[cat] = {
+                id: `${slugify(cat)}_category`,
+                label: titleize(cat),
+                open: false,
+            };
+        }
+        });
+    });
 
-    // helperها
-const titleize = s =>
-  s.replace(/[-_]+/g, ' ')
-   .replace(/\s+/g, ' ')
-   .trim()
-   .replace(/\b\w/g, c => c.toUpperCase());
-
-const slugify = s =>
-  s.toLowerCase()
-   .trim()
-   .replace(/\s+/g, '-')
-   .replace(/[^a-z0-9-_]/g, '');
-
-// 1) ساخت نقشه‌ی دسته‌ها فقط از روی JSON
-const categoriesMap = {};
-Object.entries(componentJson).forEach(([key, entries]) => {
-  // چون componentJson[key] آرایه است
-  entries.forEach(entry => {
-    const cat = entry.category?.trim();
-    if (!cat) return; // اگه دسته نداشت، ازش رد شو (یا می‌تونی لاگ بگیری)
-    if (!categoriesMap[cat]) {
-      categoriesMap[cat] = {
-        id: `${slugify(cat)}_category`,
-        label: titleize(cat),
-        open: true, // خواستی false کن
-      };
-    }
-  });
-});
-
-// 2) افزودن بلاک‌ها بر اساس دسته‌ی واقعی از JSON
-Object.entries(componentJson).forEach(([key, entries]) => {
-  entries.forEach((entry, idx) => {
-    const blockId = idx ? `${key}-${idx}` : key; // یکتا بودن id بلاک
-    try {
-      editor.Blocks.add(blockId, {
-        label: `${entry.icon || ''}<span>${titleize(key)}</span>`,
-        attributes: { class: 'flex' },
-        category: categoriesMap[entry.category], // فقط از JSON
-        content: entry.code || '',
-      });
-    } catch (error) {
-      console.error(`❌ Error adding block ${blockId}:`, error);
-    }
-  });
-});
-
+    Object.entries(componentJson).forEach(([key, entries]) => {
+        entries.forEach((entry, idx) => {
+        const blockId = idx ? `${key}-${idx}` : key;
+        try {
+            editor.Blocks.add(blockId, {
+                label: `${entry.icon || ''}<span>${titleize(key)}</span>`,
+                attributes: { class: 'flex' },
+                category: categoriesMap[entry.category],
+                content: entry.code || '',
+            });
+        } catch (error) {
+            console.error(`❌ Error adding block ${blockId}:`, error);
+        }
+        });
+    });
 
     editor.Blocks.add(`h1`, {
         label: `<i class="fa-solid fa-heading">H</i><span>heading 1</span>`,
@@ -271,7 +251,6 @@ Object.entries(componentJson).forEach(([key, entries]) => {
 
     });
 
-
     editor.Blocks.add(`hossein`, {
         label: `<i class="fa-solid fa-heading"></i><span>hossein</span>`,
         attributes: {class: `block`},
@@ -288,8 +267,6 @@ Object.entries(componentJson).forEach(([key, entries]) => {
 
     });
 
-
-
     editor.Blocks.add(`h2`, {
         label: `<i class="fa-solid fa-heading">H</i><span>heading 2</span>`,
         attributes: {class: `block`},
@@ -304,7 +281,6 @@ Object.entries(componentJson).forEach(([key, entries]) => {
             droppable: true,
         },
     });
-
 
     editor.Blocks.add(`h3`, {
         label: `<i class="fa-solid fa-heading">H</i><span>heading 3</span>`,
