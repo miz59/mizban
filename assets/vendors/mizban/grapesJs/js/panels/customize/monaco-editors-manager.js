@@ -4,12 +4,6 @@ import { formatHtmlCode, formatCssCode } from '../functions/monaco-clean-code.js
 import { updateEditorWithFormat } from '../functions/monaco-update-code.js';
 import { getCombinedCSSClasses, createMonacoSuggestions, createSmartHtmlSuggestions } from '../functions/css-classes.js';
 
-if (!sessionStorage.getItem('tabId')) {
-  const newTabId = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-  sessionStorage.setItem('tabId', newTabId);
-}
-const tabId = sessionStorage.getItem('tabId');
-
 const MONACO_CONFIG = {
   CDN_URL: './assets/vendors/mizban/playground',
   EDITOR_OPTIONS: {
@@ -1319,20 +1313,30 @@ export function getIframeBodyContentAsString() {
   }
 }
 
+// نام فایل بدون پسوند
+let filename = window.location.pathname.split('/').pop();
+if (!filename) filename = 'index.html';
+const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
+
+// کلید ثابت
+const storageKey = `preview_${nameWithoutExt}`;
+
 function updateLivePreview(htmlCode, cssCode) {
   try {
     const timestamp = Date.now();
-    localStorage.setItem(`previewHtml-${tabId}`, htmlCode);
-    localStorage.setItem(`previewCss-${tabId}`, cssCode);
-    localStorage.setItem(`previewTimestamp-${tabId}`, timestamp);
-    
+
+    // ذخیره در localStorage با کلید ثابت
+    localStorage.setItem(`${storageKey}_html`, htmlCode);
+    localStorage.setItem(`${storageKey}_css`, cssCode);
+
+    // ارسال به preview window اگر باز باشد
     if (window.previewManager?.previewWindow && !window.previewManager.previewWindow.closed) {
       try {
         window.previewManager.previewWindow.postMessage({
           type: 'UPDATE_PREVIEW',
           html: htmlCode,
           css: cssCode,
-          previewId: tabId,
+          previewId: storageKey, // استفاده از storageKey به جای tabId
           timestamp
         }, '*');
       } catch (error) {
@@ -1343,6 +1347,7 @@ function updateLivePreview(htmlCode, cssCode) {
     console.error('Error updating live preview:', error);
   }
 }
+
 
 // function formatEditorsAfterGrapesJSUpdate() {
 //   if (window.monacoEditor) {

@@ -4,21 +4,34 @@ function device_Manager(editor) {
     Object.keys(breakPoints).forEach(key => {
         const originalValue = breakPoints[key];
         const numericValue = parseInt(originalValue, 10);
-        const adjustedValue = (numericValue - 1) + 'px';
+
+        const canvasWidth = (numericValue - 1) + 'px';
         
         try {
             editor.Devices.add({
                 id: key,
                 name: key,
-                width: adjustedValue,
-            })
+                width: canvasWidth,
+                widthMedia: originalValue,
+            });
         } catch (error) {}
     });
-    editor.Devices.add([{
-        name: 'desktop',
-        width: '',
-    }
-    ]);
+
+    let filename = window.location.pathname.split('/').pop();
+    if (!filename) filename = 'index.html';
+    const pageId = filename.replace(/\./g, '_');
+    const storageKey = `gjs_${pageId}`;
+
+    const lastDevice = localStorage.getItem(`${storageKey}_device`) || 'Desktop';
+
+    editor.on('change:device', () => {
+        const currentDevice = editor.getDevice();
+        localStorage.setItem(`${storageKey}_device`, currentDevice);
+    });
+
+    editor.on('load', () => {
+        editor.setDevice(lastDevice);
+    });
 }
 
-export {device_Manager}
+export { device_Manager }

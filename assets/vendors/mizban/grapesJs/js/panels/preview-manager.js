@@ -5,7 +5,10 @@ class PreviewManager {
         this.editor = editor;
         this.previewWindow = null;
 
-        this.tabId = sessionStorage.getItem('tabId');
+        let filename = window.location.pathname.split('/').pop();
+        if (!filename) filename = 'index.html';
+        this.pageId = filename.replace(/\.[^/.]+$/, '');
+        this.storageKey = `preview_${this.pageId}`;
 
         this.setupPreviewCommand();
         this.setupAutoPreviewUpdate();
@@ -38,21 +41,19 @@ class PreviewManager {
     openPreview() {
         const htmlCode = this.getHtmlCode();
         const cssCode = this.getCssCode();
-        const timestamp = Date.now();
 
-        localStorage.setItem(`previewHtml-${this.tabId}`, htmlCode);
-        localStorage.setItem(`previewCss-${this.tabId}`, cssCode);
-        localStorage.setItem(`previewTimestamp-${this.tabId}`, timestamp);
+        localStorage.setItem(`${this.storageKey}_html`, htmlCode);
+        localStorage.setItem(`${this.storageKey}_css`, cssCode);
 
         let previewUrl = window.location.pathname;
         if (previewUrl === '/' || previewUrl === '') previewUrl = '/index.html';
 
         const params = new URLSearchParams(window.location.search);
         params.set('preview', 'true');
-        params.set('previewId', this.tabId);
+        params.set('previewId', this.pageId);
 
         const fullUrl = previewUrl + '?' + params.toString();
-        this.previewWindow = window.open(fullUrl, 'preview_' + this.tabId);
+        this.previewWindow = window.open(fullUrl, 'preview_' + this.pageId);
 
         if (!this.previewWindow) {
             console.error('Popup blocked by browser');
@@ -61,13 +62,11 @@ class PreviewManager {
 
         this.previewWindow.focus();
 
-
         const sendData = () => {
             const win = this.previewWindow;
             const doc = win.document;
 
             doc.body.innerHTML = "";
-
             doc.getElementById('preview-canvas')?.remove();
 
             setContentPreview(doc);
@@ -75,32 +74,27 @@ class PreviewManager {
 
         this.previewWindow.onload = sendData;
 
-
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-
+                // صفحه برگشت → می‌تونی refresh iframe انجام بدی
             } else {
                 sendData();
             }
         });
-
-
     }
 
     updatePreviewContent(htmlCode, cssCode) {
-        const timestamp = Date.now();
-        localStorage.setItem(`previewHtml-${this.tabId}`, htmlCode);
-        localStorage.setItem(`previewCss-${this.tabId}`, cssCode);
-        localStorage.setItem(`previewTimestamp-${this.tabId}`, timestamp);
+        localStorage.setItem(`${this.storageKey}_html`, htmlCode);
+        localStorage.setItem(`${this.storageKey}_css`, cssCode);
 
         if (!this.previewWindow || this.previewWindow.closed) return;
 
         this.previewWindow.postMessage({
             type: 'UPDATE_PREVIEW',
-            previewId: this.tabId,
+            previewId: this.pageId,
             html: htmlCode,
             css: cssCode,
-            timestamp
+            timestamp: Date.now()
         }, '*');
     }
 
@@ -126,15 +120,14 @@ class PreviewManager {
 }
 
 function setContentPreview(doc) {
-    if (!sessionStorage.getItem('tabId')) {
-        const newTabId = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-        sessionStorage.setItem('tabId', newTabId);
-    }
-    const tabId = sessionStorage.getItem('tabId');
-    const html = localStorage.getItem('previewHtml-' + tabId) || '';
-    const css = localStorage.getItem('previewCss-' + tabId) || '';
+    let filename = window.location.pathname.split('/').pop();
+    if (!filename) filename = 'index.html';
+    const pageId = filename.replace(/\.[^/.]+$/, '');
+    const storageKey = `preview_${pageId}`;
 
-    // ساخت iframe
+    const html = localStorage.getItem(`${storageKey}_html`) || '';
+    const css  = localStorage.getItem(`${storageKey}_css`) || '';
+
     const iframe = doc.createElement('iframe');
     iframe.id = 'preview-canvas';
     iframe.style.width = '100vw';
@@ -149,22 +142,17 @@ function setContentPreview(doc) {
     iframeDoc.close();
 
     setTimeout(() => {
-        // اضافه کردن miz.min.css
         let mizCss = iframeDoc.createElement('link');
         mizCss.href = './assets/css/miz.min.css';
         mizCss.rel = 'stylesheet';
 
-        // اضافه کردن style آخرین CSS
         let stylePreview = iframeDoc.createElement('style');
         stylePreview.innerHTML = css;
 
-        // اضافه کردن mizchin.min.js
         let mizchin = iframeDoc.createElement('script');
-        // mizchin.src = './assets/js/mizchin.min.js';
         mizchin.src = `${config.output}`;
         mizchin.async = true;
 
-        // اضافه کردن به iframe
         iframeDoc.head.appendChild(mizCss);
         iframeDoc.head.appendChild(stylePreview);
         iframeDoc.body.innerHTML = html;
