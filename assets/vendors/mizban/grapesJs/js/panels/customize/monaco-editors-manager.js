@@ -9,7 +9,7 @@ const MONACO_CONFIG = {
   EDITOR_OPTIONS: {
     theme: 'vs-dark',
     automaticLayout: true,
-    wordWrap: "on",
+    // wordWrap: "on",
     minimap: { enabled: true },
     scrollBeyondLastLine: false,
     fontSize: 14,
@@ -264,13 +264,12 @@ function setupGrapesJSToMonacoSync(mainEditor) {
   });
 
   let isHovering = false;
-
   function observeGrapesJS(mainEditor) {
     const frame = document.querySelector('iframe.gjs-frame');
     if (!frame) return;
 
     const frameDoc = frame.contentDocument || frame.contentWindow.document;
-
+    
     const observer = new MutationObserver((mutations) => {
       if (isMonacoTyping || isHovering || isSelectingFromMonaco) return;
 
@@ -298,7 +297,6 @@ function setupGrapesJSToMonacoSync(mainEditor) {
         if (mutation.type === 'attributes' && mutation.attributeName !== 'class') {
           const name = mutation.attributeName;
           if (name.startsWith('data-gjs')) continue; // فقط attribute های gjs نادیده گرفته شوند
-
           shouldUpdate = true;
           break;
         }
@@ -313,11 +311,11 @@ function setupGrapesJSToMonacoSync(mainEditor) {
         // ---------- اضافه/حذف node ----------
         if (mutation.type === 'childList') {
           shouldUpdate = true;
+
           break;
         }
       }
       if (shouldUpdate) {
-        console.log('updated', isMonacoTyping);
         clearTimeout(grapesToMonacoTimer);
         grapesToMonacoTimer = setTimeout(() => {
           updateMonacoFromGrapesJS(mainEditor);
@@ -345,6 +343,7 @@ function setupGrapesJSToMonacoSync(mainEditor) {
 
 
 
+  window.grapesJSSyncSetup = false;
 
   observeGrapesJS(mainEditor);
 
@@ -655,7 +654,7 @@ function createHtmlEditor(container, value) {
     language: 'html',
     theme: 'vs-dark',
     automaticLayout: true,
-    wordWrap: "on",
+    // wordWrap: "on",
     minimap: { enabled: true },
     scrollBeyondLastLine: false,
     fontSize: 14,
@@ -715,7 +714,7 @@ function createCssEditor(container, value) {
     language: 'css',
     theme: 'vs-dark',
     automaticLayout: true,
-    wordWrap: "on",
+    // wordWrap: "on",
     minimap: { enabled: true },
     scrollBeyondLastLine: false,
     fontSize: 14,
