@@ -25,7 +25,9 @@ class refreshCanvasManager {
 
         setTimeout(() => {
             initEditor(currentContent);
-            editor.runCommand('code-editor-with-format');
+            if (monacoWrapper) {
+                editor.runCommand('code-editor-with-format');
+            }
         }, 100);
     }
 }
