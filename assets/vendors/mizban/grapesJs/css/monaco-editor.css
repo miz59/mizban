@@ -292,19 +292,18 @@ div:has(> #htmlEditor, > #cssEditor, > #resizer){
 
 .resize-handle {
     position: absolute;
-    width: 3vw;
-    height: 3vw;
+    width: 2vw;
+    height: 2vw;
 }
 
 .resize-handle.top-left { top: 0; left: 0;transform: translate(-50% , -50%);  }
 .resize-handle.top-right { top: 0; right: 0; transform: translate(50% , -50%); }
 .resize-handle.bottom-left { bottom: 0; left: 0; transform: translate(-50% , 50%); }
 .resize-handle.bottom-right { bottom: 0; right: 0; transform: translate(50% , 50%); }
-.resize-handle.top {width: calc(100% - 3vw); top: 0; left: 50%; transform: translate(-50% , -50%); }
-.resize-handle.bottom {width: calc(100% - 3vw); bottom: 0; left: 50%; transform: translate(-50% , 50%); }
-.resize-handle.left {height: calc(100% - 3vw); left: 0; top: 50%; transform: translate(-50% , -50%); }
-.resize-handle.right {height: calc(100% - 3vw); right: 0; top: 50%; transform: translate(50% , -50%); }
-/* .resize-handle.cursor-nwse{cursor: nwse-resize;} */
+.resize-handle.top {width: calc(100% - 2vw); top: 0; left: 50%; transform: translate(-50% , -50%); }
+.resize-handle.bottom {width: calc(100% - 2vw); bottom: 0; left: 50%; transform: translate(-50% , 90%); }
+.resize-handle.left {height: calc(100% - 2vw); left: 0; top: 50%; transform: translate(-50% , -50%); }
+.resize-handle.right {height: calc(100% - 2vw); right: 0; top: 50%; transform: translate(90% , -50%); }
 .resize-handle.cursor-ne{cursor: ne-resize;}
 .resize-handle.cursor-nw{cursor: nw-resize;}
 .resize-handle.cursor-n{cursor: n-resize;}
