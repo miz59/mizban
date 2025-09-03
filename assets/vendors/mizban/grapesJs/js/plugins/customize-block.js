@@ -3,7 +3,7 @@ import { confCols } from '../../../commands/variables.js';
 const colsCount = confCols.count;
 function flexColBlock(editor) {
     editor.Blocks.add('modal-block', {
-        label: '<i class="fa-solid fa-square"></i><span>col</span>',
+        label: '<i class="fa-solid fa-grip-lines-vertical"></i><span>col</span>',
         content: '<div class="modal-block"></div>',
         category: 'layouts_category',
         activate: true,
@@ -41,14 +41,15 @@ function flexColBlock(editor) {
 
     function createCells(blockModel, num) {
         const components = {
-            type: 'div',
+            type: 'miz col',
             classes: ['d-flex', 'miz-col'],
             components: []
         };
 
         for (let i = 0; i < num; i++) {
             components.components.push({
-                type: 'div',
+                tagName:'div',
+                type: 'miz cell',
                 classes: ['cell'],
             });
         }

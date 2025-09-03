@@ -354,8 +354,8 @@ export function initializeMonacoEditors(mainEditor, editorContainer) {
   window.monacoInitialized = false;
   window.monacoEditor = null;
   window.cssMonacoContainer = null;
-  window.isNavigatingFromMonaco = true;
-  window.isNavigatingFromGrapes = false;
+  // window.isNavigatingFromMonaco = true;
+  // window.isNavigatingFromGrapes = false;
 
   const htmlContainer = editorContainer.querySelector('#htmlEditor');
   const cssContainer = editorContainer.querySelector('#cssEditor');

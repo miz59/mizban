@@ -1947,40 +1947,6 @@ span.CodeMirror-selectedtext {
     width: 25px
 }
 
-.gjs-pn-commands {
-    width: calc(100% - var(--gjs-left-width));
-    left: 0;
-    top: 0;
-    box-shadow: 0 0 5px var(--gjs-main-dark-color)
-}
-
-.gjs-pn-device_panel{
-    width: calc(7 * var(--box-device));
-    height: var(--gjs-canvas-top);
-}
-
-.gjs-pn-device_panel .gjs-pn-buttons:has(.gjs-pn-btn:empty){
-    display: none;
-}
-
-.gjs-pn-device_panel .gjs-pn-buttons:has(.btn-toggle-device){
-    overflow-x: hidden;
-    overflow-y: auto;
-    flex-direction: column;
-    transform: rotateZ(90deg) rotateX(180deg);
-    height: calc(7 * var(--box-device));
-    transform-origin: left top;
-}
-
-.gjs-pn-device_panel .gjs-pn-buttons .btn-toggle-device{
-    transform: rotateZ(90deg) rotateX(180deg);
-}
-
-.gjs-pn-options {
-    right: var(--gjs-left-width);
-    top: 0
-}
-
 .gjs-pn-views {
     border-bottom: 2px solid var(--gjs-main-dark-color);
     right: 0;
@@ -2975,7 +2941,6 @@ span.CodeMirror-selectedtext {
 }
 
 .gjs-block-label i {
-    font-size: 34px;
     font-style: normal;
 }
 

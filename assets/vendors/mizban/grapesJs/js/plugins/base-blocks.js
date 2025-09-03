@@ -10,7 +10,7 @@ const category = {
 
 function base_blocks(editor) {
     editor.Blocks.add("section", {
-        label: `<i class="fa-solid fa-square"></i><span>section</span>`,
+        label: `<i class="fa-solid fa-table-columns fa-rotate-270"></i><span>section</span>`,
         category: category.layouts,
         content: {
             tagName: "section",
@@ -20,7 +20,7 @@ function base_blocks(editor) {
 
 
     editor.Blocks.add("container", {
-        label: `<i class="fa-solid fa-square"></i><span>container</span>`,
+        label: `<i class="fa-solid fa-columns"></i><span>container</span>`,
         category: category.layouts,
         content: {
             tagName: "div",
@@ -29,20 +29,18 @@ function base_blocks(editor) {
         },
     });
     
-        editor.Blocks.add("block", {
-            label: `<i class="fa-solid fa-square"></i><span>block</span>`,
+    editor.Blocks.add("block", {
+        label: `<i class="fa-solid fa-square"></i><span>block</span>`,
+        category: category.layouts,
+        content: {
+            tagName: "div",
+            type:"block",
             attributes: { class: "block" },
-            category: category.layouts,
-            content: {
-                tagName: "div",
-                type:"block",
-                attributes: { class: "block" },
-                },
-        });
+        },
+    });
 
     editor.Blocks.add("div", {
-        label: `<i class="fa-solid fa-square"></i><span>div</span>`,
-        attributes: { class: "block" },
+        label: `<i class="fa-solid fa-layer-group"></i><span>div</span>`,
         category: category.layouts,
         content: {
             tagName: "div",
@@ -224,9 +222,10 @@ function base_blocks(editor) {
     Object.entries(componentJson).forEach(([key, entries]) => {
         entries.forEach((entry, idx) => {
             const blockId = idx ? `${key}-${idx}` : key;
+            const title = titleize(key);
             try {
                 editor.Blocks.add(blockId, {
-                    label: `${entry.icon || ''}<span>${titleize(key)}</span>`,
+                    label: `${entry.icon || ''}<i class="txt-normal">${title.substring(0, 3)}</i><span>${title}</span>`,
                     attributes: { class: 'flex' },
                     category: categoriesMap[entry.category],
                     content: entry.code || '',
@@ -348,8 +347,6 @@ function base_blocks(editor) {
         },
 
     });
-
-
 }
 
 
