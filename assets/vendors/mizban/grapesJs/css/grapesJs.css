@@ -18,7 +18,7 @@
     --gjs-color-highlight: #71b7f1;
     --gjs-color-warn: #ffca6f;
     --gjs-handle-margin: -5px;
-    --gjs-left-width: 15%;
+    --gjs-left-width: 17%;
     --gjs-light-border: rgba(255, 255, 255, 0.05);
     --gjs-arrow-color: rgba(255, 255, 255, 0.7);
     --gjs-dark-text-shadow: rgba(0, 0, 0, 0.2);
@@ -31,7 +31,8 @@
     --gjs-font-size: 0.75rem;
     --gjs-placeholder-background-color: var(--gjs-color-green);
     --gjs-canvas-top: 40px;
-    --gjs-flex-item-gap: 5px
+    --gjs-flex-item-gap: 5px;
+    --box-device:35px;
 }
 
 .CodeMirror {
@@ -1953,6 +1954,28 @@ span.CodeMirror-selectedtext {
     box-shadow: 0 0 5px var(--gjs-main-dark-color)
 }
 
+.gjs-pn-device_panel{
+    width: calc(7 * var(--box-device));
+    height: var(--gjs-canvas-top);
+}
+
+.gjs-pn-device_panel .gjs-pn-buttons:has(.gjs-pn-btn:empty){
+    display: none;
+}
+
+.gjs-pn-device_panel .gjs-pn-buttons:has(.btn-toggle-device){
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex-direction: column;
+    transform: rotateZ(90deg) rotateX(180deg);
+    height: calc(7 * var(--box-device));
+    transform-origin: left top;
+}
+
+.gjs-pn-device_panel .gjs-pn-buttons .btn-toggle-device{
+    transform: rotateZ(90deg) rotateX(180deg);
+}
+
 .gjs-pn-options {
     right: var(--gjs-left-width);
     top: 0
@@ -1966,11 +1989,10 @@ span.CodeMirror-selectedtext {
 }
 
 .gjs-pn-views-container {
-    width: 100%;
-    height: 100%;
+    width: var(--gjs-left-width);
+    height: calc(100% - calc(var(--gjs-canvas-top)));
     padding: 0;
     right: 0;
-    width: var(--gjs-left-width);
     overflow: auto;
     box-shadow: 0 0 5px var(--gjs-main-dark-color)
 }
@@ -2372,10 +2394,12 @@ span.CodeMirror-selectedtext {
     background-color: rgba(0, 0, 0, .2)
 }
 
+.gjs-pn-devices-c:has(.gjs-devices-c){
+    height: var(--gjs-canvas-top);
+}
+
 .gjs-devices-c {
-    display: flex;
-    align-items: center;
-    padding: 2px 3px 3px 3px
+    display: none;
 }
 
 .gjs-devices-c .gjs-device-label {

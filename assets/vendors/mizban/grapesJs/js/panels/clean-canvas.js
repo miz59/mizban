@@ -57,14 +57,14 @@ class cleanConfirmation {
 
             setTimeout(() => {
                 if (window.monacoEditor) {
-                    window.monacoEditor.setValue('<div>Hello World</div>');
+                    window.monacoEditor.setValue('');
                 }
                 if (window.cssMonacoContainer) {
                     window.cssMonacoContainer.setValue('');
                 }
 
                 if (window.mainEditor) {
-                    window.mainEditor.setComponents('<div>Hello World</div>');
+                    window.mainEditor.setComponents('');
                     window.mainEditor.setStyle('');
                     window.mainEditor.store();
                 }

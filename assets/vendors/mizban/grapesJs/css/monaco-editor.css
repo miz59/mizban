@@ -129,6 +129,8 @@
     border-radius:0px 0px 8px 8px;
     overflow: hidden;
     min-width:300px;
+    max-width: 80vw;
+    max-height: calc(80vh - 63px);
 }
 
 .monaco-draggable-wrapper.dragging {
@@ -248,18 +250,6 @@ div:has(> #htmlEditor, > #cssEditor, > #resizer){
     opacity: 1;
 }
 
-.container:empty{
-    width: 100%;
-}
-
-.div-element:empty{
-    min-width: 300px;
-}
-
-.block-element:empty{
-    min-width: 300px;
-}
-
 .editor-header{
     display: flex;
     justify-content: end;
@@ -296,9 +286,9 @@ div:has(> #htmlEditor, > #cssEditor, > #resizer){
     }
 }
 
-.section:empty,.container:empty,.block:empty,.div:empty{
+/* .section:empty,.container:empty,.block:empty,.div:empty{
     min-height: 150px;
-}
+} */
 
 .resize-handle {
     position: absolute;

@@ -25,18 +25,21 @@ function isValidCSSClass(className) {
          !className.includes(':');
 }
 
-// تابع برای فیلتر کردن کلاس‌ها بر اساس جستجو
-export function filterCSSClasses(cssClasses, searchValue) {
+export function filterCSSClasses(cssClasses, searchValue, existingClasses = new Set()) {
   return cssClasses.filter(className => {
     const classNameLower = className.toLowerCase();
     const searchLower = searchValue.toLowerCase();
-    
+
+    // اگر کلاس داخل existingClasses بود، فیلتر کنش (حذفش کن)
+    if (existingClasses.has(className)) return false;
+
     if (searchLower.length === 0) return true;
     if (classNameLower.includes(searchLower)) return true;
-    
+
     return hasSequentialCharacters(classNameLower, searchLower);
   });
 }
+
 
 // تابع برای بررسی کاراکترهای متوالی
 function hasSequentialCharacters(className, searchValue) {

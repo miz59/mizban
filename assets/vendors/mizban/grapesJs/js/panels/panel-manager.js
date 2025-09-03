@@ -3,6 +3,7 @@ import { formatHtmlCode, formatCssCode } from "./functions/monaco-clean-code.js"
 import { codeImportManager } from "./monaco-code-import.js";
 import { setupPreviewManager } from "./preview-manager.js";
 import { cleanConfirmation } from "./clean-canvas.js";
+import { refreshCanvasManager } from "./refresh-canvas.js";
 import { saveProject } from "./save-project.js";
 
 class PanelManager {
@@ -12,6 +13,7 @@ class PanelManager {
         this.setupDevicePanel();
         this.setupCodeEditorWithFormat();
         this.setupPreview();
+        this.setupChangeDir();
         
         const saveProjectOnFile = new saveProject(editor);
         saveProjectOnFile.setupImportCommand();
@@ -21,6 +23,9 @@ class PanelManager {
 
         const importCode = new codeImportManager(editor);
         importCode.setupImportCommand();
+
+        const refreshCanvas = new refreshCanvasManager(editor);
+        refreshCanvas.setupImportCommand();
     }
 
     setupMainPanel() {
@@ -38,13 +43,13 @@ class PanelManager {
             this.createButton('undo', 'fa fa-undo', 'core:undo', 'undo'),
             this.createButton('redo', 'fa fa-rotate-right', 'core:redo', 'redo'),
             this.createSaveButton(),
+            this.createRefreshCanvasButton(),
+            this.createChangeDirButton(),
             this.createPreviewButton(),
             this.createCleanButton(),
             this.createAboutButton(),
         ];
     }
-
-
 
     createButton(id, icon, command, title) {
         return {
@@ -62,6 +67,15 @@ class PanelManager {
             className: 'btn-toggle-borders',
             label: '<i class="fa fa-trash" title="clean"></i>',
             command: 'clean-canvas'
+        };
+    }
+
+    createRefreshCanvasButton() {
+        return {
+            id: 'refresh-canvas',
+            className: 'btn-toggle-borders',
+            label: '<i class="fa fa-refresh" title="Refresh Canvas"></i>',
+            command: 'refresh-canvas-command',
         };
     }
 
@@ -88,6 +102,15 @@ class PanelManager {
             className: 'fa fa-save',
             command: 'save-project',
             attributes: { title: 'Save Project' }
+        };
+    }
+
+    createChangeDirButton() {
+        return {
+            id: 'change-direction',
+            className: 'fa fa-exchange',
+            command: 'change-direction',
+            attributes: { title: 'Change Direction' }
         };
     }
 
@@ -177,6 +200,25 @@ class PanelManager {
                 `${key}`
             )
         );
+    }
+
+    setupChangeDir() {
+        this.editor.Commands.add('change-direction', {
+            run: (editor) => {
+                const grapesJsCanvas = editor.Canvas.getFrameEl();
+                const bodyGrapesJsIframe= grapesJsCanvas.contentDocument.querySelector('body');
+                const canvasDirection = bodyGrapesJsIframe.getAttribute('dir');
+
+                if(canvasDirection === 'rtl'){
+                    bodyGrapesJsIframe.setAttribute('dir', 'ltr');
+                } else if (canvasDirection === 'ltr') {
+                    bodyGrapesJsIframe.setAttribute('dir', 'rtl');
+                } else {
+                    const docDir = document.documentElement.getAttribute('dir');
+                    bodyGrapesJsIframe.setAttribute('dir', `${docDir}`);
+                }
+            }
+        });
     }
 }
 

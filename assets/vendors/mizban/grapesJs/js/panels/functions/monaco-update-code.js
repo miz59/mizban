@@ -62,9 +62,9 @@ function updateEditor(mainEditor) {
     }, 0);
 }
 
-function updateEditorWithFormat(mainEditor) {
-    const htmlCode = mainEditor.getHtml();
-    const cssCode = mainEditor.getCss();
+function updateEditorWithFormat() {
+    const htmlCode = editor.getHtml();
+    const cssCode = editor.getCss();
     const formattedHtml = formatHtmlCode(htmlCode);
     const formattedCss = formatCssCode(cssCode);
     

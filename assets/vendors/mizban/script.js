@@ -4,6 +4,13 @@
         return;
     }
 
+    // if (document.querySelector('html[dir="rtl"]')) {
+    //     const htmlRtl = document.querySelector('html[dir="rtl"]');
+    //     htmlRtl.setAttribute('dir', 'ltr');
+    //     const iframeCanvas = document.querySelector('.gjs-frame');
+    //     console.log(iframeCanvas);
+    // }
+
     const body = document.body;
     const head = document.head;
 
@@ -38,6 +45,7 @@
         const styles = [
             '/assets/vendors/mizban/grapesJs/css/grapesJs.css',
             '/assets/vendors/mizban/grapesJs/css/monaco-editor.css',
+            '/assets/vendors/mizban/grapesJs/css/custom-grapesJs.css',
         ];
 
         styles.forEach(href => {
@@ -60,12 +68,12 @@
             const script = document.createElement('script');
             script.innerHTML = `
             import { setupPreviewManager , setContentPreview } from '/assets/vendors/mizban/grapesJs/js/panels/preview-manager.js';
-(function() {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('preview') !== 'true') return;
-    const doc = document;
-    setContentPreview(doc);
-})();
+            (function() {
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('preview') !== 'true') return;
+                const doc = document;
+                setContentPreview(doc);
+            })();
             `;
             script.type = 'module';
 
@@ -76,10 +84,12 @@
         }
 
         const scripts = [
+            { src: '/assets/js/mizchin.min.js' },
             { src: '/assets/vendors/mizban/grapesJs/grapesJs.js', type: 'module' },
             { src: '/assets/vendors/mizban/grapesJs/js/editor/editor.js', type: 'module' },
             { src: '/assets/vendors/mizban/playground/vs/loader.min.js', type: 'text/javascript' },
-            { src: '/assets/vendors/mizban/grapesJs/js/assetsManager/assets-manager.js', type: 'module' }
+            { src: '/assets/vendors/mizban/grapesJs/js/assetsManager/assets-manager.js', type: 'module' },
+
         ];
 
         let chain = Promise.resolve();
@@ -103,14 +113,16 @@
     const canvasDiv = wrapBodyContent();
     if (!canvasDiv) return;
 
+    function changeDir() {
+        const html = document.querySelector('html');
+        if (!hasPreviewParam()) {
+            html.style.setProperty('direction', 'ltr');
+        }
+    }
+
+    changeDir();
     addStyles();
     addScripts();
-
-
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('preview')) {
-
-    }
 
 
 })();

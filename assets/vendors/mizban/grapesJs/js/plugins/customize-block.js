@@ -20,11 +20,11 @@ function flexColBlock(editor) {
         modal.setTitle(`Enter a number between 1 and ${colsCount}`);
         modal.setContent(`
         <div>
-          <h4>Enter the number of cells:</h4>
-          <input id="cell-input" type="number" min="1" max="${colsCount}" value="1" style="width: 100%; padding: 5px;">
-          <button id="create-cells" style="margin-top: 10px; padding: 10px;">Create Cells</button>
+            <h4>Enter the number of cells:</h4>
+            <input id="cell-input" type="number" min="1" max="${colsCount}" value="1" style="width: 100%; padding: 5px;">
+            <button id="create-cells" style="margin-top: 10px; padding: 10px;">Create Cells</button>
         </div>
-      `);
+        `);
         modal.open();
 
         document.getElementById('create-cells').addEventListener('click', () => {

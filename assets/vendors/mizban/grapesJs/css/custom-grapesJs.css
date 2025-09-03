@@ -1,0 +1,23 @@
+/* .gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color{
+
+} */
+
+body.gjs-dashed [data-gjs-type="wrapper"] .section:empty{
+    min-width: 300px;
+    min-height: 70px;
+}
+
+body.gjs-dashed [data-gjs-type="wrapper"] .container:empty{
+    min-width: 300px;
+    min-height: 70px;
+}
+
+body.gjs-dashed [data-gjs-type="wrapper"] .block:empty{
+    min-width: 300px;
+    min-height: 70px;
+}
+
+body.gjs-dashed [data-gjs-type="wrapper"] .div:empty{
+    min-width: 300px;
+    min-height: 70px;
+}

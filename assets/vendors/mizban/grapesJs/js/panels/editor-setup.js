@@ -1,4 +1,3 @@
-// import { setupHtmlImportCommand, setupImportCodeFromHtmlCommand } from './monaco-code-import.js';
 import { codeImportManager } from './monaco-code-import.js';
 import { setupCodeEditorCommand } from './customize/monaco-editor.js';
 

@@ -94,6 +94,10 @@ function setupComponentNavigation(mainEditor) {
     }
     
     mainEditor.on('component:selected', (component) => {
+        if (window.isNavigatingFromMonaco === true) {
+            return;
+        }
+
         window.isHighlightOnly = true;
         setTimeout(() => { window.isHighlightOnly = false; }, 500);
 

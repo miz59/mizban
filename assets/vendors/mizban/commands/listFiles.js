@@ -66,36 +66,35 @@ function processComponentsDir() {
                     }
                     // اگر پوشه سطح دوم هیچ فایل HTML نداشته باشد → نادیده گرفته می‌شود
                 });
-            } else if (files.length > 0) {
-                // فقط فایل‌ها → category = "components"
+            }
+            else if (files.length > 0) {
                 files.forEach(f => {
                     const filePath = path.join(itemPath, f.name);
                     const htmlContent = fs.readFileSync(filePath, 'utf8');
                     componentJson[item.name] = [{
                         code: extractBodyContent(htmlContent),
                         icon: extractIconContent(htmlContent),
-                        category: 'components'
+                        category: item.name
                     }];
                 });
             }
-        } else if (item.isFile() && item.name.endsWith('.html')) {
-            // فایل مستقیم در components
-            const filePath = itemPath;
-            const nameWithoutExt = path.basename(item.name, '.html');
+        } 
+        // else if (item.isFile() && item.name.endsWith('.html')) {
+        //     const filePath = itemPath;
+        //     const nameWithoutExt = path.basename(item.name, '.html');
 
-            const htmlContent = fs.readFileSync(filePath, 'utf8');
-            componentJson[nameWithoutExt] = [{
-                code: extractBodyContent(htmlContent),
-                icon: extractIconContent(htmlContent),
-                category: 'components'
-            }];
-        }
+        //     const htmlContent = fs.readFileSync(filePath, 'utf8');
+        //     componentJson[nameWithoutExt] = [{
+        //         code: extractBodyContent(htmlContent),
+        //         icon: extractIconContent(htmlContent),
+        //         category: 'components'
+        //     }];
+        // }
     });
 
     saveAsJSFile(componentJson);
 }
 
-// ذخیره به فایل JS
 function saveAsJSFile(jsonData) {
     const jsContent = `const componentJson = ${JSON.stringify(jsonData, null, 4)};\nexport default componentJson;`;
     const jsFilePath = path.join(__dirname, 'componentJson.js');

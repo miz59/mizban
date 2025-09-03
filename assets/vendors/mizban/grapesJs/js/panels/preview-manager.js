@@ -40,9 +40,21 @@ class PreviewManager {
 
     openPreview() {
         const htmlCode = this.getHtmlCode();
+        const parser = new DOMParser();
+        const codeDoc = parser.parseFromString(htmlCode, 'text/html');
+
+        const grapesJsCanvas = this.editor.Canvas.getFrameEl();
+        const bodyGrapesJsIframe= grapesJsCanvas.contentDocument.querySelector('body');
+        const grapesJsCanvasDirection = bodyGrapesJsIframe.getAttribute('dir');
+
+        let bodyCodeDir = codeDoc.body;
+        bodyCodeDir.setAttribute('dir', grapesJsCanvasDirection);
+        bodyCodeDir = bodyCodeDir.outerHTML;
+
+
         const cssCode = this.getCssCode();
 
-        localStorage.setItem(`${this.storageKey}_html`, htmlCode);
+        localStorage.setItem(`${this.storageKey}_html`, bodyCodeDir);
         localStorage.setItem(`${this.storageKey}_css`, cssCode);
 
         let previewUrl = window.location.pathname;
@@ -75,16 +87,38 @@ class PreviewManager {
         this.previewWindow.onload = sendData;
 
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                // صفحه برگشت → می‌تونی refresh iframe انجام بدی
-            } else {
+            if (document.visibilityState === 'visible') {}
+            else {
                 sendData();
             }
         });
     }
 
     updatePreviewContent(htmlCode, cssCode) {
-        localStorage.setItem(`${this.storageKey}_html`, htmlCode);
+    const tryUpdate = (retries = 10) => {
+        const grapesJsCanvas = this.editor.Canvas.getFrameEl();
+        const iframeDoc = grapesJsCanvas?.contentDocument;
+
+        if (!grapesJsCanvas || !iframeDoc || !iframeDoc.body) {
+            if (retries > 0) {
+                setTimeout(() => tryUpdate(retries - 1), 200);
+            } else {
+                console.error("❌ iframe not loaded");
+            }
+            return;
+        }
+
+        const parser = new DOMParser();
+        const codeDoc = parser.parseFromString(htmlCode, 'text/html');
+
+        const bodyGrapesJsIframe = iframeDoc.querySelector('body');
+        const grapesJsCanvasDirection = bodyGrapesJsIframe?.getAttribute('dir') || 'ltr';
+
+        let bodyCodeDir = codeDoc.body;
+        bodyCodeDir.setAttribute('dir', grapesJsCanvasDirection);
+        bodyCodeDir = bodyCodeDir.outerHTML;
+
+        localStorage.setItem(`${this.storageKey}_html`, bodyCodeDir);
         localStorage.setItem(`${this.storageKey}_css`, cssCode);
 
         if (!this.previewWindow || this.previewWindow.closed) return;
@@ -92,11 +126,15 @@ class PreviewManager {
         this.previewWindow.postMessage({
             type: 'UPDATE_PREVIEW',
             previewId: this.pageId,
-            html: htmlCode,
+            html: bodyCodeDir,
             css: cssCode,
             timestamp: Date.now()
         }, '*');
-    }
+    };
+
+    tryUpdate();
+}
+
 
     getHtmlCode() {
         try {
@@ -137,11 +175,19 @@ function setContentPreview(doc) {
     doc.body.appendChild(iframe);
 
     const iframeDoc = iframe.contentWindow.document;
+
     iframeDoc.open();
-    iframeDoc.write(`<!DOCTYPE html><html><head></head><body></body></html>`);
+    iframeDoc.write(`<!DOCTYPE html><html><head></head>${html}</html>`);
     iframeDoc.close();
 
     setTimeout(() => {
+        let baseUrl = iframeDoc.createElement('base');
+        baseUrl.href = '/';
+        
+        let fontawesomeIcon = iframeDoc.createElement('link');
+        fontawesomeIcon.href = './assets/icons/fontawesome/css/all.min.css';
+        fontawesomeIcon.rel = 'stylesheet';
+
         let mizCss = iframeDoc.createElement('link');
         mizCss.href = './assets/css/miz.min.css';
         mizCss.rel = 'stylesheet';
@@ -153,9 +199,11 @@ function setContentPreview(doc) {
         mizchin.src = `${config.output}`;
         mizchin.async = true;
 
+
+        iframeDoc.head.appendChild(baseUrl);
+        iframeDoc.head.appendChild(fontawesomeIcon);
         iframeDoc.head.appendChild(mizCss);
         iframeDoc.head.appendChild(stylePreview);
-        iframeDoc.body.innerHTML = html;
         iframeDoc.body.appendChild(mizchin);
     }, 100);
 }
