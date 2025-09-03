@@ -254,8 +254,23 @@ function setupGrapesJSToMonacoSync(mainEditor) {
     }, 300);
   });
 
+  cssMonacoContainer.onDidChangeCursorSelection(() => {
+    isSelectingFromMonaco = true;
+    setTimeout(() => {
+      isSelectingFromMonaco = false;
+    }, 300);
+  });
+
 
   monacoEditor.onDidChangeModelContent(() => {
+    isMonacoTyping = true;
+    clearTimeout(grapesToMonacoTimer);
+    grapesToMonacoTimer = setTimeout(() => {
+      isMonacoTyping = false;
+    }, timeUpdate);
+  });
+
+  cssMonacoContainer.onDidChangeModelContent(() => {
     isMonacoTyping = true;
     clearTimeout(grapesToMonacoTimer);
     grapesToMonacoTimer = setTimeout(() => {
