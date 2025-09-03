@@ -108,8 +108,8 @@ class codeImportManager {
     }
 
     setupImportCommand() {
-        this.editor.Commands.add('clean-canvas', {
-            run: () => this.setupImportCommand()
+        this.editor.Commands.add('import-code-from-html', {
+            run: async () => this.importCommand(await this.resolveSourceHtml())
         });
     }
 
@@ -124,21 +124,16 @@ class codeImportManager {
         return doc.body.innerHTML;
     }
 
-    setupImportCommand() {
-        this.editor.Commands.add('import-code-from-html', {
-            run: async () => {
-                const bodyHtml = await this.resolveSourceHtml();
-                this.editor.addComponents(bodyHtml);
+    importCommand(bodyHtml) {
+        this.editor.addComponents(bodyHtml);
 
-                const updateMonacoEditors = () => {
-                    updateEditorWithFormat(this.editor);
-                };
+        const updateMonacoEditors = () => {
+            updateEditorWithFormat(this.editor);
+        };
 
-                updateMonacoEditors();
-                setTimeout(updateMonacoEditors, 100);
-                setTimeout(updateMonacoEditors, 500);
-            }
-        });
+        updateMonacoEditors();
+        setTimeout(updateMonacoEditors, 100);
+        setTimeout(updateMonacoEditors, 500);
     }
 }
 

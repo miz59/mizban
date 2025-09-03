@@ -90,7 +90,7 @@ const ADVANCED_MONACO_OPTIONS = {
     showUnits: true,
     showValues: true
   },
-  
+
   links: { enabled: true },
   hover: { enabled: true },
   contextmenu: { enabled: true },
@@ -99,10 +99,10 @@ const ADVANCED_MONACO_OPTIONS = {
   suggestOnTriggerCharacters: true,
   acceptSuggestionOnCommitCharacter: true,
   acceptSuggestionOnEnter: 'on',
-  
+
   validateOnType: true,
   validateOnPaste: true,
-  
+
   wordBasedSuggestions: true,
   suggestSelection: 'first',
   suggestFilterGraceful: true,
@@ -123,13 +123,13 @@ const ADVANCED_MONACO_OPTIONS = {
   suggestShowWords: true,
   suggestShowUsers: true,
   suggestShowIssues: true,
-  
+
   quickSuggestions: {
     other: true,
     comments: true,
     strings: true
   },
-  
+
   renderWhitespace: 'selection',
   renderControlCharacters: true,
   renderLineHighlight: 'all',
@@ -138,11 +138,11 @@ const ADVANCED_MONACO_OPTIONS = {
   renderLineNumbers: 'on',
   renderIndentGuides: true,
   renderValidationDecorations: 'on',
-  
+
   largeFileOptimizations: true,
   maxTokenizationLineLength: 20000,
   maxTokenizationLineLength: 20000,
-  
+
   accessibilitySupport: 'auto',
   screenReaderAnnounceNewLine: true,
 
@@ -154,7 +154,7 @@ const ADVANCED_MONACO_OPTIONS = {
   multiCursorModifier: 'alt',
   multiCursorPaste: 'full',
   multiCursorMergeOverlapping: true,
-  
+
 
   find: {
     addExtraSpaceOnTop: false,
@@ -162,9 +162,9 @@ const ADVANCED_MONACO_OPTIONS = {
     seedSearchStringFromSelection: 'always',
     globalFindClipboard: false
   },
-  
 
-  minimap: { 
+
+  minimap: {
     enabled: true,
     maxColumn: 120,
     renderCharacters: true,
@@ -172,12 +172,12 @@ const ADVANCED_MONACO_OPTIONS = {
     side: 'right',
     size: 'proportional'
   },
-  
+
 
   overviewRulerLanes: 3,
   overviewRulerBorder: true,
   hideCursorInOverviewRuler: false,
-  
+
 
   scrollbar: {
     vertical: 'auto',
@@ -219,14 +219,14 @@ const ADVANCED_MONACO_OPTIONS = {
 
 function updateMonacoFromGrapesJS(mainEditor) {
   if (!window.monacoEditor || !window.cssMonacoContainer) return;
-  
+
   if (window.isUpdatingFromGrapesJS) return;
   window.isUpdatingFromGrapesJS = true;
 
   try {
     updateEditorWithFormat(mainEditor);
-    
-    
+
+
     const htmlCode = editor.getHtml();
     const cssCode = editor.getCss();
 
@@ -247,7 +247,7 @@ function setupGrapesJSToMonacoSync(mainEditor) {
   let grapesToMonacoTimer = null;
   const timeUpdate = 1000;
 
-  monacoEditor.onDidChangeCursorSelection (() => {
+  monacoEditor.onDidChangeCursorSelection(() => {
     isSelectingFromMonaco = true;
     setTimeout(() => {
       isSelectingFromMonaco = false;
@@ -263,91 +263,90 @@ function setupGrapesJSToMonacoSync(mainEditor) {
     }, timeUpdate);
   });
 
-let isHovering = false;
+  let isHovering = false;
 
-function observeGrapesJS(mainEditor) {
-  const frame = document.querySelector('iframe.gjs-frame');
-  if (!frame) return;
+  function observeGrapesJS(mainEditor) {
+    const frame = document.querySelector('iframe.gjs-frame');
+    if (!frame) return;
 
-  const frameDoc = frame.contentDocument || frame.contentWindow.document;
+    const frameDoc = frame.contentDocument || frame.contentWindow.document;
 
-  const observer = new MutationObserver((mutations) => {
-    if (isMonacoTyping || isHovering || isSelectingFromMonaco) return;
+    const observer = new MutationObserver((mutations) => {
+      if (isMonacoTyping || isHovering || isSelectingFromMonaco) return;
 
-    let shouldUpdate = false;
+      let shouldUpdate = false;
 
-    for (const mutation of mutations) {
-      // ---------- بررسی تغییرات کلاس ----------
-      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-        const newClasses = [...mutation.target.classList];
-        const oldClasses = mutation.oldValue ? mutation.oldValue.split(/\s+/) : [];
+      for (const mutation of mutations) {
+        // ---------- بررسی تغییرات کلاس ----------
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const newClasses = [...mutation.target.classList];
+          const oldClasses = mutation.oldValue ? mutation.oldValue.split(/\s+/) : [];
 
-        const changedClasses = [
-          ...newClasses.filter(c => !oldClasses.includes(c)),
-          ...oldClasses.filter(c => !newClasses.includes(c))
-        ];
+          const changedClasses = [
+            ...newClasses.filter(c => !oldClasses.includes(c)),
+            ...oldClasses.filter(c => !newClasses.includes(c))
+          ];
 
-        // فقط تغییرات کلاس gjs-* نادیده گرفته شود
-        if (changedClasses.every(cls => cls.startsWith('gjs-'))) continue;
+          // فقط تغییرات کلاس gjs-* نادیده گرفته شود
+          if (changedClasses.every(cls => cls.startsWith('gjs-'))) continue;
 
-        shouldUpdate = true;
-        break;
+          shouldUpdate = true;
+          break;
+        }
+
+        // ---------- بررسی تغییرات سایر attributes ----------
+        if (mutation.type === 'attributes' && mutation.attributeName !== 'class') {
+          const name = mutation.attributeName;
+          if (name.startsWith('data-gjs')) continue; // فقط attribute های gjs نادیده گرفته شوند
+
+          shouldUpdate = true;
+          break;
+        }
+
+        // ---------- تغییرات متن و content ----------
+        if (mutation.type === 'characterData') {
+          // هیچگاه نادیده گرفته نشود
+          shouldUpdate = true;
+          break;
+        }
+
+        // ---------- اضافه/حذف node ----------
+        if (mutation.type === 'childList') {
+          shouldUpdate = true;
+          break;
+        }
       }
-
-      // ---------- بررسی تغییرات سایر attributes ----------
-      if (mutation.type === 'attributes' && mutation.attributeName !== 'class') {
-        const name = mutation.attributeName;
-        if (name.startsWith('data-gjs')) continue; // فقط attribute های gjs نادیده گرفته شوند
-
-        shouldUpdate = true;
-        break;
+      if (shouldUpdate) {
+        console.log('updated', isMonacoTyping);
+        clearTimeout(grapesToMonacoTimer);
+        grapesToMonacoTimer = setTimeout(() => {
+          updateMonacoFromGrapesJS(mainEditor);
+        }, timeUpdate);
       }
+    });
 
-      // ---------- تغییرات متن و content ----------
-      if (mutation.type === 'characterData') {
-        // هیچگاه نادیده گرفته نشود
-        shouldUpdate = true;
-        break;
-      }
+    observer.observe(frameDoc.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeOldValue: true,
+      attributeFilter: undefined,
+    });
 
-      // ---------- اضافه/حذف node ----------
-      if (mutation.type === 'childList') {
-        shouldUpdate = true; // همه تغییرات لحاظ شوند
-        break;
-      }
-    }
+    frameDoc.body.addEventListener('mouseenter', () => {
+      isHovering = true;
+    }, true);
 
-    if (shouldUpdate) {
-      console.log('updated' , isMonacoTyping);
-      clearTimeout(grapesToMonacoTimer);
-      grapesToMonacoTimer = setTimeout(() => {
-        updateMonacoFromGrapesJS(mainEditor);
-      }, timeUpdate);
-    }
-  });
-
-  observer.observe(frameDoc.body, {
-    childList: true,
-    subtree: true,
-    characterData: true,
-    attributes: true,
-    attributeOldValue: true,
-    attributeFilter: undefined,
-  });
-
-  frameDoc.body.addEventListener('mouseenter', () => {
-    isHovering = true;
-  }, true);
-
-  frameDoc.body.addEventListener('mouseleave', () => {
-    isHovering = false;
-  }, true);
-}
+    frameDoc.body.addEventListener('mouseleave', () => {
+      isHovering = false;
+    }, true);
+  }
 
 
 
 
-observeGrapesJS(mainEditor);
+  observeGrapesJS(mainEditor);
 
 }
 
@@ -375,7 +374,7 @@ export function initializeMonacoEditors(mainEditor, editorContainer) {
   // setupIframeEvents();
   setupAdvancedMonacoFeatures();
 
-  
+
   require(['vs/editor/editor.main'], () => {
     const initMonaco = () => {
       if (window.monaco && window.monaco.editor) {
@@ -403,64 +402,64 @@ export function initializeMonacoEditors(mainEditor, editorContainer) {
 
 
 function setupMonacoRequire() {
-  
+
   if (window.monaco) {
     return;
   }
-  
-  
+
+
   const originalConsoleError = console.error;
   const originalConsoleWarn = console.warn;
-  
-  console.error = function(...args) {
+
+  console.error = function (...args) {
     const errorMessage = args[0] ? String(args[0]) : '';
-    if (errorMessage.includes('workerMain.js') || 
-        errorMessage.includes('Not Found') ||
-        errorMessage.includes('404') ||
-        errorMessage.includes('worker') ||
-        errorMessage.includes('workerMain') ||
-        errorMessage.includes('unexpectedErrorHandler') ||
-        errorMessage.includes('editor.main.js')) {
-      return; 
+    if (errorMessage.includes('workerMain.js') ||
+      errorMessage.includes('Not Found') ||
+      errorMessage.includes('404') ||
+      errorMessage.includes('worker') ||
+      errorMessage.includes('workerMain') ||
+      errorMessage.includes('unexpectedErrorHandler') ||
+      errorMessage.includes('editor.main.js')) {
+      return;
     }
     originalConsoleError.apply(console, args);
   };
-  
-  console.warn = function(...args) {
+
+  console.warn = function (...args) {
     const warningMessage = args[0] ? String(args[0]) : '';
-    if (warningMessage.includes('worker') || 
-        warningMessage.includes('Worker') ||
-        warningMessage.includes('unexpectedErrorHandler') ||
-        warningMessage.includes('editor.main.js')) {
-      return; 
+    if (warningMessage.includes('worker') ||
+      warningMessage.includes('Worker') ||
+      warningMessage.includes('unexpectedErrorHandler') ||
+      warningMessage.includes('editor.main.js')) {
+      return;
     }
     originalConsoleWarn.apply(console, args);
   };
-  
+
   require.config({
-    paths: { 
+    paths: {
       'vs': MONACO_CONFIG.CDN_URL + '/vs'
     }
   });
-  
-  
+
+
   const hasRequire = typeof window.require === 'function' && typeof window.require.config === 'function';
   const hasLoaderScript = document.querySelector(`script[src*="${MONACO_CONFIG.CDN_URL}/vs/loader.min.js"]`) ||
-                          document.querySelector(`script[src*="${MONACO_CONFIG.CDN_URL}/vs/loader.js"]`) ||
-                          document.querySelector('script[src$="/vs/loader.js"]') ||
-                          document.querySelector('script[src$="/vs/loader.min.js"]');
+    document.querySelector(`script[src*="${MONACO_CONFIG.CDN_URL}/vs/loader.js"]`) ||
+    document.querySelector('script[src$="/vs/loader.js"]') ||
+    document.querySelector('script[src$="/vs/loader.min.js"]');
   if (!hasRequire && !hasLoaderScript) {
-      const script = document.createElement('script');
-      script.src = MONACO_CONFIG.CDN_URL + '/vs/loader.min.js';
-      document.head.appendChild(script);
-    }
+    const script = document.createElement('script');
+    script.src = MONACO_CONFIG.CDN_URL + '/vs/loader.min.js';
+    document.head.appendChild(script);
+  }
 
-  
+
   if (!document.querySelector(`script[src*="${MONACO_CONFIG.CDN_URL}/emmet-monaco-es/dist/emmet-monaco.js"]`)) {
     const emmetMonacoScript = document.createElement('script');
     emmetMonacoScript.src = MONACO_CONFIG.CDN_URL + '/emmet-monaco-es/dist/emmet-monaco.js';
     document.head.appendChild(emmetMonacoScript);
-    }
+  }
 }
 
 
@@ -473,7 +472,7 @@ function setupCleanCodeButton() {
       const htmlCode = window.monacoEditor.getValue();
       window.monacoEditor.setValue(formatHtmlCode(htmlCode));
     }
-    
+
     if (window.cssMonacoContainer) {
       const cssCode = window.cssMonacoContainer.getValue();
       window.cssMonacoContainer.setValue(formatCssCode(cssCode));
@@ -533,7 +532,7 @@ function setupMonacoCodeToggles() {
 }
 
 function setupAdvancedMonacoFeatures() {
-  window.enableAdvancedMonacoFeatures = function() {
+  window.enableAdvancedMonacoFeatures = function () {
     if (window.monacoEditor) {
       window.monacoEditor.updateOptions({
         workers: { enabled: true },
@@ -550,10 +549,10 @@ function setupAdvancedMonacoFeatures() {
         suggestOnTriggerCharacters: true,
         acceptSuggestionOnCommitCharacter: true,
         acceptSuggestionOnEnter: 'on',
-        
+
       });
     }
-    
+
     if (window.cssMonacoContainer) {
       window.cssMonacoContainer.updateOptions({
         workers: { enabled: true },
@@ -570,14 +569,14 @@ function setupAdvancedMonacoFeatures() {
         suggestOnTriggerCharacters: true,
         acceptSuggestionOnCommitCharacter: true,
         acceptSuggestionOnEnter: 'on',
-        
+
       });
     }
-    
+
     console.log('✅ Advanced features enabled');
   };
-  
-  window.disableAdvancedMonacoFeatures = function() {
+
+  window.disableAdvancedMonacoFeatures = function () {
     if (window.monacoEditor) {
       window.monacoEditor.updateOptions({
         workers: { enabled: false },
@@ -589,7 +588,7 @@ function setupAdvancedMonacoFeatures() {
         formatOnPaste: false
       });
     }
-    
+
     if (window.cssMonacoContainer) {
       window.cssMonacoContainer.updateOptions({
         workers: { enabled: false },
@@ -601,7 +600,7 @@ function setupAdvancedMonacoFeatures() {
         formatOnPaste: false
       });
     }
-    
+
     console.log('❌ Advanced features disabled');
   };
 
@@ -638,16 +637,16 @@ function initMonacoEditors(mainEditor, htmlContainer, cssContainer) {
   setupHtmlEditorEvents(window.monacoEditor, mainEditor);
   setupCssEditorEvents(window.cssMonacoContainer, mainEditor);
   setupComponentNavigation(mainEditor);
-  
+
   setupCSSSuggestions();
 
-  try { window._htmlPrevValue = currentHtml; } catch (e) {}
+  try { window._htmlPrevValue = currentHtml; } catch (e) { }
 
   try {
     if (window.emmetMonaco && typeof window.emmetMonaco.emmetHTML === 'function') {
       window.emmetMonaco.emmetHTML(window.monaco, ['html']);
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function createHtmlEditor(container, value) {
@@ -690,7 +689,7 @@ function createHtmlEditor(container, value) {
       comments: false,
       strings: true
     },
-    
+
     workers: { enabled: true },
     links: { enabled: true },
     hover: { enabled: true },
@@ -750,7 +749,7 @@ function createCssEditor(container, value) {
       comments: false,
       strings: true
     },
-    
+
     workers: { enabled: true },
     links: { enabled: true },
     hover: { enabled: true },
@@ -773,23 +772,23 @@ function createCssEditor(container, value) {
 function setupHtmlEditorEvents(monacoEditor, mainEditor) {
   monacoEditor.onDidChangeModelContent((e) => {
     const code = monacoEditor.getValue();
-    
+
     if (window.isUpdatingFromGrapesJS || window.isAutoRenamingTag || (window.preventAutoFormatting && window.preventAutoFormatting())) {
       return;
     }
-    
+
     tryAutoRenameHtmlTag(e, monacoEditor);
-    
+
     window.isUserTyping = true;
     window.hasUserTyped = true;
     clearTimeout(window.typingTimer);
     window.typingTimer = setTimeout(() => {
       window.isUserTyping = false;
     }, 2000);
-    
+
     try {
       window.isFromMonaco = true;
-      
+
       mainEditor.DomComponents.getWrapper().set('content', '');
       mainEditor.setComponents(code.trim());
       mainEditor.store();
@@ -798,13 +797,13 @@ function setupHtmlEditorEvents(monacoEditor, mainEditor) {
       console.error('Error updating HTML:', error);
     }
 
-    try { window._htmlPrevValue = code; } catch (e) {}
+    try { window._htmlPrevValue = code; } catch (e) { }
   });
-  
+
   monacoEditor.onMouseDown(event => {
     handleHtmlEditorClick(event, monacoEditor, mainEditor);
   });
-  
+
   monacoEditor.updateOptions({
     suggest: {
       showKeywords: true,
@@ -835,11 +834,11 @@ function setupHtmlEditorEvents(monacoEditor, mainEditor) {
 function setupCssEditorEvents(cssMonacoContainer, mainEditor) {
   cssMonacoContainer.onDidChangeModelContent(() => {
     const cssCodeValue = cssMonacoContainer.getValue();
-    
+
     if (window.isUpdatingFromGrapesJS || (window.preventAutoFormatting && window.preventAutoFormatting())) {
       return;
     }
-    
+
     window.isUserTyping = true;
     window.hasUserTyped = true;
     clearTimeout(window.typingTimer);
@@ -847,10 +846,10 @@ function setupCssEditorEvents(cssMonacoContainer, mainEditor) {
       window.isUserTyping = false;
       updateCSSSuggestions();
     }, 1000);
-    
+
     try {
       window.isFromMonaco = true;
-      
+
       mainEditor.setStyle(cssCodeValue);
       mainEditor.store();
       updateLivePreview(window.monacoEditor?.getValue() || '', cssCodeValue);
@@ -858,7 +857,7 @@ function setupCssEditorEvents(cssMonacoContainer, mainEditor) {
       console.error('Error updating CSS:', error);
     }
   });
-  
+
   cssMonacoContainer.updateOptions({
     suggest: {
       showKeywords: true,
@@ -884,7 +883,7 @@ function setupCssEditorEvents(cssMonacoContainer, mainEditor) {
       strings: true
     }
   });
-  
+
   cssMonacoContainer.onDidFocusEditorText(() => {
     cssMonacoContainer.layout();
   });
@@ -893,32 +892,32 @@ function setupCssEditorEvents(cssMonacoContainer, mainEditor) {
 function handleHtmlEditorClick(event, monacoEditor, mainEditor) {
   const position = event.target.position;
   if (!position) return;
-  
+
   const lineNumber = position.lineNumber;
   const column = position.column;
   const lineContent = getPreciseLineContent(lineNumber, monacoEditor);
-  
+
   if (!lineContent) return;
-  
+
   const currentScrollTop = monacoEditor.getScrollTop();
   const currentScrollLeft = monacoEditor.getScrollLeft();
-  
+
   window.lastClickPosition = {
     position: { lineNumber, column },
     timestamp: Date.now()
   };
 
   window.monacoEditor.onDidChangeCursorPosition((e) => {
-      if (!window.isNavigatingFromGrapes) {
-          window.isNavigatingFromMonaco = true;
-          setTimeout(() => {
-              window.isNavigatingFromMonaco = false;
-          }, 300);
-      }
+    if (!window.isNavigatingFromGrapes) {
+      window.isNavigatingFromMonaco = true;
+      setTimeout(() => {
+        window.isNavigatingFromMonaco = false;
+      }, 300);
+    }
   });
-  
+
   let elementId = extractIdFromLine(lineContent);
-  
+
   if (!elementId) {
     const tagMatch = lineContent.match(/<([a-zA-Z][a-zA-Z0-9\-]*)(?:\s+[^>]*)?/);
     if (tagMatch) {
@@ -928,14 +927,14 @@ function handleHtmlEditorClick(event, monacoEditor, mainEditor) {
       return;
     }
   }
-  
+
   if (elementId) {
     window.lastClickPosition.componentId = elementId;
     selectComponentById(elementId, mainEditor);
     safeRestoreScrollPosition(monacoEditor, currentScrollTop, currentScrollLeft, lineNumber, column);
     return;
   }
-  
+
   const closestComponent = findClosestComponentByPosition(lineNumber, column, monacoEditor, mainEditor);
   if (closestComponent) {
     mainEditor.select(closestComponent);
@@ -951,7 +950,7 @@ function selectComponentById(elementId, mainEditor) {
 
     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
     const wrapperInIframe = iframeDoc.body.querySelector('[data-gjs-type="wrapper"]');
-    
+
     if (!wrapperInIframe) return;
 
     const targetElement = wrapperInIframe.querySelector(`#${elementId}`);
@@ -974,20 +973,20 @@ function selectComponentById(elementId, mainEditor) {
 
 function selectComponentByTag(tagName, mainEditor) {
   const allComponents = mainEditor.getComponents();
-  
+
   let selectedComponent = allComponents.find(component => {
     const componentHtml = component.toHTML().trim();
-    return componentHtml.startsWith(`<${tagName}`) && 
-          (componentHtml.includes(`<${tagName} `) || componentHtml.includes(`<${tagName}>`));
+    return componentHtml.startsWith(`<${tagName}`) &&
+      (componentHtml.includes(`<${tagName} `) || componentHtml.includes(`<${tagName}>`));
   });
-  
+
   if (!selectedComponent) {
     selectedComponent = allComponents.find(component => {
       const componentHtml = component.toHTML();
       return componentHtml.includes(`<${tagName}`);
     });
   }
-  
+
   if (selectedComponent) {
     mainEditor.select(selectedComponent);
     highlightSelectedComponent(mainEditor);
@@ -1038,21 +1037,21 @@ function safeRestoreScrollPosition(monacoEditor, scrollTop, scrollLeft, lineNumb
 function findClosestComponentByPosition(lineNumber, column, monacoEditor, mainEditor) {
   const currentLineContent = monacoEditor.getModel().getLineContent(lineNumber);
   const htmlMatch = currentLineContent.match(/<([a-zA-Z][a-zA-Z0-9\-]*)(?:\s+[^>]*)?/);
-  
+
   if (htmlMatch) {
     const tagName = htmlMatch[1];
     const allComponents = mainEditor.getComponents();
-    
+
     const matchingComponents = allComponents.filter(component => {
       const componentHtml = component.toHTML();
       return componentHtml.includes(`<${tagName}`);
     });
-    
+
     if (matchingComponents.length > 0) {
       return matchingComponents[0];
     }
   }
-  
+
   return findComponentByLineAnalysis(lineNumber, monacoEditor, mainEditor);
 }
 
@@ -1060,31 +1059,31 @@ function findComponentByLineAnalysis(lineNumber, monacoEditor, mainEditor) {
   const allComponents = mainEditor.getComponents();
   const model = monacoEditor.getModel();
   const totalLines = model.getLineCount();
-  
+
   const startLine = Math.max(1, lineNumber - 2);
   const endLine = Math.min(totalLines, lineNumber + 2);
-  
+
   let contextHtml = '';
   for (let i = startLine; i <= endLine; i++) {
     contextHtml += model.getLineContent(i) + '\n';
   }
-  
+
   const tagMatches = contextHtml.match(/<([a-zA-Z][a-zA-Z0-9\-]*)(?:\s+[^>]*)?/g);
   if (tagMatches) {
     for (const tagMatch of tagMatches) {
       const tagName = tagMatch.match(/<([a-zA-Z][a-zA-Z0-9\-]*)/)[1];
-      
+
       const matchingComponents = allComponents.filter(component => {
         const componentHtml = component.toHTML();
         return componentHtml.includes(`<${tagName}`);
       });
-      
+
       if (matchingComponents.length > 0) {
         return matchingComponents[0];
       }
     }
   }
-  
+
   return null;
 }
 
@@ -1114,10 +1113,10 @@ function disposeExistingEditors() {
   } catch (error) {
     console.warn('Error disposing editors:', error);
   }
-  
+
   window.isUpdatingFromGrapesJS = false;
   window.monacoInitialized = false;
-  
+
   const htmlContainer = document.querySelector('#htmlEditor');
   const cssContainer = document.querySelector('#cssEditor');
 
@@ -1125,7 +1124,7 @@ function disposeExistingEditors() {
     htmlContainer.removeAttribute('data-monaco-editor');
     htmlContainer.removeAttribute('data-context');
   }
-  
+
   if (cssContainer) {
     cssContainer.removeAttribute('data-monaco-editor');
     cssContainer.removeAttribute('data-context');
@@ -1136,7 +1135,7 @@ function formatCssString(input) {
   if (!input || typeof input !== 'string') {
     return '';
   }
-  
+
   return input
     .trim()
     .replace(/\s*{\s*/g, ' {\n\t')
@@ -1157,7 +1156,7 @@ function setupDefaultContent() {
     if (window.monacoEditor && !window.monacoEditor.getValue().trim()) {
       window.monacoEditor.setValue(' ');
     }
-    
+
     if (window.cssMonacoContainer && !window.cssMonacoContainer.getValue().trim()) {
       window.cssMonacoContainer.setValue(' ');
     }
@@ -1172,15 +1171,15 @@ function formatEditors() {
       console.warn('❌ Failed to format editors after 10 attempts');
       return;
     }
-    
+
     if (window.monacoEditor && window.cssMonacoContainer) {
       try {
         window.monacoEditor.trigger('anyString', 'editor.action.formatDocument');
         window.cssMonacoContainer.trigger('anyString', 'editor.action.formatDocument');
-        
+
         window.lastFormattedHtml = window.monacoEditor.getValue();
         window.lastFormattedCss = window.cssMonacoContainer.getValue();
-        
+
       } catch (error) {
         console.warn('Format attempt failed, retrying...', error);
         if (attempts < 5) {
@@ -1200,7 +1199,7 @@ function formatEditors() {
 //   if (!iframe) return;
 
 //   iframe.addEventListener('load', setupIframeContentEvents);
-  
+
 //   if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
 //     setupIframeContentEvents();
 //   }
@@ -1231,7 +1230,7 @@ function formatEditors() {
 export function getIframeContent() {
   const iframe = document.querySelector('.gjs-frame');
   if (!iframe) return null;
-  
+
   try {
     return iframe.contentDocument || iframe.contentWindow.document;
   } catch (error) {
@@ -1242,7 +1241,7 @@ export function getIframeContent() {
 export function getIframeContentAsString() {
   const iframeDocument = getIframeContent();
   if (!iframeDocument) return '';
-  
+
   try {
     return iframeDocument.documentElement.outerHTML;
   } catch (error) {
@@ -1253,7 +1252,7 @@ export function getIframeContentAsString() {
 export function getIframeBodyContentAsString() {
   const iframeDocument = getIframeContent();
   if (!iframeDocument) return '';
-  
+
   try {
     const body = iframeDocument.body;
     return body ? body.innerHTML : '';
@@ -1306,7 +1305,7 @@ function updateLivePreview(htmlCode, cssCode) {
 //       console.warn('Could not format HTML after GrapesJS update:', error);
 //     }
 //   }
-  
+
 //   if (window.cssMonacoContainer) {
 //     try {
 //       window.cssMonacoContainer.trigger('anyString', 'editor.action.formatDocument');
@@ -1316,25 +1315,25 @@ function updateLivePreview(htmlCode, cssCode) {
 //   }
 // }
 
-window.preventAutoFormatting = function() {
+window.preventAutoFormatting = function () {
   if (window.monacoEditor && window.lastFormattedHtml) {
     const currentHtml = window.monacoEditor.getValue();
     if (currentHtml === window.lastFormattedHtml) {
       return true;
     }
   }
-  
+
   if (window.cssMonacoContainer && window.lastFormattedCss) {
     const currentCss = window.cssMonacoContainer.getValue();
     if (currentCss === window.lastFormattedCss) {
       return true;
     }
   }
-  
+
   return false;
 };
 
-window.clearMonacoContext = function() {
+window.clearMonacoContext = function () {
   const htmlContainer = document.querySelector('#htmlEditor');
   const cssContainer = document.querySelector('#cssEditor');
 
@@ -1348,18 +1347,18 @@ window.clearMonacoContext = function() {
       });
     }
   });
-  
+
 
 };
 
-window.checkMonacoStatus = function() {
+window.checkMonacoStatus = function () {
   console.log('Monaco Editor Status:');
   console.log('Monaco available:', !!window.monaco);
   console.log('HTML Editor:', !!window.monacoEditor);
   console.log('CSS Editor:', !!window.cssMonacoContainer);
   console.log('Main Editor:', !!window.mainEditor);
   console.log('GrapesJS Sync Setup:', !!window.grapesJSSyncSetup);
-  
+
   if (window.monacoEditor) {
     console.log('HTML Content length:', window.monacoEditor.getValue().length);
   }
@@ -1368,21 +1367,21 @@ window.checkMonacoStatus = function() {
   }
 };
 
-window.formatMonacoEditors = function() {
+window.formatMonacoEditors = function () {
   formatEditors();
 };
 
-window.refreshMonacoEditors = function() {
+window.refreshMonacoEditors = function () {
   const mainEditor = window.mainEditor || window.editor;
-  
+
   if (!mainEditor) {
     console.warn('GrapesJS editor not found');
     return;
   }
-  
-  const editorContainer = document.querySelector('#editorContainer') || 
-                        document.querySelector('.editor-container');
-  
+
+  const editorContainer = document.querySelector('#editorContainer') ||
+    document.querySelector('.editor-container');
+
   if (editorContainer) {
     initializeMonacoEditors(mainEditor, editorContainer);
   } else {
@@ -1392,7 +1391,7 @@ window.refreshMonacoEditors = function() {
 
 export function reloadMonacoWithCDN(mainEditor, editorContainer) {
   disposeExistingEditors();
-  
+
   const htmlContainer = editorContainer.querySelector('#htmlEditor');
   const cssContainer = editorContainer.querySelector('#cssEditor');
   clearContainers(htmlContainer, cssContainer);
@@ -1400,7 +1399,7 @@ export function reloadMonacoWithCDN(mainEditor, editorContainer) {
   if (window.require && window.require.undef) {
     window.require.undef('vs/editor/editor.main');
   }
-  
+
   if (window.monaco) {
     initMonacoEditors(mainEditor, htmlContainer, cssContainer);
     setupEditorsLayout();
@@ -1415,22 +1414,22 @@ export function diagnoseCDNIssues() {
   if (!window.monaco || !window.monacoEditor || !window.cssMonacoContainer || !window.monaco.languages) {
     return false;
   }
-  
+
   try {
     const htmlModel = window.monacoEditor.getModel();
     const cssModel = window.cssMonacoContainer.getModel();
-    
+
     if (!htmlModel || !cssModel) {
       console.error('❌ Editor models not working');
       return false;
     }
-    
+
     window.monacoEditor.focus();
     window.monacoEditor.trigger('keyboard', 'editor.action.triggerSuggest', {});
-    
+
     window.cssMonacoContainer.focus();
     window.cssMonacoContainer.trigger('keyboard', 'editor.action.triggerSuggest', {});
-    
+
     return true;
   } catch (error) {
     return false;
@@ -1439,78 +1438,78 @@ export function diagnoseCDNIssues() {
 
 export function fixCDNIssues() {
   const isHealthy = diagnoseCDNIssues();
-  
+
   if (!isHealthy && window.mainEditor) {
-    const editorContainer = document.querySelector('#editorContainer') || 
-                          document.querySelector('.editor-container');
+    const editorContainer = document.querySelector('#editorContainer') ||
+      document.querySelector('.editor-container');
     if (editorContainer) {
       reloadMonacoWithCDN(window.mainEditor, editorContainer);
     }
   }
 }
 
-window.reloadMonacoWithCDN = function() {
+window.reloadMonacoWithCDN = function () {
   if (window.mainEditor) {
-    const editorContainer = document.querySelector('#editorContainer') || 
-                          document.querySelector('.editor-container');
+    const editorContainer = document.querySelector('#editorContainer') ||
+      document.querySelector('.editor-container');
     if (editorContainer) {
       reloadMonacoWithCDN(window.mainEditor, editorContainer);
     }
   }
 };
 
-window.diagnoseCDNIssues = function() {
+window.diagnoseCDNIssues = function () {
   return diagnoseCDNIssues();
 };
 
-window.fixCDNIssues = function() {
+window.fixCDNIssues = function () {
   fixCDNIssues();
 };
 
-window.simpleFix = function() {
+window.simpleFix = function () {
   window.clearMonacoContext();
-  
+
   const htmlContainer = document.querySelector('#htmlEditor') || document.createElement('div');
   const cssContainer = document.querySelector('#cssEditor') || document.createElement('div');
-  
+
   if (!htmlContainer.id) {
     htmlContainer.id = 'htmlEditor';
     htmlContainer.style.height = '300px';
     htmlContainer.style.border = '1px solid #ccc';
     document.body.appendChild(htmlContainer);
   }
-  
+
   if (!cssContainer.id) {
     cssContainer.id = 'cssEditor';
     cssContainer.style.height = '300px';
     cssContainer.style.border = '1px solid #ccc';
     document.body.appendChild(cssContainer);
   }
-  
+
   disposeExistingEditors();
-  
+
   const mainEditor = window.mainEditor || window.editor;
   const htmlContent = mainEditor ? mainEditor.getHtml() || '' : '';
   const cssContent = mainEditor ? mainEditor.getCss() || '' : '';
-  
+
   if (window.monaco && window.monaco.editor) {
     window.monacoEditor = window.monaco.editor.create(htmlContainer, {
       value: htmlContent,
       language: 'html',
       ...MONACO_CONFIG.EDITOR_OPTIONS
     });
-    
+
     window.cssMonacoContainer = window.monaco.editor.create(cssContainer, {
       value: cssContent,
       language: 'css',
       ...MONACO_CONFIG.EDITOR_OPTIONS
     });
-    
+
     if (mainEditor) {
       setupHtmlEditorEvents(window.monacoEditor, mainEditor);
       setupCssEditorEvents(window.cssMonacoContainer, mainEditor);
     }
-    
+
 
   }
 };
@@ -1526,7 +1525,7 @@ function updateCSSSuggestions() {
         window.cssCompletionProvider.dispose();
       }
       window.cssCompletionProvider = window.monaco.languages.registerCompletionItemProvider('html', {
-        provideCompletionItems: function(model, position) {
+        provideCompletionItems: function (model, position) {
           return createSmartHtmlSuggestions(cssClasses, model, position);
         }
       });
