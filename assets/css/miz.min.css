@@ -16306,6 +16306,27 @@ a {
   user-select: text;
 }
 
+.menu-item .submenu {
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: 0.3s ease-out;
+}
+.menu-item > a:hover ~ .submenu {
+  transform: translateY(0%);
+  opacity: 1;
+}
+.menu-item > a:hover ~ .submenu:hover {
+  transform: translateY(0%);
+  opacity: 1;
+}
+
+.simple a {
+  transition: 0.3s ease-out;
+}
+.simple:hover a {
+  color: #FF8000;
+}
+
 .social-icons li {
   transition: 0.1s ease-out;
 }

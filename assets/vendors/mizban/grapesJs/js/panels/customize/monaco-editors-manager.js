@@ -239,30 +239,26 @@ function updateMonacoFromGrapesJS(mainEditor) {
 }
 
 function setupGrapesJSToMonacoSync(mainEditor) {
-  if (window.grapesJSSyncSetup) return;
-  window.grapesJSSyncSetup = true;
-
+  if (window.grapesJSSyncCleanup) {
+    window.grapesJSSyncCleanup();
+  }
   let isMonacoTyping = false;
   let isSelectingFromMonaco = false;
+  // let isHovering = false;
   let grapesToMonacoTimer = null;
+
   const timeUpdate = 1000;
 
-  monacoEditor.onDidChangeCursorSelection(() => {
+  const disposables = [];
+
+  const monacoSelectionListener = monacoEditor.onDidChangeCursorSelection(() => {
     isSelectingFromMonaco = true;
     setTimeout(() => {
       isSelectingFromMonaco = false;
     }, 300);
   });
 
-  cssMonacoContainer.onDidChangeCursorSelection(() => {
-    isSelectingFromMonaco = true;
-    setTimeout(() => {
-      isSelectingFromMonaco = false;
-    }, 300);
-  });
-
-
-  monacoEditor.onDidChangeModelContent(() => {
+  const monacoContentListener = monacoEditor.onDidChangeModelContent(() => {
     isMonacoTyping = true;
     clearTimeout(grapesToMonacoTimer);
     grapesToMonacoTimer = setTimeout(() => {
@@ -270,7 +266,16 @@ function setupGrapesJSToMonacoSync(mainEditor) {
     }, timeUpdate);
   });
 
-  cssMonacoContainer.onDidChangeModelContent(() => {
+  disposables.push(monacoSelectionListener, monacoContentListener);
+
+  const cssSelectionListener = cssMonacoContainer.onDidChangeCursorSelection(() => {
+    isSelectingFromMonaco = true;
+    setTimeout(() => {
+      isSelectingFromMonaco = false;
+    }, 300);
+  });
+
+  const cssContentListener = cssMonacoContainer.onDidChangeModelContent(() => {
     isMonacoTyping = true;
     clearTimeout(grapesToMonacoTimer);
     grapesToMonacoTimer = setTimeout(() => {
@@ -278,91 +283,116 @@ function setupGrapesJSToMonacoSync(mainEditor) {
     }, timeUpdate);
   });
 
-  let isHovering = false;
+  disposables.push(cssSelectionListener, cssContentListener);
+
+  let observer = null;
   function observeGrapesJS(mainEditor) {
-    const frame = document.querySelector('iframe.gjs-frame');
-    if (!frame) return;
+    function waitForFrame(selector = 'iframe.gjs-frame', timeout = 5000) {
+      return new Promise((resolve, reject) => {
+        const start = Date.now();
 
-    const frameDoc = frame.contentDocument || frame.contentWindow.document;
-    
-    const observer = new MutationObserver((mutations) => {
-      if (isMonacoTyping || isHovering || isSelectingFromMonaco) return;
+        const check = () => {
+          const frame = document.querySelector(selector);
+          if (frame) return resolve(frame);
 
-      let shouldUpdate = false;
+          if (Date.now() - start > timeout) {
+            return reject(new Error('Frame not found within timeout'));
+          }
 
-      for (const mutation of mutations) {
-        // ---------- بررسی تغییرات کلاس ----------
-        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-          const newClasses = [...mutation.target.classList];
-          const oldClasses = mutation.oldValue ? mutation.oldValue.split(/\s+/) : [];
+          requestAnimationFrame(check); // سبک‌تر از setTimeout
+        };
 
-          const changedClasses = [
-            ...newClasses.filter(c => !oldClasses.includes(c)),
-            ...oldClasses.filter(c => !newClasses.includes(c))
-          ];
+        check();
+      });
+    }
+    waitForFrame().then((frame) => {
+      const frameDoc = frame.contentDocument || frame.contentWindow.document;
+      if (!frame) return;
 
-          // فقط تغییرات کلاس gjs-* نادیده گرفته شود
-          if (changedClasses.every(cls => cls.startsWith('gjs-'))) continue;
+      observer = new MutationObserver((mutations) => {
+        console.log(isMonacoTyping, isSelectingFromMonaco,);
+        if (isMonacoTyping || isSelectingFromMonaco) return;
+        // if (isMonacoTyping || isHovering || isSelectingFromMonaco) return;
 
-          shouldUpdate = true;
-          break;
+        let shouldUpdate = false;
+
+        for (const mutation of mutations) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+            const newClasses = [...mutation.target.classList];
+            const oldClasses = mutation.oldValue ? mutation.oldValue.split(/\s+/) : [];
+
+            const changedClasses = [
+              ...newClasses.filter(c => !oldClasses.includes(c)),
+              ...oldClasses.filter(c => !newClasses.includes(c))
+            ];
+
+            if (changedClasses.every(cls => cls.startsWith('gjs-'))) continue;
+            shouldUpdate = true;
+            break;
+          }
+
+          if (mutation.type === 'attributes' && !mutation.attributeName.startsWith('data-gjs')) {
+            shouldUpdate = true;
+            break;
+          }
+
+          if (mutation.type === 'characterData' || mutation.type === 'childList') {
+            shouldUpdate = true;
+            break;
+          }
         }
 
-        // ---------- بررسی تغییرات سایر attributes ----------
-        if (mutation.type === 'attributes' && mutation.attributeName !== 'class') {
-          const name = mutation.attributeName;
-          if (name.startsWith('data-gjs')) continue; // فقط attribute های gjs نادیده گرفته شوند
-          shouldUpdate = true;
-          break;
+        if (shouldUpdate) {
+          clearTimeout(grapesToMonacoTimer);
+          grapesToMonacoTimer = setTimeout(() => {
+            console.log('updated');
+            updateMonacoFromGrapesJS(mainEditor);
+          }, timeUpdate);
         }
+      });
 
-        // ---------- تغییرات متن و content ----------
-        if (mutation.type === 'characterData') {
-          // هیچگاه نادیده گرفته نشود
-          shouldUpdate = true;
-          break;
-        }
+      observer.observe(frameDoc.body, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeOldValue: true,
+      });
 
-        // ---------- اضافه/حذف node ----------
-        if (mutation.type === 'childList') {
-          shouldUpdate = true;
+      // const onMouseEnter = () => { isHovering = true; };
+      // const onMouseLeave = () => { isHovering = false; };
 
-          break;
-        }
-      }
-      if (shouldUpdate) {
-        clearTimeout(grapesToMonacoTimer);
-        grapesToMonacoTimer = setTimeout(() => {
-          updateMonacoFromGrapesJS(mainEditor);
-        }, timeUpdate);
-      }
+      // frameDoc.body.addEventListener('mouseenter', onMouseEnter, true);
+      // frameDoc.body.addEventListener('mouseleave', onMouseLeave, true);
+
+      // disposables.push({
+      //   dispose: () => {
+      //     frameDoc.body.removeEventListener('mouseenter', onMouseEnter, true);
+      //     frameDoc.body.removeEventListener('mouseleave', onMouseLeave, true);
+      //   }
+      // });
+
+    }).catch((err) => {
+      console.error('Error:', err.message);
     });
-
-    observer.observe(frameDoc.body, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-      attributes: true,
-      attributeOldValue: true,
-      attributeFilter: undefined,
-    });
-
-    frameDoc.body.addEventListener('mouseenter', () => {
-      isHovering = true;
-    }, true);
-
-    frameDoc.body.addEventListener('mouseleave', () => {
-      isHovering = false;
-    }, true);
   }
-
-
-
-  window.grapesJSSyncSetup = false;
 
   observeGrapesJS(mainEditor);
 
+  window.grapesJSSyncCleanup = function () {
+    disposables.forEach(d => {
+      if (d.dispose) d.dispose();
+    });
+
+    if (observer) {
+      observer.disconnect();
+      observer = null;
+    }
+
+    clearTimeout(grapesToMonacoTimer);
+  };
 }
+
 
 
 export function initializeMonacoEditors(mainEditor, editorContainer) {
