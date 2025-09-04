@@ -310,7 +310,6 @@ function setupGrapesJSToMonacoSync(mainEditor) {
       if (!frame) return;
 
       observer = new MutationObserver((mutations) => {
-        console.log(isMonacoTyping, isSelectingFromMonaco,);
         if (isMonacoTyping || isSelectingFromMonaco) return;
         // if (isMonacoTyping || isHovering || isSelectingFromMonaco) return;
 
@@ -345,7 +344,6 @@ function setupGrapesJSToMonacoSync(mainEditor) {
         if (shouldUpdate) {
           clearTimeout(grapesToMonacoTimer);
           grapesToMonacoTimer = setTimeout(() => {
-            console.log('updated');
             updateMonacoFromGrapesJS(mainEditor);
           }, timeUpdate);
         }
