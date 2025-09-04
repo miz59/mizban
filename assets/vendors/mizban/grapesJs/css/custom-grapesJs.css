@@ -72,9 +72,10 @@ body.gjs-dashed [data-gjs-type="wrapper"] .cell:empty {
     min-height: 70px;
 }
 
-
-
-
+body.gjs-dashed [data-gjs-type="wrapper"] main:empty {
+    min-width: 300px;
+    min-height: 70px;
+}
 
 /* panel styles */
 
