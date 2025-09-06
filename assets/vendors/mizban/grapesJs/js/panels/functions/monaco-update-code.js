@@ -3,7 +3,6 @@ function updateEditor(mainEditor) {
     const htmlCode = mainEditor.getHtml();
     const cssCode = mainEditor.getCss();
     
-    // ذخیره موقعیت cursor قبل از آپدیت
     let htmlPosition = null;
     let cssPosition = null;
     
@@ -25,7 +24,6 @@ function updateEditor(mainEditor) {
         window.cssOnlyEditor.setValue(cssCode);
     }
     
-    // برگرداندن موقعیت cursor بعد از آپدیت
     setTimeout(() => {
         if (window.monacoEditor && htmlPosition) {
             try {
@@ -89,13 +87,11 @@ function updateEditorWithFormat() {
         window.cssOnlyEditor.setValue(formattedCss);
     }
     
-    // برگرداندن موقعیت cursor بعد از آپدیت
     setTimeout(() => {
         if (window.monacoEditor && htmlPosition) {
             try {
                 window.monacoEditor.setPosition(htmlPosition);
             } catch (e) {
-                // اگر خط خارج از محدوده باشد، به خط آخر برو
                 const lineCount = window.monacoEditor.getModel().getLineCount();
                 window.monacoEditor.setPosition({ lineNumber: lineCount, column: 1 });
             }

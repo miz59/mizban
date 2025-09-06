@@ -40,21 +40,9 @@ class PreviewManager {
 
     openPreview() {
         const htmlCode = this.getHtmlCode();
-        const parser = new DOMParser();
-        const codeDoc = parser.parseFromString(htmlCode, 'text/html');
-
-        const grapesJsCanvas = this.editor.Canvas.getFrameEl();
-        const bodyGrapesJsIframe= grapesJsCanvas.contentDocument.querySelector('body');
-        const grapesJsCanvasDirection = bodyGrapesJsIframe.getAttribute('dir');
-
-        let bodyCodeDir = codeDoc.body;
-        bodyCodeDir.setAttribute('dir', grapesJsCanvasDirection);
-        bodyCodeDir = bodyCodeDir.outerHTML;
-
-
         const cssCode = this.getCssCode();
 
-        localStorage.setItem(`${this.storageKey}_html`, bodyCodeDir);
+        localStorage.setItem(`${this.storageKey}_html`, htmlCode);
         localStorage.setItem(`${this.storageKey}_css`, cssCode);
 
         let previewUrl = window.location.pathname;
@@ -108,17 +96,7 @@ class PreviewManager {
             return;
         }
 
-        const parser = new DOMParser();
-        const codeDoc = parser.parseFromString(htmlCode, 'text/html');
-
-        const bodyGrapesJsIframe = iframeDoc.querySelector('body');
-        const grapesJsCanvasDirection = bodyGrapesJsIframe?.getAttribute('dir') || 'ltr';
-
-        let bodyCodeDir = codeDoc.body;
-        bodyCodeDir.setAttribute('dir', grapesJsCanvasDirection);
-        bodyCodeDir = bodyCodeDir.outerHTML;
-
-        localStorage.setItem(`${this.storageKey}_html`, bodyCodeDir);
+        localStorage.setItem(`${this.storageKey}_html`, htmlCode);
         localStorage.setItem(`${this.storageKey}_css`, cssCode);
 
         if (!this.previewWindow || this.previewWindow.closed) return;
@@ -126,7 +104,7 @@ class PreviewManager {
         this.previewWindow.postMessage({
             type: 'UPDATE_PREVIEW',
             previewId: this.pageId,
-            html: bodyCodeDir,
+            html: htmlCode,
             css: cssCode,
             timestamp: Date.now()
         }, '*');

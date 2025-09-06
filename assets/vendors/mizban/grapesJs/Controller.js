@@ -5,8 +5,6 @@ import { setupAssetsManager } from "./js/assetsManager/assets-manager.js";
 import { cssRules } from "./js/cssRules/cssRules.js";
 import { editor_panelManager } from "./js/panels/panel-manager.js";
 import { code_editor } from "./js/panels/editor-setup.js";
-import { device_Manager } from "./js/devices/device-manager.js";
-import { commands } from "./js/commands/commands.js";
 import { editor_events } from "./js/events/editor-events.Js";
 
 function removeId(editor) {
@@ -18,7 +16,7 @@ function removeId(editor) {
 }
 
 
-const plugins = [removeId, base_blocks, base_component, cssRules, device_Manager, commands, editor_events, flexColBlock];
+const plugins = [removeId, base_blocks, base_component, cssRules, editor_events, flexColBlock];
 
 
 

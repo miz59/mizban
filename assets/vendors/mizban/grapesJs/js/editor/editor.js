@@ -1,6 +1,7 @@
 import { setupAssetsManager, editor_panelManager, code_editor, plugins } from "../../Controller.js";
 import { initializeWidgets } from '../widget/widget-setup.js';
 import { refreshCanvasManager } from '../panels/refresh-canvas.js';
+import { device_Manager } from "../devices/device-manager.js";
 
 let filename = window.location.pathname.split('/').pop();
 if (!filename) filename = 'index.html';
@@ -49,7 +50,7 @@ export function initEditor(content = { html: '', css: '' }) {
         },
         layerManager: {
             sortable: true,
-        }
+        },
     });
 
     editor.setComponents(cleanHtml);
@@ -58,29 +59,21 @@ export function initEditor(content = { html: '', css: '' }) {
     const refreshManager = new refreshCanvasManager(editor);
     refreshManager.setupImportCommand();
 
-    editor.on('canvas:frame:load', () => {
-        setTimeout(() => {
-            const iframe = editor.Canvas.getFrameEl();
-            const script = document.createElement('script');
-            script.src = '/assets/js/mizchin.min.js';
-            iframe.contentDocument.body.appendChild(script);
-
-            script.onload = () => {
-                if (iframe.contentWindow.MizchinInit) {
-                    iframe.contentWindow.MizchinInit();
-                }
-            };
-        }, 1000);
-    });
-
     window.editor = editor;
 
-    setupAssetsManager(editor);
-    editor_panelManager(editor);
-    code_editor(editor);
-    initializeWidgets(editor);
-
     editor.on('load', () => {
+        const iframe = editor.Canvas.getFrameEl();
+        const script = document.createElement('script');
+        script.src = '/assets/js/mizchin.min.js';
+        iframe.contentDocument.body.appendChild(script);
+
+        script.onload = () => {
+            if (iframe.contentWindow.MizchinInit) {
+                iframe.contentWindow.MizchinInit();
+            }
+        };
+
+
         setTimeout(() => {
             editor.runCommand('open-blocks');
             const blocksButton = editor.Panels.getButton('views', 'open-blocks');
@@ -88,8 +81,16 @@ export function initEditor(content = { html: '', css: '' }) {
                 blocksButton.set('active', true);
             }
         }, 300);
-        editor.runCommand('change-direction');
+
+        device_Manager(editor);
+        setupAssetsManager(editor);
+        editor_panelManager(editor);
+        code_editor(editor);
+        initializeWidgets(editor);
+
+
     });
+
 
     editor.on('asset:remove', (asset) => {
         const src = asset.get('src');

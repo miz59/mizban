@@ -4,7 +4,7 @@ import { codeImportManager } from "./monaco-code-import.js";
 import { setupPreviewManager } from "./preview-manager.js";
 import { cleanConfirmation } from "./clean-canvas.js";
 import { refreshCanvasManager } from "./refresh-canvas.js";
-import { saveProject } from "./save-project.js";
+// import { saveProject } from "./save-project.js";
 
 class PanelManager {
     constructor(editor) {
@@ -13,10 +13,9 @@ class PanelManager {
         this.setupDevicePanel();
         this.setupCodeEditorWithFormat();
         this.setupPreview();
-        this.setupChangeDir();
-        
-        const saveProjectOnFile = new saveProject(editor);
-        saveProjectOnFile.setupImportCommand();
+
+        // const saveProjectOnFile = new saveProject(editor);
+        // saveProjectOnFile.setupImportCommand();
 
         const cleanCanvas = new cleanConfirmation(editor);
         cleanCanvas.setupImportCommand();
@@ -42,9 +41,8 @@ class PanelManager {
             this.createButton('importCode', 'fa fa-upload', 'import-code-from-html', 'import code from html'),
             this.createButton('undo', 'fa fa-undo', 'core:undo', 'undo'),
             this.createButton('redo', 'fa fa-rotate-right', 'core:redo', 'redo'),
-            this.createSaveButton(),
+            // this.createSaveButton(),
             this.createRefreshCanvasButton(),
-            this.createChangeDirButton(),
             this.createPreviewButton(),
             this.createCleanButton(),
             this.createAboutButton(),
@@ -96,24 +94,14 @@ class PanelManager {
         };
     }
 
-    createSaveButton() {
-        return {
-            id: 'save-button',
-            className: 'fa fa-save',
-            command: 'save-project',
-            attributes: { title: 'Save Project' }
-        };
-    }
-
-    createChangeDirButton() {
-        return {
-            id: 'change-direction',
-            className: 'fa fa-exchange',
-            command: 'change-direction',
-            attributes: { title: 'Change Direction' }
-        };
-    }
-
+    // createSaveButton() {
+    //     return {
+    //         id: 'save-button',
+    //         className: 'fa fa-save',
+    //         command: 'save-project',
+    //         attributes: { title: 'Save Project' }
+    //     };
+    // }
 
     showAboutModal(editor) {
         editor.Modal.open({
@@ -166,6 +154,7 @@ class PanelManager {
     }
 
     setupDevicePanel() {
+
         this.editor.Panels.addPanel({
             id: "device_panel",
             el: ".gjs-pn-commands",
@@ -179,47 +168,30 @@ class PanelManager {
         ];
     }
 
-    createDeviceButton(id, command, active = false, title = '', content) {
+    createDeviceButton(id, command, title = '', content, active = false,) {
         return {
             id,
             className: "btn-toggle-device",
             label: `<i class="txt-subtitle" title="${title}">${content}</i>`,
             command,
             active,
-            togglable: false
+            togglable: false,
         };
     }
 
     createBreakpointButtons() {
-        return Object.entries(breakPoints).map(([key, value]) =>
+        const buttons = Object.entries(breakPoints).map(([key, value], index) =>
             this.createDeviceButton(
                 key,
                 `set-device-${key}`,
-                true,
                 `${key}:${value}`,
-                `${key}`
+                `${key}`,
+                false
             )
         );
+        return buttons;
     }
 
-    setupChangeDir() {
-        this.editor.Commands.add('change-direction', {
-            run: (editor) => {
-                const grapesJsCanvas = editor.Canvas.getFrameEl();
-                const bodyGrapesJsIframe= grapesJsCanvas.contentDocument.querySelector('body');
-                const canvasDirection = bodyGrapesJsIframe.getAttribute('dir');
-
-                if(canvasDirection === 'rtl'){
-                    bodyGrapesJsIframe.setAttribute('dir', 'ltr');
-                } else if (canvasDirection === 'ltr') {
-                    bodyGrapesJsIframe.setAttribute('dir', 'rtl');
-                } else {
-                    const docDir = document.documentElement.getAttribute('dir');
-                    bodyGrapesJsIframe.setAttribute('dir', `${docDir}`);
-                }
-            }
-        });
-    }
 }
 
 function editor_panelManager(editor) {

@@ -35,14 +35,14 @@ export function copyCSSLinksToIframe(editor) {
     });
 }
 
-export function setupComponentIdListener(editor) {
-    editor.on('component:add', (component) => {
-        const currentId = component.getId();
-        if (currentId && !currentId.startsWith('mizban-')) {
-            component.setId(`mizban-${currentId}`);
-        }
-    });
-}
+// export function setupComponentIdListener(editor) {
+//     editor.on('component:add', (component) => {
+//         const currentId = component.getId();
+//         if (currentId && !currentId.startsWith('mizban-')) {
+//             component.setId(`mizban-${currentId}`);
+//         }
+//     });
+// }
 
 export function setupCommand(editor, name, callback) {
     editor.Commands.add(name, {

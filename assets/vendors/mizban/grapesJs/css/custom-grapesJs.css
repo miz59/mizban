@@ -37,6 +37,7 @@
     --gjs-canvas-top: 40px;
     --gjs-flex-item-gap: 5px;
     --box-device: 35px;
+    --breakpoints-gap-space: 0.5;
 
     /* custom variables */
 
@@ -72,6 +73,11 @@ body.gjs-dashed [data-gjs-type="wrapper"] .cell:empty {
     min-height: 70px;
 }
 
+body.gjs-dashed [data-gjs-type="wrapper"] header:empty {
+    min-width: 300px;
+    min-height: 70px;
+}
+
 body.gjs-dashed [data-gjs-type="wrapper"] main:empty {
     min-width: 300px;
     min-height: 70px;
@@ -83,12 +89,18 @@ body.gjs-dashed [data-gjs-type="wrapper"] main:empty {
     right: 0;
     position: absolute;
 }
-.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color div:has( > div[style*="block"]){
+
+.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color div:has(> div[style*="block"]) {
     width: 100% !important;
 }
 
-.gjs-pn-panel.gjs-pn-views.gjs-one-bg.gjs-two-color{
+.gjs-pn-panel.gjs-pn-views.gjs-one-bg.gjs-two-color {
+    
     border: 0px !important;
+}
+
+.gjs-pn-panel.gjs-pn-views.gjs-one-bg.gjs-two-color .gjs-pn-buttons {
+    width: 100%;
 }
 
 .gjs-pn-panel.gjs-pn-options {
@@ -107,7 +119,7 @@ body.gjs-dashed [data-gjs-type="wrapper"] main:empty {
 }
 
 .gjs-pn-device_panel {
-    width: calc(7 * var(--box-device));
+    width: calc(calc(7 + var(--breakpoints-gap-space)) * var(--box-device));
     height: var(--gjs-canvas-top);
     transform: translateX(50%);
     right: 50%;
@@ -118,12 +130,18 @@ body.gjs-dashed [data-gjs-type="wrapper"] main:empty {
     display: none;
 }
 
+.gjs-pn-btn.btn-toggle-device:not(.disabled) {
+    background-color: var(--gjs-quaternary-color);
+}
+
 .gjs-pn-device_panel .gjs-pn-buttons:has(.btn-toggle-device) {
+    gap: calc(var(--breakpoints-gap-space) * 1rem);
+    scrollbar-width: thin;
     overflow-x: hidden;
     overflow-y: auto;
     flex-direction: column;
     transform: rotateZ(90deg) rotateX(180deg);
-    height: calc(7 * var(--box-device));
+    height: calc(calc(7 + var(--breakpoints-gap-space)) * var(--box-device));
     transform-origin: left top;
 }
 
@@ -189,7 +207,7 @@ body.gjs-dashed [data-gjs-type="wrapper"] main:empty {
     width: 100%;
 }
 
-#cssClassDropdown > div {
+#cssClassDropdown>div {
     color: white;
     background-image: var(--box-gradient) !important;
     border-radius: var(--box-border-radios);
@@ -199,10 +217,9 @@ body.gjs-dashed [data-gjs-type="wrapper"] main:empty {
     opacity: .5;
 }
 
-#cssClassDropdown > div.selected {
+#cssClassDropdown>div.selected {
     opacity: 1;
 }
-
 
 #gjs-clm-tags-c .gjs-three-bg {
     background-image: var(--box-gradient) !important;

@@ -1,5 +1,5 @@
 import { setupComponentNavigation } from '../functions/monaco-navigation-indicator.js';
-import { tryAutoRenameHtmlTag } from '../functions/auto-rename-tag.js';
+// import { tryAutoRenameHtmlTag } from '../functions/auto-rename-tag.js';
 import { formatHtmlCode, formatCssCode } from '../functions/monaco-clean-code.js';
 import { updateEditorWithFormat } from '../functions/monaco-update-code.js';
 import { getCombinedCSSClasses, createMonacoSuggestions, createSmartHtmlSuggestions } from '../functions/css-classes.js';
@@ -244,10 +244,9 @@ function setupGrapesJSToMonacoSync(mainEditor) {
   }
   let isMonacoTyping = false;
   let isSelectingFromMonaco = false;
-  // let isHovering = false;
   let grapesToMonacoTimer = null;
 
-  const timeUpdate = 1000;
+  const timeUpdate = 500;
 
   const disposables = [];
 
@@ -287,93 +286,75 @@ function setupGrapesJSToMonacoSync(mainEditor) {
 
   let observer = null;
   function observeGrapesJS(mainEditor) {
-    function waitForFrame(selector = 'iframe.gjs-frame', timeout = 5000) {
-      return new Promise((resolve, reject) => {
-        const start = Date.now();
 
-        const check = () => {
-          const frame = document.querySelector(selector);
-          if (frame) return resolve(frame);
+    const frame = document.querySelector('iframe.gjs-frame');
+    startGrapsjsMonocoConnection(frame)
+    frame.addEventListener('load', function () {
+      startGrapsjsMonocoConnection(frame)
 
-          if (Date.now() - start > timeout) {
-            return reject(new Error('Frame not found within timeout'));
-          }
-
-          requestAnimationFrame(check); // سبک‌تر از setTimeout
-        };
-
-        check();
-      });
-    }
-    waitForFrame().then((frame) => {
-      const frameDoc = frame.contentDocument || frame.contentWindow.document;
-      if (!frame) return;
-
-      observer = new MutationObserver((mutations) => {
-        if (isMonacoTyping || isSelectingFromMonaco) return;
-        // if (isMonacoTyping || isHovering || isSelectingFromMonaco) return;
-
-        let shouldUpdate = false;
-
-        for (const mutation of mutations) {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-            const newClasses = [...mutation.target.classList];
-            const oldClasses = mutation.oldValue ? mutation.oldValue.split(/\s+/) : [];
-
-            const changedClasses = [
-              ...newClasses.filter(c => !oldClasses.includes(c)),
-              ...oldClasses.filter(c => !newClasses.includes(c))
-            ];
-
-            if (changedClasses.every(cls => cls.startsWith('gjs-'))) continue;
-            shouldUpdate = true;
-            break;
-          }
-
-          if (mutation.type === 'attributes' && !mutation.attributeName.startsWith('data-gjs')) {
-            shouldUpdate = true;
-            break;
-          }
-
-          if (mutation.type === 'characterData' || mutation.type === 'childList') {
-            shouldUpdate = true;
-            break;
-          }
-        }
-
-        if (shouldUpdate) {
-          clearTimeout(grapesToMonacoTimer);
-          grapesToMonacoTimer = setTimeout(() => {
-            updateMonacoFromGrapesJS(mainEditor);
-          }, timeUpdate);
-        }
-      });
-
-      observer.observe(frameDoc.body, {
-        childList: true,
-        subtree: true,
-        characterData: true,
-        attributes: true,
-        attributeOldValue: true,
-      });
-
-      // const onMouseEnter = () => { isHovering = true; };
-      // const onMouseLeave = () => { isHovering = false; };
-
-      // frameDoc.body.addEventListener('mouseenter', onMouseEnter, true);
-      // frameDoc.body.addEventListener('mouseleave', onMouseLeave, true);
-
-      // disposables.push({
-      //   dispose: () => {
-      //     frameDoc.body.removeEventListener('mouseenter', onMouseEnter, true);
-      //     frameDoc.body.removeEventListener('mouseleave', onMouseLeave, true);
-      //   }
-      // });
-
-    }).catch((err) => {
-      console.error('Error:', err.message);
     });
+
   }
+
+
+
+  function startGrapsjsMonocoConnection(frame) {
+
+    const frameDoc = frame.contentDocument || frame.contentWindow.document;
+
+    if (!frame) return;
+
+    observer = new MutationObserver((mutations) => {
+
+      if (isMonacoTyping || isSelectingFromMonaco) return;
+
+      let shouldUpdate = false;
+
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const newClasses = [...mutation.target.classList];
+          const oldClasses = mutation.oldValue ? mutation.oldValue.split(/\s+/) : [];
+
+          const changedClasses = [
+            ...newClasses.filter(c => !oldClasses.includes(c)),
+            ...oldClasses.filter(c => !newClasses.includes(c))
+          ];
+
+          if (changedClasses.every(cls => cls.startsWith('gjs-'))) continue;
+          shouldUpdate = true;
+          break;
+        }
+
+        if (mutation.type === 'attributes' && !mutation.attributeName.startsWith('data-gjs')) {
+          shouldUpdate = true;
+          break;
+        }
+
+        if (mutation.type === 'characterData' || mutation.type === 'childList') {
+          shouldUpdate = true;
+          break;
+        }
+      }
+
+      if (shouldUpdate) {
+        clearTimeout(grapesToMonacoTimer);
+        grapesToMonacoTimer = setTimeout(() => {
+          updateMonacoFromGrapesJS(mainEditor);
+        }, timeUpdate);
+      }
+    });
+
+    observer.observe(frameDoc.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeOldValue: true,
+    });
+
+  }
+
+
 
   observeGrapesJS(mainEditor);
 
@@ -676,8 +657,8 @@ function initMonacoEditors(mainEditor, htmlContainer, cssContainer) {
   window.monacoEditor = createHtmlEditor(htmlContainer, currentHtml);
   window.cssMonacoContainer = createCssEditor(cssContainer, formatCssString(currentCss));
 
-  setupHtmlEditorEvents(window.monacoEditor, mainEditor);
-  setupCssEditorEvents(window.cssMonacoContainer, mainEditor);
+  setupHtmlEditorEvents(window.monacoEditor, window.cssMonacoContainer, mainEditor);
+  setupCssEditorEvents(window.monacoEditor, window.cssMonacoContainer, mainEditor);
   setupComponentNavigation(mainEditor);
 
   setupCSSSuggestions();
@@ -811,15 +792,16 @@ function createCssEditor(container, value) {
   });
 }
 
-function setupHtmlEditorEvents(monacoEditor, mainEditor) {
+function setupHtmlEditorEvents(monacoEditor, cssMonacoContainer, mainEditor) {
   monacoEditor.onDidChangeModelContent((e) => {
     const code = monacoEditor.getValue();
+    const cssCodeValue = cssMonacoContainer.getValue();
 
     if (window.isUpdatingFromGrapesJS || window.isAutoRenamingTag || (window.preventAutoFormatting && window.preventAutoFormatting())) {
       return;
     }
 
-    tryAutoRenameHtmlTag(e, monacoEditor);
+    // tryAutoRenameHtmlTag(e, monacoEditor);
 
     window.isUserTyping = true;
     window.hasUserTyped = true;
@@ -833,6 +815,7 @@ function setupHtmlEditorEvents(monacoEditor, mainEditor) {
 
       mainEditor.DomComponents.getWrapper().set('content', '');
       mainEditor.setComponents(code.trim());
+      mainEditor.setStyle(cssCodeValue);
       mainEditor.store();
       updateLivePreview(code, window.cssMonacoContainer?.getValue() || '');
     } catch (error) {
@@ -873,9 +856,10 @@ function setupHtmlEditorEvents(monacoEditor, mainEditor) {
   });
 }
 
-function setupCssEditorEvents(cssMonacoContainer, mainEditor) {
+function setupCssEditorEvents(monacoEditor, cssMonacoContainer, mainEditor) {
   cssMonacoContainer.onDidChangeModelContent(() => {
     const cssCodeValue = cssMonacoContainer.getValue();
+    const code = monacoEditor.getValue();
 
     if (window.isUpdatingFromGrapesJS || (window.preventAutoFormatting && window.preventAutoFormatting())) {
       return;
@@ -883,15 +867,17 @@ function setupCssEditorEvents(cssMonacoContainer, mainEditor) {
 
     window.isUserTyping = true;
     window.hasUserTyped = true;
+    const cssSuggestionsTimer = 500;
     clearTimeout(window.typingTimer);
     window.typingTimer = setTimeout(() => {
       window.isUserTyping = false;
       updateCSSSuggestions();
-    }, 1000);
+    }, cssSuggestionsTimer);
 
     try {
       window.isFromMonaco = true;
 
+      mainEditor.setComponents(code.trim());
       mainEditor.setStyle(cssCodeValue);
       mainEditor.store();
       updateLivePreview(window.monacoEditor?.getValue() || '', cssCodeValue);
@@ -965,7 +951,7 @@ function handleHtmlEditorClick(event, monacoEditor, mainEditor) {
     if (tagMatch) {
       window.lastClickPosition.tagName = tagMatch[1];
       selectComponentByTag(tagMatch[1], mainEditor);
-      safeRestoreScrollPosition(monacoEditor, currentScrollTop, currentScrollLeft, lineNumber, column);
+      // safeRestoreScrollPosition(monacoEditor, currentScrollTop, currentScrollLeft, lineNumber, column);
       return;
     }
   }
@@ -973,7 +959,7 @@ function handleHtmlEditorClick(event, monacoEditor, mainEditor) {
   if (elementId) {
     window.lastClickPosition.componentId = elementId;
     selectComponentById(elementId, mainEditor);
-    safeRestoreScrollPosition(monacoEditor, currentScrollTop, currentScrollLeft, lineNumber, column);
+    // safeRestoreScrollPosition(monacoEditor, currentScrollTop, currentScrollLeft, lineNumber, column);
     return;
   }
 
@@ -981,7 +967,7 @@ function handleHtmlEditorClick(event, monacoEditor, mainEditor) {
   if (closestComponent) {
     mainEditor.select(closestComponent);
     highlightSelectedComponent(mainEditor);
-    safeRestoreScrollPosition(monacoEditor, currentScrollTop, currentScrollLeft, lineNumber, column);
+    // safeRestoreScrollPosition(monacoEditor, currentScrollTop, currentScrollLeft, lineNumber, column);
   }
 }
 
@@ -1548,8 +1534,8 @@ window.simpleFix = function () {
     });
 
     if (mainEditor) {
-      setupHtmlEditorEvents(window.monacoEditor, mainEditor);
-      setupCssEditorEvents(window.cssMonacoContainer, mainEditor);
+      setupHtmlEditorEvents(window.monacoEditor, window.cssMonacoContainer, mainEditor);
+      setupCssEditorEvents(window.monacoEditor, window.cssMonacoContainer, mainEditor);
     }
 
 

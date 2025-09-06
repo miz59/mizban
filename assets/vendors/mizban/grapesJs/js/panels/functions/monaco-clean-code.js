@@ -68,10 +68,10 @@ function formatHtmlCode(html) {
 }
 
 function formatCssCode(css) {
+    css = css.replace(/:\s+([a-zA-Z-]+)/g, ':$1');
     css = css.replace(/\s*{\s*/g, ' {\n');
     css = css.replace(/\s*}\s*/g, '\n}\n');
     css = css.replace(/(^|\n)\s*([^{\n]+?)\s*{/, (m, p1, p2) => `\n${p2.trim()} {`);
-    css = css.replace(/:\s*/g, ': ');
 
     let lines = css.split(/\n+/).map(line => line.trim()).filter(Boolean);
     let result = '';

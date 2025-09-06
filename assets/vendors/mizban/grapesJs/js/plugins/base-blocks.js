@@ -237,7 +237,7 @@ function base_blocks(editor) {
     });
 
     editor.Blocks.add(`h1`, {
-        label: `<i class="fa-solid fa-heading">H</i><span>heading 1</span>`,
+        label: `<i class="fa-solid fa-heading"></i><span>heading 1</span>`,
         attributes: { class: `block` },
         category: category.heading,
 
@@ -252,24 +252,8 @@ function base_blocks(editor) {
 
     });
 
-    // editor.Blocks.add(`hossein`, {
-    //     label: `<i class="fa-solid fa-heading"></i><span>hossein</span>`,
-    //     attributes: {class: `block`},
-    //     category: category.heading,
-
-    //     content: {
-    //         tagName: `h1`,
-    //         type: "hossein",
-    //         attributes: {class: "blocks"},
-    //         content: ` this is header 1`,
-    //         draggable: true,
-    //         droppable: true,
-    //     },
-
-    // });
-
     editor.Blocks.add(`h2`, {
-        label: `<i class="fa-solid fa-heading">H</i><span>heading 2</span>`,
+        label: `<i class="fa-solid fa-heading"></i><span>heading 2</span>`,
         attributes: { class: `block` },
         category: category.heading,
 
@@ -284,7 +268,7 @@ function base_blocks(editor) {
     });
 
     editor.Blocks.add(`h3`, {
-        label: `<i class="fa-solid fa-heading">H</i><span>heading 3</span>`,
+        label: `<i class="fa-solid fa-heading"></i><span>heading 3</span>`,
         attributes: { class: `block` },
         category: category.heading,
 
@@ -299,7 +283,7 @@ function base_blocks(editor) {
     });
 
     editor.Blocks.add(`h4`, {
-        label: `<i class="fa-solid fa-heading">H</i><span>heading 4</span>`,
+        label: `<i class="fa-solid fa-heading"></i><span>heading 4</span>`,
         attributes: { class: `block` },
         category: category.heading,
 
@@ -316,7 +300,7 @@ function base_blocks(editor) {
 
 
     editor.Blocks.add(`h5`, {
-        label: `<i class="fa-solid fa-heading">H</i><span>heading 5</span>`,
+        label: `<i class="fa-solid fa-heading"></i><span>heading 5</span>`,
         attributes: { class: `block` },
         category: category.heading,
 
@@ -333,7 +317,7 @@ function base_blocks(editor) {
 
 
     editor.Blocks.add(`h6`, {
-        label: `<i class="fa-solid fa-heading">H</i><span>heading 6</span>`,
+        label: `<i class="fa-solid fa-heading"></i><span>heading 6</span>`,
         attributes: { class: `block` },
         category: category.heading,
 
