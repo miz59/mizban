@@ -1,4 +1,3 @@
-// ===== DRAGGABLE MODAL SETUP =====
 export function setupDraggableModal(modal) {
   function createDraggableWrapper() {
     const existingWrapper = document.querySelector('.monaco-draggable-wrapper');
@@ -54,7 +53,6 @@ export function setupDraggableModal(modal) {
   window.monacoDraggableContent = content;
 }
 
-// ===== DRAGGING FUNCTIONALITY =====
 function setupDragging(header, wrapper) {
   let isDragging = false;
   let startX, startY, startLeftPercent, startTopPercent;
@@ -95,7 +93,6 @@ function setupDragging(header, wrapper) {
     let newLeft = startLeftPercent + deltaX;
     let newTop = startTopPercent + deltaY;
 
-    // محدود کردن به داخل صفحه
     const maxLeft = 100 - (wrapper.offsetWidth / window.innerWidth) * 100;
     const maxTop = 100 - (wrapper.offsetHeight / window.innerHeight) * 100;
 

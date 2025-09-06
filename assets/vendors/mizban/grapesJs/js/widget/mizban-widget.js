@@ -35,15 +35,6 @@ export function copyCSSLinksToIframe(editor) {
     });
 }
 
-// export function setupComponentIdListener(editor) {
-//     editor.on('component:add', (component) => {
-//         const currentId = component.getId();
-//         if (currentId && !currentId.startsWith('mizban-')) {
-//             component.setId(`mizban-${currentId}`);
-//         }
-//     });
-// }
-
 export function setupCommand(editor, name, callback) {
     editor.Commands.add(name, {
         run(editor, sender) {
@@ -60,14 +51,10 @@ export function initializeCSSAutocomplete(editor) {
                 setupClassManagerAutocomplete(editor, cssClasses);
             }
         })
-        .catch(error => {
-            // Silent fail - no CSS classes available
-        });
+        .catch(error => {});
 }
 
-// تابع جدید برای تنظیم autocomplete در Class Manager
 function setupClassManagerAutocomplete(editor, cssClasses) {
-    // اضافه کردن event listener برای Class Manager
     editor.on('component:selected', function(component) {
         setTimeout(() => {
             const classInput = document.querySelector('#gjs-clm-new');
@@ -77,7 +64,6 @@ function setupClassManagerAutocomplete(editor, cssClasses) {
         }, 100);
     });
     
-    // اضافه کردن event listener برای Class Manager panel
     editor.on('panel:open', function(panel) {
         if (panel.id === 'gjs-clm') {
             setTimeout(() => {
@@ -90,7 +76,6 @@ function setupClassManagerAutocomplete(editor, cssClasses) {
     });
 }
 
-// تابع برای دریافت CSS classes به صورت select options
 export function getCSSClassesAsOptions() {
     return new Promise((resolve) => {
         getCSSClassesFromFiles()
@@ -102,11 +87,9 @@ export function getCSSClassesAsOptions() {
                 resolve(options);
             })
             .catch(() => {
-                // اگر فایل‌های CSS در دسترس نباشند، array خالی برگردان
                 resolve([]);
             });
     });
 }
 
-// Re-export توابع از css-classes.js
 export { addCSSFile, removeCSSFile, getCSSFiles };

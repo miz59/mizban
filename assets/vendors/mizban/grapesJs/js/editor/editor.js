@@ -63,15 +63,17 @@ export function initEditor(content = { html: '', css: '' }) {
 
     editor.on('load', () => {
         const iframe = editor.Canvas.getFrameEl();
-        const script = document.createElement('script');
-        script.src = '/assets/js/mizchin.min.js';
-        iframe.contentDocument.body.appendChild(script);
-
-        script.onload = () => {
-            if (iframe.contentWindow.MizchinInit) {
-                iframe.contentWindow.MizchinInit();
-            }
-        };
+        const mizchin = document.createElement('script');
+        mizchin.src = '/assets/js/mizchin.min.js';
+        const mizCss = document.createElement('link');
+        mizCss.rel = 'stylesheet';
+        mizCss.href = '/assets/css/miz.min.css';
+        const customCssGrapesJs = document.createElement('link');
+        customCssGrapesJs.rel = 'stylesheet';
+        customCssGrapesJs.href = '/assets/vendors/mizban/grapesJs/css/custom-grapesJs.css';
+        iframe.contentDocument.body.appendChild(mizchin);
+        iframe.contentDocument.head.appendChild(mizCss);
+        iframe.contentDocument.head.appendChild(customCssGrapesJs);
 
 
         setTimeout(() => {
@@ -87,8 +89,6 @@ export function initEditor(content = { html: '', css: '' }) {
         editor_panelManager(editor);
         code_editor(editor);
         initializeWidgets(editor);
-
-
     });
 
 

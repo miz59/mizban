@@ -1,7 +1,6 @@
 function navigateToComponent(component, mainEditor) {
     if (!window.monacoEditor || !component) return;
 
-    // موقع انتخاب از GrapesJS می‌خوایم فقط ناوبری کنیم نه آپدیت
     window.isNavigatingFromGrapes = true;
 
     try {
@@ -24,11 +23,9 @@ function navigateToComponent(component, mainEditor) {
             }
         }
 
-        // ... (بقیه کد همون قبلی بمونه)
     } catch (error) {
         console.error('Error navigating to component in Monaco:', error);
     } finally {
-        // بعد از یک زمان کوتاه فلگ رو غیر فعال کن
         setTimeout(() => {
             window.isNavigatingFromGrapes = false;
         }, 300);
@@ -105,7 +102,6 @@ function setupComponentNavigation(mainEditor) {
             navigateToComponent(component, mainEditor);
         }, 50);
     });
-
 }
 
 export { navigateToComponent, setupComponentNavigation };

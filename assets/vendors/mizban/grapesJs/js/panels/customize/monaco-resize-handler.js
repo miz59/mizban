@@ -1,4 +1,3 @@
-// ===== RESIZE FUNCTIONALITY =====
 export function setupResizeHandling(editorContainer, htmlContainer, cssContainer, resizeHandle) {
   let isResizing = false;
   let startX, startLeftPercent;

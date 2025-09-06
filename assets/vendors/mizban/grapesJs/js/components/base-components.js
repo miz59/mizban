@@ -133,18 +133,6 @@ function base_component(editor) {
             }
         }
     });
-
-    // const script = function (){
-    //     console.log(this.dataset.time);
-    // };
-    // editor.DomComponents.addType("sq" , {
-    //     model:{
-    //         defaults:{
-    //             script,
-    //             attributes:{'data-time':'55' , }
-    //         }
-    //     }
-    // });
 }
 
 

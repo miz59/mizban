@@ -34,20 +34,7 @@ function editor_events(editor) {
         body.on('change:font-family', (model, value) => {
             body.setStyle({ 'font-family': value });
         });
-
-
-
     })
-
-
-    // editor.on('block:drag:stop', function (model) {
-    //     if (model.attributes.tagName === "img") {
-    //         editor.runCommand('open-assets');
-    //     }
-    //     model.addStyle({
-    //         // padding: '10px',
-    //     });
-    // });
 }
 
 export { editor_events }

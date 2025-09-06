@@ -8,17 +8,6 @@ export function createCSSClassDropdown(input, cssClasses) {
 
     const dropdownContainer = document.createElement('div');
     dropdownContainer.id = 'cssClassDropdown';
-    // dropdownContainer.style.cssText = `
-    //     width: 100%;
-    //     height:calc(33px * 3);
-    //     overflow-y: auto;
-    //     background-color: white;
-    //     border: 1px solid #ccc;
-    //     border-radius: 4px;
-    //     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    //     display: none;
-    //     margin-top:1rem;
-    // `;
 
     input.parentNode.appendChild(dropdownContainer);
 
@@ -29,14 +18,10 @@ export function createCSSClassDropdown(input, cssClasses) {
         const items = dropdownContainer.querySelectorAll('div');
         items.forEach((item, i) => {
             if (i === index) {
-                // item.style.backgroundColor = '#cce4ff';
-                // item.classList.remove("bg-secondary-color");
                 item.classList.add("selected");
                 item.scrollIntoView({ block: 'nearest' });
             } else {
-                // item.style.backgroundColor = 'white';
                 item.classList.remove("selected");
-                // item.classList.add("bg-secondary-color");
             }
         });
     }

@@ -1,4 +1,3 @@
-// ===== EDITOR CONTAINER CREATION =====
 export function createEditorContainer() {
   const editorContainer = document.createElement('div');
   editorContainer.className = 'monaco-editor-container';

@@ -5,10 +5,6 @@ class cleanConfirmation {
 
     setupImportCommand(){
         this.editor.Commands.add('clean-canvas', {
-            // run: () => {
-            //     // sender && sender.set('active', 0);
-            //     this.show();
-            // }
             run: () => this.show()
         });
     }

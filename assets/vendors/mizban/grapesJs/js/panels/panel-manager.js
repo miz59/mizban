@@ -4,7 +4,6 @@ import { codeImportManager } from "./monaco-code-import.js";
 import { setupPreviewManager } from "./preview-manager.js";
 import { cleanConfirmation } from "./clean-canvas.js";
 import { refreshCanvasManager } from "./refresh-canvas.js";
-// import { saveProject } from "./save-project.js";
 
 class PanelManager {
     constructor(editor) {
@@ -13,9 +12,6 @@ class PanelManager {
         this.setupDevicePanel();
         this.setupCodeEditorWithFormat();
         this.setupPreview();
-
-        // const saveProjectOnFile = new saveProject(editor);
-        // saveProjectOnFile.setupImportCommand();
 
         const cleanCanvas = new cleanConfirmation(editor);
         cleanCanvas.setupImportCommand();
@@ -41,7 +37,6 @@ class PanelManager {
             this.createButton('importCode', 'fa fa-upload', 'import-code-from-html', 'import code from html'),
             this.createButton('undo', 'fa fa-undo', 'core:undo', 'undo'),
             this.createButton('redo', 'fa fa-rotate-right', 'core:redo', 'redo'),
-            // this.createSaveButton(),
             this.createRefreshCanvasButton(),
             this.createPreviewButton(),
             this.createCleanButton(),
@@ -93,15 +88,6 @@ class PanelManager {
             command: this.showAboutModal.bind(this)
         };
     }
-
-    // createSaveButton() {
-    //     return {
-    //         id: 'save-button',
-    //         className: 'fa fa-save',
-    //         command: 'save-project',
-    //         attributes: { title: 'Save Project' }
-    //     };
-    // }
 
     showAboutModal(editor) {
         editor.Modal.open({

@@ -103,17 +103,8 @@ function code_editor(editor) {
 
     const importButton = new ImportButton(editor);
 
-    // setupHtmlImportCommand(
-    //     editor,
-    //     codeViewer.getViewer(),
-    //     editor.Modal,
-    //     editorContainer.container,
-    //     importButton.getButton()
-    // );
-
     setupCodeEditorCommand(
         editor,
-        // editor.Modal,
         editorContainer.container,
         editorContainer.monacoContainer,
         editorContainer.resizer,

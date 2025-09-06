@@ -9,7 +9,6 @@ const __dirname = path.dirname(__filename);
 const componentsDir = path.join(__dirname, `../../../../miz/themes/${config.theme}/components`);
 let componentJson = {};
 
-// استخراج محتوا از تگ <body>
 function extractBodyContent(html) {
     const bodyRegex = /<body[^>]*>([\s\S]*?)<\/body>/i;
     const match = html.match(bodyRegex);
@@ -19,19 +18,16 @@ function extractBodyContent(html) {
     return '';
 }
 
-// حذف div مخصوص آیکون
 function removeIconDiv(content) {
     return content.replace(/<div class="miz-block-icon">[\s\S]*?<\/div>/i, '').trim();
 }
 
-// استخراج محتوا برای آیکون
 function extractIconContent(html) {
     const iconRegex = /<div class="miz-block-icon">([\s\S]*?)<\/div>/i;
     const match = html.match(iconRegex);
     return match && match[1] ? match[1].trim() : '';
 }
 
-// پردازش پوشه‌ها و فایل‌ها
 function processComponentsDir() {
     const firstLevelItems = fs.readdirSync(componentsDir, { withFileTypes: true });
 
@@ -45,16 +41,14 @@ function processComponentsDir() {
             const files = subItems.filter(sub => sub.isFile() && sub.name.endsWith('.html'));
 
             if (folders.length > 0) {
-                // اولویت با پوشه → فقط پوشه‌ها را اضافه می‌کنیم
                 folders.forEach(subFolder => {
                     const subFolderPath = path.join(itemPath, subFolder.name);
 
-                    // فایل‌های مستقیم داخل این پوشه سطح دوم
                     const subFiles = fs.readdirSync(subFolderPath, { withFileTypes: true })
                         .filter(f => f.isFile() && f.name.endsWith('.html'));
 
                     if (subFiles.length > 0) {
-                        const firstFile = subFiles[0]; // اگر چند فایل هست فقط اولین فایل را اضافه می‌کنیم
+                        const firstFile = subFiles[0]; 
                         const filePath = path.join(subFolderPath, firstFile.name);
 
                         const htmlContent = fs.readFileSync(filePath, 'utf8');
@@ -64,7 +58,6 @@ function processComponentsDir() {
                             category: item.name
                         }];
                     }
-                    // اگر پوشه سطح دوم هیچ فایل HTML نداشته باشد → نادیده گرفته می‌شود
                 });
             }
             else if (files.length > 0) {
@@ -78,18 +71,7 @@ function processComponentsDir() {
                     }];
                 });
             }
-        } 
-        // else if (item.isFile() && item.name.endsWith('.html')) {
-        //     const filePath = itemPath;
-        //     const nameWithoutExt = path.basename(item.name, '.html');
-
-        //     const htmlContent = fs.readFileSync(filePath, 'utf8');
-        //     componentJson[nameWithoutExt] = [{
-        //         code: extractBodyContent(htmlContent),
-        //         icon: extractIconContent(htmlContent),
-        //         category: 'components'
-        //     }];
-        // }
+        }
     });
 
     saveAsJSFile(componentJson);

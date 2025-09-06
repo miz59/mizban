@@ -29,7 +29,6 @@ export function makeWrapperResizable(wrapper) {
         wrapper.appendChild(h);
     });
 
-    // --- مقدار اولیه برای monaco-content
     const r = wrapper.getBoundingClientRect();
     const initW = (r.width / window.innerWidth) * 100;
     const initH = (r.height / window.innerHeight) * 100;
@@ -41,7 +40,6 @@ export function makeWrapperResizable(wrapper) {
         content.style.width = pxWidth + 'px';
         content.style.height = pxHeight + 'px';
     }
-    // ---
 
     let isResizing = false;
     let currentHandle = null;
@@ -59,9 +57,6 @@ export function makeWrapperResizable(wrapper) {
             startH = (r.height / window.innerHeight) * 100;
             startL = (r.left / window.innerWidth) * 100;
             startT = (r.top / window.innerHeight) * 100;
-
-            // handle.style.width = '10vw';
-            // handle.style.height = '10vw';
 
             wrapper.style.transform = 'none';
             document.body.style.userSelect = 'none';

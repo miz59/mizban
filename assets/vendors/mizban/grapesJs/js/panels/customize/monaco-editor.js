@@ -4,7 +4,6 @@ import { setupDraggableModal } from './monaco-draggable-modal.js';
 import { initializeMonacoEditors } from './monaco-editors-manager.js';
 import { makeWrapperResizable  } from './monaco-resize-panel.js';
 
-// ===== MONACO EDITOR SETUP =====
 function setupCodeEditorCommand(editor , modal) {
     editor.Commands.add('code-editor', {
         run: (mainEditor, sender) => {
@@ -25,7 +24,6 @@ function setupCodeEditorCommand(editor , modal) {
             setupResizeHandling(editorContainer, htmlContainer, cssContainer, resizeHandle);
 
             wrapperContent.appendChild(editorContainer);
-            // setEditorHeader(mainEditor);
             resetEditorsResize(htmlContainer, cssContainer);
 
             initializeMonacoEditors(mainEditor, editorContainer);
@@ -34,10 +32,4 @@ function setupCodeEditorCommand(editor , modal) {
     });
 }
 
-// ===== UTILITY FUNCTIONS =====
-// function setEditorHeader(mainEditor) {
-//     // Placeholder for future header setup
-// }
-
-// ===== EXPORTS =====
 export { setupCodeEditorCommand }; 

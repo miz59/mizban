@@ -4,13 +4,6 @@
         return;
     }
 
-    // if (document.querySelector('html[dir="rtl"]')) {
-    //     const htmlRtl = document.querySelector('html[dir="rtl"]');
-    //     htmlRtl.setAttribute('dir', 'ltr');
-    //     const iframeCanvas = document.querySelector('.gjs-frame');
-    //     console.log(iframeCanvas);
-    // }
-
     const body = document.body;
     const head = document.head;
 
