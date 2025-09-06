@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-const scssFiles = ['./miz/sass/config/_responsive.scss'];
+const scssFiles = [`${process.cwd()}/miz/sass/config/_responsive.scss`];
 
 const variableNames = ['$conf-cols','$break-points',];
 
@@ -49,7 +49,7 @@ async function extractScssVariables() {
       .map(([key, value]) => `export const ${key} = ${value};`)
       .join('\n');
 
-    await fs.writeFile('./assets/vendors/mizban/commands/variables.js', jsContent);
+    await fs.writeFile(`${window.location.origin}/assets/vendors/mizban/commands/variables.js`, jsContent);
     console.log('SCSS variables extracted to variables.js');
   } catch (err) {
     console.error('Error reading or writing files:', err);

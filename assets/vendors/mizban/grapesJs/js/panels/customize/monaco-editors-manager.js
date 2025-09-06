@@ -4,7 +4,7 @@ import { updateEditorWithFormat } from '../functions/monaco-update-code.js';
 import { getCombinedCSSClasses, createMonacoSuggestions, createSmartHtmlSuggestions } from '../functions/css-classes.js';
 
 const MONACO_CONFIG = {
-    CDN_URL: './assets/vendors/mizban/playground',
+    CDN_URL: `${window.location.origin}/assets/vendors/mizban/playground`,
     EDITOR_OPTIONS: {
         theme: 'vs-dark',
         automaticLayout: true,

@@ -163,11 +163,11 @@ function setContentPreview(doc) {
         baseUrl.href = '/';
         
         let fontawesomeIcon = iframeDoc.createElement('link');
-        fontawesomeIcon.href = './assets/icons/fontawesome/css/all.min.css';
+        fontawesomeIcon.href = `${window.location.origin}/assets/icons/fontawesome/css/all.min.css`;
         fontawesomeIcon.rel = 'stylesheet';
 
         let mizCss = iframeDoc.createElement('link');
-        mizCss.href = './assets/css/miz.min.css';
+        mizCss.href = `${window.location.origin}/assets/css/miz.min.css`;
         mizCss.rel = 'stylesheet';
 
         let stylePreview = iframeDoc.createElement('style');

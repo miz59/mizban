@@ -1,4 +1,4 @@
-let cssFileUrl = './assets/vendors/mizban/grapesJs/js/cssRules/cssRules.css';
+let cssFileUrl = `${window.location.origin}/assets/vendors/mizban/grapesJs/js/cssRules/cssRules.css`;
 
 
 async function fetchCSSContent(url) {

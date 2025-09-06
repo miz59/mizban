@@ -1,12 +1,15 @@
 import fs from 'fs';
 import path from 'path';
-import { config } from '../../../../miz/themes/scripts.js';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
+
+const configPath = path.join(process.cwd(), 'miz', 'themes', 'scripts.js');
+const { config } = await import(pathToFileURL(configPath).href);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const rootDir = process.cwd()
 
-const componentsDir = path.join(__dirname, `../../../../miz/themes/${config.theme}/components`);
+const componentsDir = `${rootDir}/miz/themes/${config.theme}/components`;
 let componentJson = {};
 
 function extractBodyContent(html) {

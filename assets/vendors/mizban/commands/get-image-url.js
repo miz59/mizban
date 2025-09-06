@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const imagesFolder = path.join(__dirname, '../../../media/images');
+const imagesFolder = `${window.location.origin}/assets/media/images`;
 
 const getImageUrls = () => {
 
@@ -19,7 +19,7 @@ const getImageUrls = () => {
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.svg', '.webp'];
     const imageUrls = files
         .filter(file => imageExtensions.includes(path.extname(file).toLowerCase()))
-        .map(file => `./assets/media/images/${file}`);
+        .map(file => `${window.location.origin}/assets/media/images/${file}`);
     
     return imageUrls;
 };
