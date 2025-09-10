@@ -32,43 +32,21 @@
         return document.getElementById('canvas');
     }
 
-    // function addStyles() {
-    //     if (hasPreviewParam()) return;
-
-    //     const styles = [
-    //         '/assets/vendors/mizban/grapesJs/css/grapesJs.css',
-    //         '/assets/vendors/mizban/grapesJs/css/monaco-editor.css',
-    //         '/assets/vendors/mizban/grapesJs/css/custom-grapesJs.css',
-    //     ];
-
-    //     styles.forEach(href => {
-    //         if (!document.head.querySelector(`link[href*="${href}"]`)) {
-    //             const link = document.createElement('link');
-    //             link.rel = 'stylesheet';
-    //             link.href = href;
-    //             head.appendChild(link);
-    //         }
-    //     });
-    // }
-
     function addStyles() {
         if (hasPreviewParam()) return;
 
-        const baseURLCss = `${window.location.origin}/assets/vendors/mizban/grapesJs/css/`;
-
         const styles = [
-            'grapesJs.css',
-            'monaco-editor.css',
-            'custom-grapesJs.css',
+            '/assets/vendors/mizban/grapesJs/css/grapesJs.css',
+            '/assets/vendors/mizban/grapesJs/css/monaco-editor.css',
+            '/assets/vendors/mizban/grapesJs/css/custom-grapesJs.css',
         ];
 
-        styles.forEach(file => {
-            const href = baseURLCss + file;
-            if (!document.head.querySelector(`link[href="${href}"]`)) {
+        styles.forEach(href => {
+            if (!document.head.querySelector(`link[href*="${href}"]`)) {
                 const link = document.createElement('link');
                 link.rel = 'stylesheet';
                 link.href = href;
-                document.head.appendChild(link);
+                head.appendChild(link);
             }
         });
     }
