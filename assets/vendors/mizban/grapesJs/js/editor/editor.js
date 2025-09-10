@@ -73,8 +73,16 @@ export function initEditor(content = { html: '', css: '' }) {
         const customCssGrapesJs = document.createElement('link');
         customCssGrapesJs.rel = 'stylesheet';
         customCssGrapesJs.href = '/assets/vendors/mizban/grapesJs/css/custom-grapesJs.css';
+        const fontawesomeIcon = document.createElement('link');
+        fontawesomeIcon.rel = 'stylesheet';
+        fontawesomeIcon.href = '/assets/icons/fontawesome/css/all.min.css';
+        const customStyle = document.createElement('link');
+        customStyle.rel = 'stylesheet';
+        customStyle.href = '/assets/css/style.min.css';
         iframe.contentDocument.body.appendChild(mizchin);
         iframe.contentDocument.head.appendChild(mizCss);
+        iframe.contentDocument.head.appendChild(fontawesomeIcon);
+        iframe.contentDocument.head.appendChild(customStyle);
         iframe.contentDocument.head.appendChild(customCssGrapesJs);
 
 

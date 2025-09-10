@@ -4,7 +4,7 @@
   "description": "null",
   "type": "module",
   "scripts": {
-    "watch-sass": "sass --watch --update --style=expanded sass/style.scss:assets/css/style.css",
+    "watch-sass": "sass --watch --update --style=expanded sass/style.scss:assets/css/style.min.css",
     "build-sass": "sass --no-source-map --style=compressed sass/style.scss:assets/css/style.min.css",
     "watch-miz": "concurrently \"sass --watch --update --style=expanded miz/_index.scss:assets/css/miz.min.css\" \"node miz/pkg/merge-components.js --watch\"",
     "build-miz": "concurrently \"sass --no-source-map --style=compressed miz/_index.scss:assets/css/miz.min.css\" \"node miz/pkg/merge-components.js --build\"",
