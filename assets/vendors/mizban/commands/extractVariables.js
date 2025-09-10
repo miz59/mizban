@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 const scssFiles = [`${process.cwd()}/miz/sass/config/_responsive.scss`];
-
+    console.log('hossein');
 const variableNames = ['$conf-cols','$break-points',];
 
 function toCamelCase(str) {
@@ -48,8 +48,7 @@ async function extractScssVariables() {
     const jsContent = Object.entries(variables)
       .map(([key, value]) => `export const ${key} = ${value};`)
       .join('\n');
-
-    await fs.writeFile(`${window.location.origin}/assets/vendors/mizban/commands/variables.js`, jsContent);
+    await fs.writeFile(`${process.cwd()}/assets/vendors/mizban/commands/variables.js`, jsContent);
     console.log('SCSS variables extracted to variables.js');
   } catch (err) {
     console.error('Error reading or writing files:', err);

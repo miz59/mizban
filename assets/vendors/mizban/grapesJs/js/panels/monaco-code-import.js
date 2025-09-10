@@ -26,6 +26,7 @@ class codeImportManager {
         this.editor.addComponents(bodyHtml);
 
         const updateMonacoEditors = () => {
+            console.log("Sdsdsd")
             updateEditorWithFormat(this.editor);
         };
 

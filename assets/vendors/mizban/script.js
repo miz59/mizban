@@ -128,16 +128,6 @@
     const canvasDiv = wrapBodyContent();
     if (!canvasDiv) return;
 
-    function changeDir() {
-        const html = document.querySelector('html');
-        if (!hasPreviewParam()) {
-            html.style.setProperty('direction', 'ltr');
-        }
-    }
-
-    changeDir();
     addStyles();
     addScripts();
-
-
 })();

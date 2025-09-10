@@ -61,6 +61,8 @@ export function initEditor(content = { html: '', css: '' }) {
 
     window.editor = editor;
 
+    window.isMonacoActive = true;
+
     editor.on('load', () => {
         const iframe = editor.Canvas.getFrameEl();
         const mizchin = document.createElement('script');
@@ -95,6 +97,10 @@ export function initEditor(content = { html: '', css: '' }) {
     editor.on('asset:remove', (asset) => {
         const src = asset.get('src');
         localStorage.removeItem(src);
+    });
+
+    editor.on('component:selected', () => {
+        window.isMonacoActive = false;
     });
 }
 

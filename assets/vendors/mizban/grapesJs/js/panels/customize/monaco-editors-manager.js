@@ -216,6 +216,13 @@ function setupGrapesJSToMonacoSync(mainEditor) {
 
     const disposables = [];
 
+    monacoEditor.onMouseDown(() => {
+        window.isMonacoActive = true;
+        setTimeout(() => {
+            window.isMonacoActive = true;
+        }, 100);
+    });
+
     const monacoSelectionListener = monacoEditor.onDidChangeCursorSelection(() => {
         isSelectingFromMonaco = true;
         setTimeout(() => {
@@ -232,6 +239,13 @@ function setupGrapesJSToMonacoSync(mainEditor) {
     });
 
     disposables.push(monacoSelectionListener, monacoContentListener);
+
+    cssMonacoContainer.onMouseDown(() => {
+        window.isMonacoActive = true;
+        setTimeout(() => {
+            window.isMonacoActive = true;
+        }, 100);
+    });
 
     const cssSelectionListener = cssMonacoContainer.onDidChangeCursorSelection(() => {
         isSelectingFromMonaco = true;
@@ -257,7 +271,6 @@ function setupGrapesJSToMonacoSync(mainEditor) {
         startGrapsjsMonocoConnection(frame)
         frame.addEventListener('load', function () {
             startGrapsjsMonocoConnection(frame)
-
         });
 
     }
@@ -739,35 +752,48 @@ function createCssEditor(container, value) {
     });
 }
 
+
+
 function setupHtmlEditorEvents(monacoEditor, cssMonacoContainer, mainEditor) {
+    let applyChangesTimer;
+
     monacoEditor.onDidChangeModelContent((e) => {
         const code = monacoEditor.getValue();
         const cssCodeValue = cssMonacoContainer.getValue();
 
-        if (window.isUpdatingFromGrapesJS || window.isAutoRenamingTag || (window.preventAutoFormatting && window.preventAutoFormatting())) {
+        if (
+            window.isUpdatingFromGrapesJS ||
+            window.isAutoRenamingTag ||
+            (window.preventAutoFormatting && window.preventAutoFormatting())
+        ) {
             return;
         }
 
+
+
         window.isUserTyping = true;
-        window.hasUserTyped = true;
+
         clearTimeout(window.typingTimer);
+
         window.typingTimer = setTimeout(() => {
             window.isUserTyping = false;
+
+
+            try {
+                window.isFromMonaco = true;
+                mainEditor.DomComponents.getWrapper().set('content', '');
+                mainEditor.setComponents(code.trim());
+                mainEditor.setStyle(cssCodeValue);
+                mainEditor.store();
+                updateLivePreview(code, window.cssMonacoContainer?.getValue() || '');
+            } catch (error) {
+                console.error('Error updating HTML:', error);
+            }
+
+            try {
+                window._htmlPrevValue = code;
+            } catch (e) { }
         }, 2000);
-
-        try {
-            window.isFromMonaco = true;
-
-            mainEditor.DomComponents.getWrapper().set('content', '');
-            mainEditor.setComponents(code.trim());
-            mainEditor.setStyle(cssCodeValue);
-            mainEditor.store();
-            updateLivePreview(code, window.cssMonacoContainer?.getValue() || '');
-        } catch (error) {
-            console.error('Error updating HTML:', error);
-        }
-
-        try { window._htmlPrevValue = code; } catch (e) { }
     });
 
     monacoEditor.onMouseDown(event => {
@@ -802,33 +828,44 @@ function setupHtmlEditorEvents(monacoEditor, cssMonacoContainer, mainEditor) {
 }
 
 function setupCssEditorEvents(monacoEditor, cssMonacoContainer, mainEditor) {
-    cssMonacoContainer.onDidChangeModelContent(() => {
-        const cssCodeValue = cssMonacoContainer.getValue();
-        const code = monacoEditor.getValue();
+    let applyChangesTimer;
 
-        if (window.isUpdatingFromGrapesJS || (window.preventAutoFormatting && window.preventAutoFormatting())) {
+    cssMonacoContainer.onDidChangeModelContent((e) => {
+        const code = monacoEditor.getValue();
+        const cssCodeValue = cssMonacoContainer.getValue();
+
+        if (
+            window.isUpdatingFromGrapesJS ||
+            window.isAutoRenamingTag ||
+            (window.preventAutoFormatting && window.preventAutoFormatting())
+        ) {
             return;
         }
 
+
+
         window.isUserTyping = true;
-        window.hasUserTyped = true;
-        const cssSuggestionsTimer = 500;
+
         clearTimeout(window.typingTimer);
+
         window.typingTimer = setTimeout(() => {
             window.isUserTyping = false;
-            updateCSSSuggestions();
-        }, cssSuggestionsTimer);
 
-        try {
-            window.isFromMonaco = true;
+            try {
+                window.isFromMonaco = true;
+                mainEditor.DomComponents.getWrapper().set('content', '');
+                mainEditor.setComponents(code.trim());
+                mainEditor.setStyle(cssCodeValue);
+                mainEditor.store();
+                updateLivePreview(code, window.cssMonacoContainer?.getValue() || '');
+            } catch (error) {
+                console.error('Error updating HTML:', error);
+            }
 
-            mainEditor.setComponents(code.trim());
-            mainEditor.setStyle(cssCodeValue);
-            mainEditor.store();
-            updateLivePreview(window.monacoEditor?.getValue() || '', cssCodeValue);
-        } catch (error) {
-            console.error('Error updating CSS:', error);
-        }
+            try {
+                window._htmlPrevValue = code;
+            } catch (e) { }
+        }, 2000);
     });
 
     cssMonacoContainer.updateOptions({
@@ -855,10 +892,6 @@ function setupCssEditorEvents(monacoEditor, cssMonacoContainer, mainEditor) {
             comments: false,
             strings: true
         }
-    });
-
-    cssMonacoContainer.onDidFocusEditorText(() => {
-        cssMonacoContainer.layout();
     });
 }
 
@@ -936,6 +969,7 @@ function selectComponentById(elementId, mainEditor) {
             mainEditor.select(selectedComponent);
             targetElement.click();
             highlightSelectedComponent(mainEditor);
+            mainEditor.Canvas.scrollTo(mainEditor.getSelected(), { behavior: 'smooth' });
         }
     } catch (error) {
         console.warn('Error selecting component by ID:', error);
@@ -961,6 +995,7 @@ function selectComponentByTag(tagName, mainEditor) {
     if (selectedComponent) {
         mainEditor.select(selectedComponent);
         highlightSelectedComponent(mainEditor);
+        mainEditor.Canvas.scrollTo(mainEditor.getSelected(), { behavior: 'smooth' });
     }
 }
 

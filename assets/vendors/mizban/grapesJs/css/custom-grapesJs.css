@@ -225,3 +225,7 @@ body.gjs-dashed [data-gjs-type="wrapper"] main:empty {
     background-image: var(--box-gradient) !important;
     background-color: unset !important;
 }
+
+.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color div[style*="block"]{
+    width: 100%;
+}
