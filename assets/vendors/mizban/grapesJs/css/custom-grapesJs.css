@@ -83,6 +83,11 @@ body.gjs-dashed [data-gjs-type="wrapper"] main:empty {
     min-height: 70px;
 }
 
+body.gjs-dashed [data-gjs-type="wrapper"] nav:empty {
+    min-width: 300px;
+    min-height: 70px;
+}
+
 /* panel styles */
 
 .gjs-pn-panel.gjs-pn-views .gjs-pn-buttons {
