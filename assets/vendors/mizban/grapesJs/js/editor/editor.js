@@ -110,6 +110,11 @@ export function initEditor(content = { html: '', css: '' }) {
     editor.on('component:selected', () => {
         window.isMonacoActive = false;
     });
+
+    editor.on('component:add', (component) => {
+        const currentId = component.getId();
+        component.setId(`${currentId}`);
+    });
 }
 
 initEditor();
