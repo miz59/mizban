@@ -1,6 +1,5 @@
 import { promises as fs } from 'fs';
 const scssFiles = [`${process.cwd()}/miz/sass/config/_responsive.scss`];
-    console.log('hossein');
 const variableNames = ['$conf-cols','$break-points',];
 
 function toCamelCase(str) {
