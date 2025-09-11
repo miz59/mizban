@@ -28,8 +28,8 @@ function device_Manager(editor) {
             deviceManager.add({
                 id: key,
                 name: key,
-                width: index == 0 ? "" : `${newWidth}px`,
-                widthMedia: breakpointOriginalValue,
+                width: index == 0 ? "" : `${newWidth - 1}px`,
+                widthMedia: breakpointNumericValue,
             });
 
 
