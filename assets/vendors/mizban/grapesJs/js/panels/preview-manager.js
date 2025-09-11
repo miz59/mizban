@@ -184,6 +184,7 @@ function setContentPreview(doc) {
 
         iframeDoc.head.appendChild(baseUrl);
         iframeDoc.head.appendChild(fontawesomeIcon);
+        iframeDoc.head.appendChild(styleCss);
         iframeDoc.head.appendChild(mizCss);
         iframeDoc.head.appendChild(stylePreview);
         iframeDoc.body.appendChild(mizchin);
