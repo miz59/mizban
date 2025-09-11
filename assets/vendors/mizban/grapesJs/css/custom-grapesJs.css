@@ -244,3 +244,7 @@ body.gjs-dashed [data-gjs-type="wrapper"] nav:empty {
 .gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color div[style*="block"]{
     width: 100%;
 }
+
+.gjs-am-asset{
+    height: fit-content;
+}

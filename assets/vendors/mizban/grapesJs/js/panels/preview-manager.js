@@ -170,6 +170,10 @@ function setContentPreview(doc) {
         mizCss.href = `${window.location.origin}/assets/css/miz.min.css`;
         mizCss.rel = 'stylesheet';
 
+        let styleCss = iframeDoc.createElement('link');
+        styleCss.href = `${window.location.origin}/assets/css/style.min.css`;
+        styleCss.rel = 'stylesheet';
+
         let stylePreview = iframeDoc.createElement('style');
         stylePreview.innerHTML = css;
 
