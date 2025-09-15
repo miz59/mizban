@@ -1,5 +1,5 @@
 (function () {
-    if (!document.head.querySelector(`link[href*="/assets/css/miz.min.css"]`)) {
+    if (!document.head.querySelector(`link[href*="/miz.min.css"]`)) {
         console.error('You need to include the miz.min.css file');
         return;
     }
