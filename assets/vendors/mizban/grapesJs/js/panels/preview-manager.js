@@ -1,4 +1,4 @@
-import { config } from "../../../../../../miz/themes/scripts.js";
+import { config } from "../../../../../../miz/themes/config.js";
 
 class PreviewManager {
     constructor(editor) {

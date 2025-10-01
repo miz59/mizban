@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 
-const configPath = path.join(process.cwd(), 'miz', 'themes', 'scripts.js');
+const configPath = path.join(process.cwd(), 'miz', 'themes', 'config.js');
 const { config } = await import(pathToFileURL(configPath).href);
 
 const __filename = fileURLToPath(import.meta.url);
