@@ -3,6 +3,10 @@
         console.error('You need to include the miz.min.css file');
         return;
     }
+    if (!document.head.querySelector(`script[defer]`)) {
+        console.error('You need to use defer in script in head file');
+        return;
+    }
 
     const body = document.body;
     const head = document.head;
@@ -82,7 +86,6 @@
             { src: '/assets/vendors/mizban/grapesJs/js/editor/editor.js', type: 'module' },
             { src: '/assets/vendors/mizban/playground/vs/loader.min.js', type: 'text/javascript' },
             { src: '/assets/vendors/mizban/grapesJs/js/assetsManager/assets-manager.js', type: 'module' },
-
         ];
 
         let chain = Promise.resolve();

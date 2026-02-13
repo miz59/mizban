@@ -1,5 +1,5 @@
 export const CSS_FILES = [
-    '/assets/vendors/css/miz.min.css',
+    '/assets/vendors/mizban/compile-css/css/miz.min.css',
 ];
 
 export function extractCSSClasses(cssText) {

@@ -3,10 +3,14 @@ import { initializeWidgets } from '../widget/widget-setup.js';
 import { refreshCanvasManager } from '../panels/refresh-canvas.js';
 import { device_Manager } from "../devices/device-manager.js";
 
-let filename = window.location.pathname.split('/').pop();
-if (!filename) filename = 'index.html';
-const pageId = filename.replace(/\./g, '_');
-const storageKey = `gjs_${pageId}`;
+let path = window.location.pathname;
+path = path.replace(/^\/+/, '');
+if (path.endsWith('/')) {
+    path += 'index.html';
+}
+path = path.replace(/\.html$/, '');
+const pageId = path.replace(/[\/\.]/g, '_');
+const storageKey = `gjs_html_${pageId}`;
 
 let editor;
 
@@ -79,11 +83,19 @@ export function initEditor(content = { html: '', css: '' }) {
         const customStyle = document.createElement('link');
         customStyle.rel = 'stylesheet';
         customStyle.href = '/assets/css/style.min.css';
+
         iframe.contentDocument.body.appendChild(mizchin);
         iframe.contentDocument.head.appendChild(mizCss);
         iframe.contentDocument.head.appendChild(fontawesomeIcon);
         iframe.contentDocument.head.appendChild(customStyle);
         iframe.contentDocument.head.appendChild(customCssGrapesJs);
+
+
+        if (document.dir == 'rtl'){
+            document.dir = 'ltr';
+            const wrapper = iframe.contentDocument.querySelector("div[data-gjs-type='wrapper']");
+            wrapper.dir = 'rtl';
+        }
 
 
         setTimeout(() => {

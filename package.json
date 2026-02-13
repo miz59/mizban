@@ -3,14 +3,10 @@
     "version":"1.0.0",
     "description":"null",
     "type": "module",
-    "scripts":{
-        "watch-sass":"sass --watch --update --style=expanded sass/style.scss:assets/css/style.min.css",
-        "build-sass":"sass --no-source-map --style=compressed sass/style.scss:assets/css/style.min.css",
-        "watch-miz": "concurrently \"sass --watch --update --style=expanded miz/_index.scss:assets/css/miz.min.css\" \"node miz/pkg/merge-components.js --watch\"",
-        "build-miz": "concurrently \"sass --no-source-map --style=compressed miz/_index.scss:assets/css/miz.min.css\" \"node miz/pkg/merge-components.js && terser assets/js/mizchin.js -o assets/js/mizchin.min.js\"",
-        "build-miz-clean": "sass --no-source-map --style=expanded miz/_index.scss:assets/css/miz-clean.css && node miz/pkg/miz-min.cjs && sass --no-source-map --style=compressed miz/_index.scss:assets/vendors/css/miz.min.css",
-        "build-mizban": "node ./assets/vendors/mizban/commands/listFiles.js && node ./assets/vendors/mizban/commands/extractVariables.js",
-        "watch-mizban": "concurrently \"sass --watch --update --style=expanded miz/_index.scss:assets/css/miz.min.css\" \"node miz/pkg/watch-all.js --watch\"",
+    "scripts": {
+        "watch": "concurrently \"sass --watch --update --style=expanded miz/_index.scss:assets/css/miz.min.css\" \"node miz/pkg/miz-controller.js --watch\" \"sass --watch --update --style=expanded sass/style.scss:assets/css/style.min.css\" \"sass --watch --update --style=expanded miz/_index.scss:assets/vendors/mizban/compile-css/css/miz.min.css\"",
+        "build": "concurrently \"sass --no-source-map --style=compressed miz/_index.scss:assets/css/miz.min.css\" \"node miz/pkg/miz-controller.js --build\" \"sass --no-source-map --style=compressed sass/style.scss:assets/css/style.min.css\" \"node ./assets/vendors/mizban/commands/listFiles.js ^&^& node ./assets/vendors/mizban/commands/extractVariables.js\" \"sass --no-source-map --style=compressed miz/_index.scss:assets/vendors/mizban/compile-css/css/miz.min.css\"",
+        "clean": "sass --no-source-map --style=expanded miz/_index.scss:assets/css/miz-clean.css && node miz/pkg/miz-min.cjs",
         "dev": "node miz/pkg/server.js"
     },
     "author":"",

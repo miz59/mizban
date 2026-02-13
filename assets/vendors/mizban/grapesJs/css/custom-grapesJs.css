@@ -100,6 +100,10 @@ body.gjs-dashed [data-gjs-type="wrapper"] nav:empty {
 
 /* panel styles */
 
+body.gjs-dashed [data-gjs-type="wrapper"]{
+    min-height: fit-content;
+}
+
 .gjs-pn-panel.gjs-pn-views .gjs-pn-buttons {
     right: 0;
     position: absolute;
