@@ -1,4 +1,4 @@
-import { updateEditorWithFormat } from './functions/monaco-update-code.js';
+import { updateEditorWithFormat } from './monaco-update-code.js';
 class codeImportManager {
     constructor(editor) {
         this.editor = editor;

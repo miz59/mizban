@@ -1,10 +1,10 @@
-import { createCSSClassDropdown } from '../panels/style-manager.js';
+import { createCSSClassDropdown } from '../plugins/style-manager.js';
 import { 
     getCSSClassesFromFiles, 
     addCSSFile, 
     removeCSSFile, 
     getCSSFiles 
-} from '../panels/functions/css-classes.js';
+} from '../plugins/css-classes.js';
 
 export function createDataListForInput(input, cssClasses) {
     if (!input) return;

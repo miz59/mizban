@@ -1,6 +1,6 @@
 import { setupAssetsManager, editor_panelManager, code_editor, plugins } from "../../Controller.js";
 import { initializeWidgets } from '../widget/widget-setup.js';
-import { refreshCanvasManager } from '../panels/refresh-canvas.js';
+import { refreshCanvasManager } from '../plugins/refresh-canvas.js';
 import { device_Manager } from "../devices/device-manager.js";
 
 let path = window.location.pathname;

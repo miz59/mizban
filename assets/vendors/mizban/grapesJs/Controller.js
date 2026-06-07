@@ -1,7 +1,7 @@
 import { base_component } from "./js/components/base-components.js";
 import { base_blocks } from "./js/plugins/base-blocks.js";
 import { flexColBlock } from "./js/plugins/customize-block.js";
-import { setupAssetsManager } from "./js/assetsManager/assets-manager.js";
+import { setupAssetsManager } from "./js/plugins/assetsManager/assets-manager.js";
 import { cssRules } from "./js/cssRules/cssRules.js";
 import { editor_panelManager } from "./js/panels/panel-manager.js";
 import { code_editor } from "./js/panels/editor-setup.js";

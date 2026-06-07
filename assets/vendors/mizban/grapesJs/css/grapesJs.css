@@ -2364,10 +2364,6 @@ span.CodeMirror-selectedtext {
     height: var(--gjs-canvas-top);
 }
 
-.gjs-devices-c {
-    display: none;
-}
-
 .gjs-devices-c .gjs-device-label {
     flex-grow: 2;
     text-align: left;

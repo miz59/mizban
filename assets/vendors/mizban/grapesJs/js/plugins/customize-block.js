@@ -9,11 +9,12 @@ function flexColBlock(editor) {
         activate: true,
     });
 
-    editor.on('block:drag:stop', (blockModel) => {
-        if (blockModel.view.el.getAttribute('class').includes("modal-block")) {
-            openModal(blockModel);
-        }
-    });
+    // editor.on('block:drag:stop', (blockModel) => {
+    //     console.log(blockModel)
+    //     // if (blockModel.view.el.getAttribute('class').includes("modal-block")) {
+    //     //     openModal(blockModel);
+    //     // }
+    // });
 
     function openModal(blockModel) {
         const modal = editor.Modal;

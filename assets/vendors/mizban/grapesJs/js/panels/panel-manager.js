@@ -1,9 +1,9 @@
 import { breakPoints } from "../../../commands/variables.js";
-import { formatHtmlCode, formatCssCode } from "./functions/monaco-clean-code.js";
-import { codeImportManager } from "./monaco-code-import.js";
-import { setupPreviewManager } from "./preview-manager.js";
-import { cleanConfirmation } from "./clean-canvas.js";
-import { refreshCanvasManager } from "./refresh-canvas.js";
+import { formatHtmlCode, formatCssCode } from "../plugins/monaco/monaco-clean-code.js";
+import { codeImportManager } from "../plugins/monaco/monaco-code-import.js";
+import { setupPreviewManager } from "../plugins/preview-manager.js";
+import { cleanConfirmation } from "../plugins/clean-canvas.js";
+import { refreshCanvasManager } from "../plugins/refresh-canvas.js";
 
 class PanelManager {
     constructor(editor) {

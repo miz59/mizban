@@ -1,7 +1,7 @@
-import { setupComponentNavigation } from '../functions/monaco-navigation-indicator.js';
-import { formatHtmlCode, formatCssCode } from '../functions/monaco-clean-code.js';
-import { updateEditorWithFormat } from '../functions/monaco-update-code.js';
-import { getCombinedCSSClasses, createMonacoSuggestions, createSmartHtmlSuggestions } from '../functions/css-classes.js';
+import { setupComponentNavigation } from './monaco-navigation-indicator.js';
+import { formatHtmlCode, formatCssCode } from './monaco-clean-code.js';
+import { updateEditorWithFormat } from './monaco-update-code.js';
+import { getCombinedCSSClasses, createMonacoSuggestions, createSmartHtmlSuggestions } from '../css-classes.js';
 
 const MONACO_CONFIG = {
     CDN_URL: `${window.location.origin}/assets/vendors/mizban/playground`,
@@ -24,165 +24,165 @@ const MONACO_CONFIG = {
     }
 };
 
-const ADVANCED_MONACO_OPTIONS = {
-    folding: { enabled: true },
-    foldingStrategy: 'auto',
-    showFoldingControls: 'always',
-    bracketPairColorization: { enabled: true },
-    guides: { bracketPairs: true, indentation: true },
-    autoIndent: 'full',
-    formatOnType: true,
-    formatOnPaste: true,
-    formatOnSave: true,
+// const ADVANCED_MONACO_OPTIONS = {
+//     folding: { enabled: true },
+//     foldingStrategy: 'auto',
+//     showFoldingControls: 'always',
+//     bracketPairColorization: { enabled: true },
+//     guides: { bracketPairs: true, indentation: true },
+//     autoIndent: 'full',
+//     formatOnType: true,
+//     formatOnPaste: true,
+//     formatOnSave: true,
 
-    suggest: {
-        showKeywords: true,
-        showSnippets: true,
-        showClasses: true,
-        showFunctions: true,
-        showVariables: true,
-        showConstants: true,
-        showEnums: true,
-        showEnumsMembers: true,
-        showColors: true,
-        showFiles: true,
-        showReferences: true,
-        showFolders: true,
-        showTypeParameters: true,
-        showWords: true,
-        showUsers: true,
-        showIssues: true,
-        showCustomcolors: true,
-        showDeprecated: true,
-        showInterfaces: true,
-        showModules: true,
-        showProperties: true,
-        showEvents: true,
-        showOperators: true,
-        showUnits: true,
-        showValues: true,
-        showConstructors: true,
-        showFields: true,
-        showMethods: true,
-        showFunctions: true,
-        showVariables: true,
-        showConstants: true,
-        showEnums: true,
-        showEnumMembers: true,
-        showKeywords: true,
-        showWords: true,
-        showColors: true,
-        showFiles: true,
-        showReferences: true,
-        showFolders: true,
-        showTypeParameters: true,
-        showUsers: true,
-        showIssues: true,
-        showCustomcolors: true,
-        showDeprecated: true,
-        showInterfaces: true,
-        showModules: true,
-        showProperties: true,
-        showEvents: true,
-        showOperators: true,
-        showUnits: true,
-        showValues: true
-    },
+//     suggest: {
+//         showKeywords: true,
+//         showSnippets: true,
+//         showClasses: true,
+//         showFunctions: true,
+//         showVariables: true,
+//         showConstants: true,
+//         showEnums: true,
+//         showEnumsMembers: true,
+//         showColors: true,
+//         showFiles: true,
+//         showReferences: true,
+//         showFolders: true,
+//         showTypeParameters: true,
+//         showWords: true,
+//         showUsers: true,
+//         showIssues: true,
+//         showCustomcolors: true,
+//         showDeprecated: true,
+//         showInterfaces: true,
+//         showModules: true,
+//         showProperties: true,
+//         showEvents: true,
+//         showOperators: true,
+//         showUnits: true,
+//         showValues: true,
+//         showConstructors: true,
+//         showFields: true,
+//         showMethods: true,
+//         showFunctions: true,
+//         showVariables: true,
+//         showConstants: true,
+//         showEnums: true,
+//         showEnumMembers: true,
+//         showKeywords: true,
+//         showWords: true,
+//         showColors: true,
+//         showFiles: true,
+//         showReferences: true,
+//         showFolders: true,
+//         showTypeParameters: true,
+//         showUsers: true,
+//         showIssues: true,
+//         showCustomcolors: true,
+//         showDeprecated: true,
+//         showInterfaces: true,
+//         showModules: true,
+//         showProperties: true,
+//         showEvents: true,
+//         showOperators: true,
+//         showUnits: true,
+//         showValues: true
+//     },
 
-    links: { enabled: true },
-    hover: { enabled: true },
-    contextmenu: { enabled: true },
-    quickSuggestionsDelay: 10,
-    parameterHints: { enabled: true },
-    suggestOnTriggerCharacters: true,
-    acceptSuggestionOnCommitCharacter: true,
-    acceptSuggestionOnEnter: 'on',
+//     links: { enabled: true },
+//     hover: { enabled: true },
+//     contextmenu: { enabled: true },
+//     quickSuggestionsDelay: 10,
+//     parameterHints: { enabled: true },
+//     suggestOnTriggerCharacters: true,
+//     acceptSuggestionOnCommitCharacter: true,
+//     acceptSuggestionOnEnter: 'on',
 
-    validateOnType: true,
-    validateOnPaste: true,
+//     validateOnType: true,
+//     validateOnPaste: true,
 
-    wordBasedSuggestions: true,
-    suggestSelection: 'first',
-    suggestFilterGraceful: true,
-    suggestSnippetsPreventQuickSuggestions: false,
-    suggestShowKeywords: true,
-    suggestShowSnippets: true,
-    suggestShowClasses: true,
-    suggestShowFunctions: true,
-    suggestShowVariables: true,
-    suggestShowConstants: true,
-    suggestShowEnums: true,
-    suggestShowEnumsMembers: true,
-    suggestShowColors: true,
-    suggestShowFiles: true,
-    suggestShowReferences: true,
-    suggestShowFolders: true,
-    suggestShowTypeParameters: true,
-    suggestShowWords: true,
-    suggestShowUsers: true,
-    suggestShowIssues: true,
+//     wordBasedSuggestions: true,
+//     suggestSelection: 'first',
+//     suggestFilterGraceful: true,
+//     suggestSnippetsPreventQuickSuggestions: false,
+//     suggestShowKeywords: true,
+//     suggestShowSnippets: true,
+//     suggestShowClasses: true,
+//     suggestShowFunctions: true,
+//     suggestShowVariables: true,
+//     suggestShowConstants: true,
+//     suggestShowEnums: true,
+//     suggestShowEnumsMembers: true,
+//     suggestShowColors: true,
+//     suggestShowFiles: true,
+//     suggestShowReferences: true,
+//     suggestShowFolders: true,
+//     suggestShowTypeParameters: true,
+//     suggestShowWords: true,
+//     suggestShowUsers: true,
+//     suggestShowIssues: true,
 
-    quickSuggestions: {
-        other: true,
-        comments: true,
-        strings: true
-    },
+//     quickSuggestions: {
+//         other: true,
+//         comments: true,
+//         strings: true
+//     },
 
-    renderWhitespace: 'selection',
-    renderControlCharacters: true,
-    renderLineHighlight: 'all',
-    renderValidationDecorations: 'on',
-    renderFinalNewline: true,
-    renderLineNumbers: 'on',
-    renderIndentGuides: true,
-    renderValidationDecorations: 'on',
+//     renderWhitespace: 'selection',
+//     renderControlCharacters: true,
+//     renderLineHighlight: 'all',
+//     renderValidationDecorations: 'on',
+//     renderFinalNewline: true,
+//     renderLineNumbers: 'on',
+//     renderIndentGuides: true,
+//     renderValidationDecorations: 'on',
 
-    largeFileOptimizations: true,
-    maxTokenizationLineLength: 20000,
-    maxTokenizationLineLength: 20000,
+//     largeFileOptimizations: true,
+//     maxTokenizationLineLength: 20000,
+//     maxTokenizationLineLength: 20000,
 
-    accessibilitySupport: 'auto',
-    screenReaderAnnounceNewLine: true,
+//     accessibilitySupport: 'auto',
+//     screenReaderAnnounceNewLine: true,
 
-    mouseWheelScrollSensitivity: 1,
-    fastScrollSensitivity: 1,
-    scrollBeyondLastLine: false,
-    scrollBeyondLastColumn: 5,
+//     mouseWheelScrollSensitivity: 1,
+//     fastScrollSensitivity: 1,
+//     scrollBeyondLastLine: false,
+//     scrollBeyondLastColumn: 5,
 
-    multiCursorModifier: 'alt',
-    multiCursorPaste: 'full',
-    multiCursorMergeOverlapping: true,
+//     multiCursorModifier: 'alt',
+//     multiCursorPaste: 'full',
+//     multiCursorMergeOverlapping: true,
 
-    find: {
-        addExtraSpaceOnTop: false,
-        autoFindInSelection: 'never',
-        seedSearchStringFromSelection: 'always',
-        globalFindClipboard: false
-    },
+//     find: {
+//         addExtraSpaceOnTop: false,
+//         autoFindInSelection: 'never',
+//         seedSearchStringFromSelection: 'always',
+//         globalFindClipboard: false
+//     },
 
-    minimap: {
-        enabled: true,
-        maxColumn: 120,
-        renderCharacters: true,
-        showSlider: 'mouseover',
-        side: 'right',
-        size: 'proportional'
-    },
+//     minimap: {
+//         enabled: true,
+//         maxColumn: 120,
+//         renderCharacters: true,
+//         showSlider: 'mouseover',
+//         side: 'right',
+//         size: 'proportional'
+//     },
 
-    overviewRulerLanes: 3,
-    overviewRulerBorder: true,
-    hideCursorInOverviewRuler: false,
+//     overviewRulerLanes: 3,
+//     overviewRulerBorder: true,
+//     hideCursorInOverviewRuler: false,
 
-    scrollbar: {
-        vertical: 'auto',
-        horizontal: 'auto',
-        verticalScrollbarSize: 14,
-        horizontalScrollbarSize: 14,
-        useShadows: true,
-        verticalHasArrows: false,
-        horizontalHasArrows: false
-    }
-};
+//     scrollbar: {
+//         vertical: 'auto',
+//         horizontal: 'auto',
+//         verticalScrollbarSize: 14,
+//         horizontalScrollbarSize: 14,
+//         useShadows: true,
+//         verticalHasArrows: false,
+//         horizontalHasArrows: false
+//     }
+// };
 
 function updateMonacoFromGrapesJS(mainEditor) {
     if (!window.monacoEditor || !window.cssMonacoContainer) return;
@@ -346,6 +346,7 @@ function setupGrapesJSToMonacoSync(mainEditor) {
     };
 }
 
+/* new file */
 export function initializeMonacoEditors(mainEditor, editorContainer) {
     window.monacoInitialized = false;
     window.monacoEditor = null;
@@ -378,7 +379,7 @@ export function initializeMonacoEditors(mainEditor, editorContainer) {
                     colors: {}
                 });
                 disposeExistingEditors();
-                clearContainers(htmlContainer, cssContainer);
+                // clearContainers(htmlContainer, cssContainer);
                 initMonacoEditors(mainEditor, htmlContainer, cssContainer);
                 setupGrapesJSToMonacoSync(mainEditor);
                 setupEditorsLayout();
@@ -393,8 +394,8 @@ export function initializeMonacoEditors(mainEditor, editorContainer) {
     });
 }
 
+/* new file */
 function setupMonacoRequire() {
-
     if (window.monaco) {
         return;
     }
@@ -451,6 +452,7 @@ function setupMonacoRequire() {
     }
 }
 
+/* new file */
 function setupCleanCodeButton() {
     document.querySelector('#cleanCode')?.addEventListener('click', () => {
         if (window.monacoEditor) {
@@ -465,13 +467,14 @@ function setupCleanCodeButton() {
     });
 }
 
+/* new file */
 function setupMonacoCodeToggles() {
     const monacoContainer = document.querySelector('.monaco-editor-container');
     const monacoContainerHtml = monacoContainer.querySelector('#htmlEditor');
     const monacoContainerCss = monacoContainer.querySelector('#cssEditor');
     const monacoContainerResizeHandle = monacoContainer.querySelector('.monaco-resize-handle');
 
-    let activeEditor = 'html';
+    let activeEditor = null;
 
     const showHtml = () => {
         monacoContainerHtml.style.display = 'block';
@@ -516,6 +519,7 @@ function setupMonacoCodeToggles() {
     });
 }
 
+/* new file */
 function setupAdvancedMonacoFeatures() {
     window.enableAdvancedMonacoFeatures = function () {
         if (window.monacoEditor) {
@@ -612,6 +616,7 @@ function setupAdvancedMonacoFeatures() {
     };
 }
 
+/* new file */
 function initMonacoEditors(mainEditor, htmlContainer, cssContainer) {
     const currentHtml = mainEditor.getHtml() || '';
     const currentCss = mainEditor.getCss() || '';
@@ -623,7 +628,7 @@ function initMonacoEditors(mainEditor, htmlContainer, cssContainer) {
     setupCssEditorEvents(window.monacoEditor, window.cssMonacoContainer, mainEditor);
     setupComponentNavigation(mainEditor);
 
-    setupCSSSuggestions();
+    updateCSSSuggestions();
 
     try { window._htmlPrevValue = currentHtml; } catch (e) { }
 
@@ -634,6 +639,7 @@ function initMonacoEditors(mainEditor, htmlContainer, cssContainer) {
     } catch (e) { }
 }
 
+/* new file */
 function createHtmlEditor(container, value) {
     return monaco.editor.create(container, {
         value: value,
@@ -693,6 +699,7 @@ function createHtmlEditor(container, value) {
     });
 }
 
+/* new file */
 function createCssEditor(container, value) {
     return monaco.editor.create(container, {
         value: value,
@@ -753,7 +760,7 @@ function createCssEditor(container, value) {
 }
 
 
-
+/* new file */
 function setupHtmlEditorEvents(monacoEditor, cssMonacoContainer, mainEditor) {
     let applyChangesTimer;
 
@@ -827,6 +834,7 @@ function setupHtmlEditorEvents(monacoEditor, cssMonacoContainer, mainEditor) {
     });
 }
 
+/* new file */
 function setupCssEditorEvents(monacoEditor, cssMonacoContainer, mainEditor) {
     let applyChangesTimer;
 
@@ -895,6 +903,7 @@ function setupCssEditorEvents(monacoEditor, cssMonacoContainer, mainEditor) {
     });
 }
 
+/* new file */
 function handleHtmlEditorClick(event, monacoEditor, mainEditor) {
     const position = event.target.position;
     if (!position) return;
@@ -920,6 +929,9 @@ function handleHtmlEditorClick(event, monacoEditor, mainEditor) {
                 window.isNavigatingFromMonaco = false;
             }, 300);
         }
+    });
+    window.monacoEditor.onDidChangeCursorPosition((e) => {
+        console.log("monaco click");
     });
 
     let elementId = extractIdFromLine(lineContent);
@@ -947,6 +959,7 @@ function handleHtmlEditorClick(event, monacoEditor, mainEditor) {
     }
 }
 
+/* new file */
 function selectComponentById(elementId, mainEditor) {
     try {
         const iframe = document.querySelector('.gjs-frame');
@@ -976,6 +989,7 @@ function selectComponentById(elementId, mainEditor) {
     }
 }
 
+/* new file */
 function selectComponentByTag(tagName, mainEditor) {
     const allComponents = mainEditor.getComponents();
 
@@ -1024,7 +1038,7 @@ function getPreciseLineContent(lineNumber, monacoEditor) {
     return '';
 }
 
-function safeRestoreScrollPosition(monacoEditor, scrollTop, scrollLeft, lineNumber, column) {
+/* function safeRestoreScrollPosition(monacoEditor, scrollTop, scrollLeft, lineNumber, column) {
     try {
         requestAnimationFrame(() => {
             try {
@@ -1038,8 +1052,9 @@ function safeRestoreScrollPosition(monacoEditor, scrollTop, scrollLeft, lineNumb
     } catch (error) {
         console.warn('Error in scroll restoration:', error);
     }
-}
+} */
 
+/* new file */
 function findClosestComponentByPosition(lineNumber, column, monacoEditor, mainEditor) {
     const currentLineContent = monacoEditor.getModel().getLineContent(lineNumber);
     const htmlMatch = currentLineContent.match(/<([a-zA-Z][a-zA-Z0-9\-]*)(?:\s+[^>]*)?/);
@@ -1061,6 +1076,7 @@ function findClosestComponentByPosition(lineNumber, column, monacoEditor, mainEd
     return findComponentByLineAnalysis(lineNumber, monacoEditor, mainEditor);
 }
 
+/* new file */
 function findComponentByLineAnalysis(lineNumber, monacoEditor, mainEditor) {
     const allComponents = mainEditor.getComponents();
     const model = monacoEditor.getModel();
@@ -1096,6 +1112,7 @@ function findComponentByLineAnalysis(lineNumber, monacoEditor, mainEditor) {
 function clearContainers(htmlContainer, cssContainer) {
     htmlContainer.innerHTML = '';
     cssContainer.innerHTML = '';
+    console.log("abcd")
 
     ['data-monaco-editor', 'data-context', 'data-editor-type'].forEach(attr => {
         htmlContainer.removeAttribute(attr);
@@ -1200,7 +1217,7 @@ function formatEditors() {
     formatWithRetry();
 }
 
-export function getIframeContent() {
+/* export function getIframeContent() {
     const iframe = document.querySelector('.gjs-frame');
     if (!iframe) return null;
 
@@ -1209,9 +1226,9 @@ export function getIframeContent() {
     } catch (error) {
         return null;
     }
-}
+} */
 
-export function getIframeContentAsString() {
+/* export function getIframeContentAsString() {
     const iframeDocument = getIframeContent();
     if (!iframeDocument) return '';
 
@@ -1220,9 +1237,9 @@ export function getIframeContentAsString() {
     } catch (error) {
         return '';
     }
-}
+} */
 
-export function getIframeBodyContentAsString() {
+/* export function getIframeBodyContentAsString() {
     const iframeDocument = getIframeContent();
     if (!iframeDocument) return '';
 
@@ -1232,7 +1249,7 @@ export function getIframeBodyContentAsString() {
     } catch (error) {
         return '';
     }
-}
+} */
 
 let filename = window.location.pathname.split('/').pop();
 if (!filename) filename = 'index.html';
@@ -1283,7 +1300,7 @@ window.preventAutoFormatting = function () {
     return false;
 };
 
-window.clearMonacoContext = function () {
+/* window.clearMonacoContext = function () {
     const htmlContainer = document.querySelector('#htmlEditor');
     const cssContainer = document.querySelector('#cssEditor');
 
@@ -1297,9 +1314,9 @@ window.clearMonacoContext = function () {
             });
         }
     });
-};
+}; */
 
-window.checkMonacoStatus = function () {
+/* window.checkMonacoStatus = function () {
     console.log('Monaco Editor Status:');
     console.log('Monaco available:', !!window.monaco);
     console.log('HTML Editor:', !!window.monacoEditor);
@@ -1313,13 +1330,13 @@ window.checkMonacoStatus = function () {
     if (window.cssMonacoContainer) {
         console.log('CSS Content length:', window.cssMonacoContainer.getValue().length);
     }
-};
+}; */
 
-window.formatMonacoEditors = function () {
+/* window.formatMonacoEditors = function () {
     formatEditors();
-};
+}; */
 
-window.refreshMonacoEditors = function () {
+/* window.refreshMonacoEditors = function () {
     const mainEditor = window.mainEditor || window.editor;
 
     if (!mainEditor) {
@@ -1335,9 +1352,9 @@ window.refreshMonacoEditors = function () {
     } else {
         console.warn('Editor container not found');
     }
-};
+}; */
 
-export function reloadMonacoWithCDN(mainEditor, editorContainer) {
+/* export function reloadMonacoWithCDN(mainEditor, editorContainer) {
     disposeExistingEditors();
 
     const htmlContainer = editorContainer.querySelector('#htmlEditor');
@@ -1356,9 +1373,9 @@ export function reloadMonacoWithCDN(mainEditor, editorContainer) {
     } else {
         initializeMonacoEditors(mainEditor, editorContainer);
     }
-}
+} */
 
-export function diagnoseCDNIssues() {
+/* export function diagnoseCDNIssues() {
     if (!window.monaco || !window.monacoEditor || !window.cssMonacoContainer || !window.monaco.languages) {
         return false;
     }
@@ -1382,9 +1399,9 @@ export function diagnoseCDNIssues() {
     } catch (error) {
         return false;
     }
-}
+} */
 
-export function fixCDNIssues() {
+/* export function fixCDNIssues() {
     const isHealthy = diagnoseCDNIssues();
 
     if (!isHealthy && window.mainEditor) {
@@ -1394,9 +1411,9 @@ export function fixCDNIssues() {
             reloadMonacoWithCDN(window.mainEditor, editorContainer);
         }
     }
-}
+} */
 
-window.reloadMonacoWithCDN = function () {
+/* window.reloadMonacoWithCDN = function () {
     if (window.mainEditor) {
         const editorContainer = document.querySelector('#editorContainer') ||
             document.querySelector('.editor-container');
@@ -1404,17 +1421,17 @@ window.reloadMonacoWithCDN = function () {
             reloadMonacoWithCDN(window.mainEditor, editorContainer);
         }
     }
-};
+}; */
 
-window.diagnoseCDNIssues = function () {
+/* window.diagnoseCDNIssues = function () {
     return diagnoseCDNIssues();
-};
+}; */
 
-window.fixCDNIssues = function () {
+/* window.fixCDNIssues = function () {
     fixCDNIssues();
-};
+}; */
 
-window.simpleFix = function () {
+/* window.simpleFix = function () {
     window.clearMonacoContext();
 
     const htmlContainer = document.querySelector('#htmlEditor') || document.createElement('div');
@@ -1457,20 +1474,16 @@ window.simpleFix = function () {
             setupHtmlEditorEvents(window.monacoEditor, window.cssMonacoContainer, mainEditor);
             setupCssEditorEvents(window.monacoEditor, window.cssMonacoContainer, mainEditor);
         }
-
-
     }
-};
+}; */
 
-function setupCSSSuggestions() {
-    updateCSSSuggestions();
-}
 
+/* new file */
 function updateCSSSuggestions() {
     getCombinedCSSClasses().then(cssClasses => {
         if (cssClasses.length > 0 && window.monaco?.languages) {
             if (window.cssCompletionProvider) {
-                window.cssCompletionProvider.dispose();
+                window.cssCompletionProvider.dispose(1);
             }
             window.cssCompletionProvider = window.monaco.languages.registerCompletionItemProvider('html', {
                 provideCompletionItems: function (model, position) {

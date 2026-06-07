@@ -1,5 +1,5 @@
-import { codeImportManager } from './monaco-code-import.js';
-import { setupCodeEditorCommand } from './customize/monaco-editor.js';
+import { codeImportManager } from '../plugins/monaco/monaco-code-import.js';
+import { setupCodeEditorCommand } from '../plugins/monaco/monaco-editor.js';
 
 class EditorContainer {
     constructor() {

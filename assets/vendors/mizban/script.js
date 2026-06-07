@@ -85,7 +85,7 @@
             { src: '/assets/vendors/mizban/grapesJs/grapesJs.js', type: 'module' },
             { src: '/assets/vendors/mizban/grapesJs/js/editor/editor.js', type: 'module' },
             { src: '/assets/vendors/mizban/playground/vs/loader.min.js', type: 'text/javascript' },
-            { src: '/assets/vendors/mizban/grapesJs/js/assetsManager/assets-manager.js', type: 'module' },
+            { src: '/assets/vendors/mizban/grapesJs/js/plugins/assetsManager/assets-manager.js', type: 'module' },
         ];
 
         let chain = Promise.resolve();
